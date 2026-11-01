@@ -336,7 +336,9 @@ tbody tr:nth-child(even) td { background: #fcfbf8; }
 .level-bars { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 12px; }
 .level-bars li { display: grid; grid-template-columns: 40px 110px 1fr 46px; align-items: center; gap: 10px; }
 .level-bars li.locked { opacity: .5; }
-.lb-id { font-weight: 800; color: var(--lvl); }
+.lb-id { font-weight: 800; color: var(--lvl); white-space: nowrap; }
+.level-badge { line-height: 1; }
+.level-badge .badge-pre { display: block; font-family: var(--font-body, inherit); font-size: .5em; font-weight: 700; letter-spacing: .06em; opacity: .9; margin-bottom: 2px; }
 .lb-name { font-size: .9rem; color: var(--ink-2); }
 .lb-bar { height: 10px; background: var(--paper-2); border-radius: 99px; overflow: hidden; }
 .lb-bar i { display: block; height: 100%; background: var(--lvl); border-radius: 99px; transition: width .8s; }
@@ -1494,11 +1496,11 @@ function getQuestion2(ref) {
 }
 function refLabel2(ref) {
   const src = ref.split(":")[0];
-  if (src.startsWith("exam-")) return `Examen ${src.slice(5)}`;
+  if (src.startsWith("exam-")) return `Examen ${lvlLabel(src.slice(5))}`;
   const l = getLesson2(src);
-  return l ? `${l.levelId} \xB7 ${l.title}` : src;
+  return l ? `${lvlLabel(l.levelId)} \xB7 ${l.title}` : src;
 }
-var mcq2, fill2, match2, tr2, MODULES2, LEVELS2, ALL_LESSONS2, getLevel2, getLesson2;
+var mcq2, fill2, match2, tr2, MODULES2, LEVELS2, ALL_LESSONS2, getLevel2, getLesson2, lvlLabel;
 var init_zh = __esm({
   "js/data/zh.js"() {
     mcq2 = (q, options, answer, explain = "") => ({ type: "mcq", q, options, answer, explain });
@@ -1518,6 +1520,7 @@ var init_zh = __esm({
       /* ================================================================ A1 */
       {
         id: "A1",
+        label: "HSK 1",
         name: "D\xE9butant",
         hsk: "HSK 1",
         title: "Les premiers pas",
@@ -1701,6 +1704,7 @@ var init_zh = __esm({
       /* ================================================================ A2 */
       {
         id: "A2",
+        label: "HSK 2",
         name: "\xC9l\xE9mentaire",
         hsk: "HSK 2",
         title: "La vie quotidienne",
@@ -1852,6 +1856,7 @@ var init_zh = __esm({
       /* ================================================================ B1 */
       {
         id: "B1",
+        label: "HSK 3",
         name: "Seuil",
         hsk: "HSK 3",
         title: "Comparer et agir",
@@ -1999,6 +2004,7 @@ var init_zh = __esm({
       /* ================================================================ B2 */
       {
         id: "B2",
+        label: "HSK 4",
         name: "Avanc\xE9",
         hsk: "HSK 4",
         title: "Argumenter et travailler",
@@ -2115,6 +2121,7 @@ var init_zh = __esm({
       /* ================================================================ C1 */
       {
         id: "C1",
+        label: "HSK 5",
         name: "Autonome",
         hsk: "HSK 5",
         title: "Pr\xE9cision et \xE9l\xE9gance",
@@ -2232,6 +2239,7 @@ var init_zh = __esm({
       /* ================================================================ C2 */
       {
         id: "C2",
+        label: "HSK 6",
         name: "Ma\xEEtrise",
         hsk: "HSK 6+",
         title: "Comme un natif",
@@ -2358,6 +2366,7 @@ var init_zh = __esm({
     });
     getLevel2 = (id) => LEVELS2.find((l) => l.id === id);
     getLesson2 = (id) => ALL_LESSONS2.find((l) => l.id === id);
+    lvlLabel = (id) => LEVELS2.find((l) => l.id === id)?.label || id;
   }
 });
 
@@ -2418,7 +2427,7 @@ var LANGS = {
     label: "Mandarin",
     native: "\u4E2D\u6587",
     brand: "Xu\xE9x\xED",
-    title: "Xu\xE9x\xED \u5B66\u4E60 \u2014 Apprendre le mandarin de A1 \xE0 C2",
+    title: "Xu\xE9x\xED \u5B66\u4E60 \u2014 Apprendre le mandarin du HSK 1 au HSK 6",
     themeColor: "#c23b32",
     storageKey: "xuexi.state.v1",
     speech: "zh-CN",
@@ -2435,7 +2444,7 @@ var LANGS = {
     goalDone: "\u592A\u68D2\u4E86",
     onboardEyebrow: "\u6B22\u8FCE hu\u0101ny\xEDng \xB7 Bienvenue",
     onboardTitle: "Apprenez le mandarin,",
-    onboardLead: "6 paliers CECRL (A1 \u2192 C2, rep\xE8res HSK 1 \xE0 6), caract\xE8res + pinyin, prononciation audio, quiz corrig\xE9s instantan\xE9ment et suivi de vos progr\xE8s.",
+    onboardLead: "6 niveaux HSK (HSK 1 \u2192 HSK 6), caract\xE8res + pinyin, prononciation audio, quiz corrig\xE9s instantan\xE9ment et suivi de vos progr\xE8s.",
     start: "\u5F00\u59CB\u5427 ! Commencer \u2192",
     namePh: "ex. L\xE9a",
     cheers: ["Bravo ! \u5F88\u597D\uFF01", "Parfait ! \u592A\u68D2\u4E86\uFF01", "Exact ! \u5BF9\u4E86\uFF01", "Excellent ! \u771F\u68D2\uFF01"],
@@ -2597,6 +2606,15 @@ var SOURCES = {
 };
 var mod = await (SOURCES[code] || SOURCES.it)();
 var { LEVELS: LEVELS3, MODULES: MODULES3, ALL_LESSONS: ALL_LESSONS3, getLevel: getLevel3, getLesson: getLesson3, getQuestion: getQuestion3, refLabel: refLabel3 } = mod;
+var lvlLabel2 = (lvlOrId) => {
+  const l = typeof lvlOrId === "string" ? LEVELS3.find((x) => x.id === lvlOrId) : lvlOrId;
+  return l?.label || l?.id || lvlOrId;
+};
+var lvlBadge = (l) => {
+  const lab = lvlLabel2(l);
+  const m = /^HSK\s*(.+)$/.exec(lab);
+  return m ? `<span class="badge-pre">HSK</span>${m[1]}` : lab;
+};
 
 // js/core/ui.js
 var $ = (sel, root = document) => root.querySelector(sel);
@@ -2831,13 +2849,13 @@ function renderParcours(app2) {
       <div>
         <p class="eyebrow">${L.hello} ${pseudo} \u{1F44B}</p>
         <h1>Votre route vers<br><em>${L.heroEm}</em></h1>
-        <p class="muted">${g.done} \xE9tapes sur ${g.total} valid\xE9es \xB7 niveau actuel <b>${currentLevel().id}</b></p>
+        <p class="muted">${g.done} \xE9tapes sur ${g.total} valid\xE9es \xB7 niveau actuel <b>${lvlLabel2(currentLevel())}</b></p>
         ${next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
-               ${next.kind === "lesson" ? `Continuer : ${esc(next.lesson.title)}` : `Passer l'examen ${next.level.id}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
+               ${next.kind === "lesson" ? `Continuer : ${esc(next.lesson.title)}` : `Passer l'examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
       </div>
       <div class="hero-meter" aria-label="Progression globale ${g.pct} %">
         <div class="meter-track"><span style="width:${g.pct}%"></span></div>
-        <div class="meter-labels">${LEVELS3.map((l, i) => `<span class="${isLevelUnlocked(i) ? "on" : ""}">${l.id}</span>`).join("")}</div>
+        <div class="meter-labels">${LEVELS3.map((l, i) => `<span class="${isLevelUnlocked(i) ? "on" : ""}">${lvlLabel2(l)}</span>`).join("")}</div>
       </div>
     </section>
 
@@ -2854,9 +2872,9 @@ function levelBlock(lvl, li) {
   return `
   <section class="level ${unlocked ? "" : "locked"}" style="--lvl:${lvl.color}" id="palier-${lvl.id}">
     <header class="level-head">
-      <div class="level-badge">${lvl.id}</div>
+      <div class="level-badge">${lvlBadge(lvl)}</div>
       <div class="level-info">
-        <p class="eyebrow">${lvl.emoji} Palier ${lvl.id} \xB7 ${lvl.name}${lvl.hsk ? ` \xB7 rep\xE8re ${lvl.hsk}` : ""}</p>
+        <p class="eyebrow">${lvl.emoji} Palier ${lvlLabel2(lvl)} \xB7 ${lvl.name}${lvl.hsk && !lvl.label ? ` \xB7 rep\xE8re ${lvl.hsk}` : ""}</p>
         <h2>${lvl.title}</h2>
         <p class="muted small">${lvl.desc}</p>
       </div>
@@ -2864,16 +2882,16 @@ function levelBlock(lvl, li) {
         ${unlocked ? `<span>${prog.pct}%</span><div class="mini-bar"><i style="width:${prog.pct}%"></i></div>` : `<span class="lock">\u{1F512}</span>`}
       </div>
     </header>
-    ${unlocked ? "" : `<p class="level-locked-msg">R\xE9ussissez l'examen ${LEVELS3[li - 1].id} pour d\xE9bloquer ce palier.</p>`}
+    ${unlocked ? "" : `<p class="level-locked-msg">R\xE9ussissez l'examen ${lvlLabel2(LEVELS3[li - 1])} pour d\xE9bloquer ce palier.</p>`}
     <ol class="nodes">
       ${lvl.lessons.map((lesson, i) => node(lesson, OFFSETS[i % OFFSETS.length])).join("")}
       <li class="node-wrap" style="--x:${examOffset}px">
         <a class="node exam ${examDone ? "done" : examOpen ? "open" : "locked"}"
            ${examOpen ? `href="#examen-${lvl.id}"` : `aria-disabled="true"`}
-           aria-label="Examen de fin de palier ${lvl.id}${examDone ? ", valid\xE9" : examOpen ? "" : ", verrouill\xE9"}">
+           aria-label="Examen de fin de palier ${lvlLabel2(lvl)}${examDone ? ", valid\xE9" : examOpen ? "" : ", verrouill\xE9"}">
           <span class="node-icon">${examDone ? "\u{1F3C6}" : examOpen ? "\u{1F393}" : "\u{1F512}"}</span>
         </a>
-        <span class="node-label"><b>Examen ${lvl.id}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "80 % requis"}</small></span>
+        <span class="node-label"><b>Examen ${lvlLabel2(lvl)}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "80 % requis"}</small></span>
       </li>
     </ol>
   </section>`;
@@ -2914,7 +2932,7 @@ function renderLecon(app2, id) {
     <header class="lesson-head">
       <div class="lesson-emoji">${lesson.emoji}</div>
       <div>
-        <p class="eyebrow">${level.id}${level.hsk ? ` (${level.hsk})` : ""} \xB7 ${mod2.icon} ${mod2.label} \xB7 Le\xE7on ${lesson.index + 1}/${lessons.length}</p>
+        <p class="eyebrow">${lvlLabel2(level)}${level.hsk && !level.label ? ` (${level.hsk})` : ""} \xB7 ${mod2.icon} ${mod2.label} \xB7 Le\xE7on ${lesson.index + 1}/${lessons.length}</p>
         <h1>${esc(lesson.title)}</h1>
         <p class="lead">${lesson.intro}</p>
         ${rec ? `<p class="small muted">Meilleur score : ${rec.best}/${rec.total} ${"\u2605".repeat(starsFor(rec.best / rec.total))}</p>` : ""}
@@ -3272,8 +3290,8 @@ function renderExamen(app2, levelId) {
   start(app2, {
     kind: "exam",
     id: levelId,
-    label: `Examen ${levelId}`,
-    title: `Examen de fin de palier ${levelId}`,
+    label: `Examen ${lvlLabel2(levelId)}`,
+    title: `Examen de fin de palier ${lvlLabel2(levelId)}`,
     questions: level.exam.map((q, i) => ({ ref: `exam-${levelId}:${i}`, q })),
     back: "#parcours"
   });
@@ -3313,9 +3331,9 @@ function showResults(app2, cfg, s) {
     msg = s.mastered ? `${s.mastered} notion(s) ma\xEEtris\xE9e(s) et retir\xE9e(s) du cahier d'erreurs.` : "Une erreur dispara\xEEt du cahier apr\xE8s 2 bonnes r\xE9ponses d'affil\xE9e.";
     primary = Object.keys(state.errors).length ? `<a class="btn primary big" href="#revision" data-reload>Nouvelle r\xE9vision</a>` : `<a class="btn primary big" href="#parcours">Retour au parcours</a>`;
   } else if (s.passed) {
-    headline = cfg.kind === "exam" ? `Palier ${cfg.id} valid\xE9 ! \u{1F393}` : L.resultHeads[s.stars - 1] || L.resultHeads[0];
-    msg = cfg.kind === "exam" ? LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1] ? `Le palier ${LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1].id} est maintenant d\xE9bloqu\xE9.` : L.finished : s.newWords ? `${s.newWords} nouveaux mots ajout\xE9s \xE0 votre carnet.` : "Le\xE7on valid\xE9e.";
-    primary = next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">${next.kind === "lesson" ? "Le\xE7on suivante" : `Examen ${next.level.id}`} \u2192</a>` : `<a class="btn primary big" href="#tableau">Voir mon tableau de bord</a>`;
+    headline = cfg.kind === "exam" ? `Palier ${lvlLabel2(cfg.id)} valid\xE9 ! \u{1F393}` : L.resultHeads[s.stars - 1] || L.resultHeads[0];
+    msg = cfg.kind === "exam" ? LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1] ? `Le palier ${lvlLabel2(LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1])} est maintenant d\xE9bloqu\xE9.` : L.finished : s.newWords ? `${s.newWords} nouveaux mots ajout\xE9s \xE0 votre carnet.` : "Le\xE7on valid\xE9e.";
+    primary = next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">${next.kind === "lesson" ? "Le\xE7on suivante" : `Examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<a class="btn primary big" href="#tableau">Voir mon tableau de bord</a>`;
   } else {
     headline = L.almost;
     msg = `Il faut ${Math.round(s.passMark * 100)} % pour valider. Relisez la le\xE7on, vos erreurs sont dans le cahier.`;
@@ -3363,11 +3381,11 @@ function renderDashboard(app2) {
     <section class="card dash-main">
       ${ring(g.pct, 168, 14)}
       <div>
-        <p class="eyebrow">Progression globale A1 \u2192 C2</p>
+        <p class="eyebrow">Progression globale ${lvlLabel2(LEVELS3[0])} \u2192 ${lvlLabel2(LEVELS3[LEVELS3.length - 1])}</p>
         <h2>${g.done} / ${g.total} \xE9tapes</h2>
-        <p class="muted">Niveau actuel : <b>${currentLevel().id} \xB7 ${currentLevel().name}</b></p>
+        <p class="muted">Niveau actuel : <b>${lvlLabel2(currentLevel())} \xB7 ${currentLevel().name}</b></p>
         ${next ? `<a class="btn primary" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
-          ${next.kind === "lesson" ? "Reprendre : " + esc(next.lesson.title) : "Passer l'examen " + next.level.id} \u2192</a>` : ""}
+          ${next.kind === "lesson" ? "Reprendre : " + esc(next.lesson.title) : "Passer l'examen " + lvlLabel2(next.level)} \u2192</a>` : ""}
       </div>
     </section>
 
@@ -3395,8 +3413,8 @@ function renderDashboard(app2) {
         ${LEVELS3.map((l, i) => {
     const p = levelProgress(i), open = isLevelUnlocked(i);
     return `<li class="${open ? "" : "locked"}" style="--lvl:${l.color}">
-            <span class="lb-id">${l.id}</span>
-            <span class="lb-name">${l.name}${l.hsk ? ` \xB7 ${l.hsk}` : ""}${isExamPassed(l.id) ? " \u{1F3C6}" : ""}</span>
+            <span class="lb-id">${lvlLabel2(l)}</span>
+            <span class="lb-name">${l.name}${l.hsk && !l.label ? ` \xB7 ${l.hsk}` : ""}${isExamPassed(l.id) ? " \u{1F3C6}" : ""}</span>
             <span class="lb-bar"><i style="width:${p.pct}%"></i></span>
             <span class="lb-pct">${open ? p.pct + "%" : "\u{1F512}"}</span>
           </li>`;
@@ -3433,7 +3451,7 @@ function renderCarnet(app2) {
   <div class="toolbar">
     <input type="search" class="search" placeholder="${esc(L.search)}" value="${esc(ui.query)}" aria-label="Rechercher">
     <div class="chips" role="group" aria-label="Filtrer par palier">
-      ${["all", ...LEVELS3.map((l) => l.id)].map((id) => `<button class="chip-btn ${ui.level === id ? "on" : ""}" data-level="${id}">${id === "all" ? "Tous" : id}</button>`).join("")}
+      ${["all", ...LEVELS3.map((l) => l.id)].map((id) => `<button class="chip-btn ${ui.level === id ? "on" : ""}" data-level="${id}">${id === "all" ? "Tous" : lvlLabel2(id)}</button>`).join("")}
     </div>
     <div class="seg" role="group" aria-label="Mode d'affichage">
       <button class="${ui.mode === "list" ? "on" : ""}" data-mode="list">Liste</button>
@@ -3451,7 +3469,7 @@ function renderCarnet(app2) {
         <li>${speakBtn(w.zh)}
           <span class="it"><span class="${L.wordClass}">${esc(w.zh)}</span>${w.py ? ` <span class="py">${esc(w.py)}</span>` : ""}</span>
           <span class="fr">${esc(w.fr)}</span>
-          <span class="tag" style="--lvl:${LEVELS3.find((l) => l.id === w.levelId)?.color}" title="${esc(getLesson3(w.lessonId)?.title || "")}">${w.levelId}</span>
+          <span class="tag" style="--lvl:${LEVELS3.find((l) => l.id === w.levelId)?.color}" title="${esc(getLesson3(w.lessonId)?.title || "")}">${lvlLabel2(w.levelId)}</span>
         </li>`).join("")}</ul>` : `<p class="empty">Aucun r\xE9sultat.</p>`;
     } else {
       if (!ui.deck.length || ui.deck.some((w2) => !list.includes(w2))) {
