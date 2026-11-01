@@ -717,6 +717,30 @@ rt { font-family: var(--font); font-size: .58em; font-weight: 600; color: var(--
 .tag rt { color: inherit; opacity: .85; } .tag { line-height: 1.9; }
 .s-board-name small { display: block; font-weight: 600; font-size: .75rem; color: var(--muted); }
 
+/* 11. RÉGLAGES ------------------------------------------------------- */
+.gear-pill { position: relative; text-decoration: none; color: var(--ink); width: 40px; height: 36px; padding: 0; justify-content: center; }
+.gear-pill .gear { font-size: 1.15rem; line-height: 1; transition: transform .4s ease; }
+.gear-pill:hover .gear { transform: rotate(60deg); }
+.gear-pill.active { background: var(--ink); border-color: var(--ink); }
+.sync-dot { position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--card); background: var(--muted); }
+.sync-dot[hidden] { display: none; }
+.sync-dot.dot-error { background: var(--rosso); }
+.sync-dot.dot-offline { background: var(--muted); }
+.sync-dot.dot-guest { background: var(--oro); }
+.sync-dot.dot-syncing { background: #4a90d9; animation: pulse 1.2s ease-in-out infinite; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.settings-col { display: grid; gap: 20px; min-width: 0; }
+.set-card h2 { margin-bottom: 14px; }
+.set-card .switch { margin-bottom: 14px; }
+.set-label { font-weight: 700; font-size: .9rem; margin: 0 0 8px; }
+.set-card .seg { margin-bottom: 8px; }
+.set-card .btn-row { margin: 12px 0 0; }
+.set-card .lang-pick { margin-bottom: 10px; justify-content: flex-start; }
+.acc-edit { margin-left: auto; }
+.danger-zone { border-color: #f0c8c3; }
+@media (max-width: 860px) { .settings-grid { grid-template-columns: 1fr; } }
+.btn.ghost.danger-txt { color: var(--rosso); }
+
 </style>
 </head>
 <body>
@@ -741,7 +765,7 @@ rt { font-family: var(--font); font-size: .58em; font-weight: 600; color: var(--
     <div class="hdr-stats">
       <span class="pill" title="Série de jours">🔥 <b id="hdr-streak">0</b></span>
       <span class="pill" title="Points d'expérience">⚡ <b id="hdr-xp">0</b></span>
-      <a class="pill cloud-pill" id="hdr-cloud" href="#compte" hidden></a>
+      <a class="pill gear-pill" id="hdr-gear" href="#reglages" data-tab="reglages" aria-label="Réglages" title="Réglages"><span class="gear" aria-hidden="true">⚙️</span><i class="sync-dot" hidden></i></a>
       <a class="hdr-profile" href="#profil" data-tab="profil" aria-label="Mon profil">
         <span class="hdr-avatar">👤</span><span id="hdr-pseudo"></span>
       </a>
@@ -4252,88 +4276,6 @@ async function updatePassword(password) {
 var syncNow = () => pull();
 var getClient = () => client();
 
-// js/core/pwa.js
-var deferred = null;
-var listeners3 = /* @__PURE__ */ new Set();
-var onPwa = (fn) => (listeners3.add(fn), () => listeners3.delete(fn));
-var emit2 = () => listeners3.forEach((fn) => fn());
-var isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-var isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
-var canPrompt = () => !!deferred;
-var swSupported = () => "serviceWorker" in navigator && location.protocol === "https:";
-function initPwa() {
-  if (swSupported()) navigator.serviceWorker.register("sw.js").catch(() => {
-  });
-  addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferred = e;
-    emit2();
-  });
-  addEventListener("appinstalled", () => {
-    deferred = null;
-    emit2();
-  });
-}
-async function promptInstall() {
-  if (!deferred) return false;
-  deferred.prompt();
-  const { outcome } = await deferred.userChoice.catch(() => ({ outcome: "dismissed" }));
-  deferred = null;
-  emit2();
-  return outcome === "accepted";
-}
-var pushSupported = () => swSupported() && "PushManager" in window && "Notification" in window;
-var pushNeedsInstall = () => isIOS() && !isStandalone();
-var b64ToBytes = (s) => {
-  const pad = "=".repeat((4 - s.length % 4) % 4);
-  const raw = atob((s + pad).replace(/-/g, "+").replace(/_/g, "/"));
-  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
-};
-async function vapidKey() {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/notify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
-    body: JSON.stringify({ action: "vapid" })
-  });
-  if (!res.ok) throw new Error("Service de notifications indisponible pour le moment.");
-  const { publicKey } = await res.json();
-  if (!publicKey) throw new Error("Service de notifications indisponible pour le moment.");
-  return publicKey;
-}
-async function currentSub() {
-  if (!pushSupported()) return null;
-  const reg = await navigator.serviceWorker.getRegistration();
-  return reg ? reg.pushManager.getSubscription() : null;
-}
-async function pushState() {
-  if (!isConfigured() || !pushSupported()) return pushNeedsInstall() ? "needs-install" : "unsupported";
-  if (pushNeedsInstall()) return "needs-install";
-  if (!cloudInfo().user) return "needs-login";
-  if (Notification.permission === "denied") return "denied";
-  return await currentSub() && Notification.permission === "granted" ? "on" : "off";
-}
-async function enablePush() {
-  if (!cloudInfo().user) throw new Error("Connectez-vous d'abord \xE0 votre compte.");
-  const perm = await Notification.requestPermission();
-  if (perm !== "granted") throw new Error("Notifications refus\xE9es. Vous pouvez les autoriser dans les r\xE9glages du navigateur.");
-  const reg = await navigator.serviceWorker.ready;
-  let sub = await reg.pushManager.getSubscription();
-  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(await vapidKey()) });
-  const j = sub.toJSON();
-  const sb2 = await getClient();
-  const { error } = await sb2.rpc("save_push_subscription", { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
-  if (error) throw new Error(error.message);
-}
-async function disablePush() {
-  const sub = await currentSub();
-  if (!sub) return;
-  const sb2 = await getClient();
-  await sb2.rpc("remove_push_subscription", { p_endpoint: sub.endpoint }).catch(() => {
-  });
-  await sub.unsubscribe().catch(() => {
-  });
-}
-
 // js/views/profil.js
 var GOALS = [[20, "D\xE9tente"], [50, "R\xE9gulier"], [100, "Intensif"]];
 function renderOnboarding(app2, onDone) {
@@ -4397,164 +4339,30 @@ function renderProfil(app2) {
       <fieldset class="field"><legend>Avatar</legend>
         <div class="avatar-grid">${AVATARS.map((a) => `<button type="button" class="avatar-opt ${a === p.avatar ? "on" : ""}" data-a="${a}">${a}</button>`).join("")}</div>
       </fieldset>
-      <fieldset class="field"><legend>Objectif quotidien</legend>
-        <div class="seg wide">${GOALS.map(([v, l]) => `<button type="button" data-g="${v}" class="${v === p.dailyGoal ? "on" : ""}">${l}<small>${v} XP</small></button>`).join("")}</div>
-      </fieldset>
-      <label class="switch"><input type="checkbox" name="tts" ${state.settings.tts ? "checked" : ""}><span></span> ${L.tts}</label>
-      <fieldset class="field"><legend>Vitesse de la voix</legend>
-        <div class="seg wide">${VOICE_SPEEDS.map(([v, l]) => `<button type="button" data-v="${v}" class="${v === (state.settings.voiceSpeed || 1) ? "on" : ""}">${l}</button>`).join("")}</div>
-        <p class="small muted">Le bouton \u{1F422} \xE0 c\xF4t\xE9 de chaque \u{1F50A} lit encore plus lentement.</p>
-      </fieldset>
-      ${code === "zh" ? `<fieldset class="field"><legend>Pinyin dans les quiz</legend>
-        <div class="seg wide">${PINYIN_MODES.map(([v, l]) => `<button type="button" data-pyq="${v}" class="${v === (state.settings.pinyinQuiz || "auto") ? "on" : ""}">${l}</button>`).join("")}</div>
-        <p class="small muted">Le pinyin s'affiche au-dessus des caract\xE8res dans les questions. Par d\xE9faut : HSK 1 et HSK 2.</p>
-      </fieldset>` : ""}
       <button class="btn primary" type="submit">Enregistrer</button>
     </form>
 
-    <section class="card">
-      ${isConfigured() ? `
-      <h2 class="h3">\u2601\uFE0F Compte en ligne</h2>
-      <p class="small muted">${cloudInfo().user ? `Connect\xE9 avec <b>${esc(cloudInfo().user.email)}</b> : votre progression est sauvegard\xE9e en ligne et synchronis\xE9e sur vos appareils.` : "Cr\xE9ez un compte gratuit pour retrouver votre progression sur tous vos appareils."}</p>
-      <a class="btn ${cloudInfo().user ? "ghost" : "primary"}" href="#compte">${cloudInfo().user ? "G\xE9rer mon compte" : "Se connecter / cr\xE9er un compte"}</a>
-      <hr>` : ""}
-      <h2 class="h3">\u{1F4F2} Application et notifications</h2>
-      <div data-zone="app"><p class="small muted">\u2026</p></div>
-      <hr>
-      <h2 class="h3">\u{1F4BE} Sauvegarde</h2>
-      <p class="small muted">${isPersistent() ? "Votre progression est enregistr\xE9e automatiquement dans ce navigateur." : "\u26A0\uFE0F Le stockage local est indisponible ici : la progression sera perdue en fermant la page. Exportez-la pour la conserver."}
-        Pour la transf\xE9rer sur un autre appareil, copiez le code ci-dessous puis importez-le l\xE0-bas.</p>
-      <div class="btn-row">
-        <button class="btn ghost" data-export>\u{1F4CB} Copier ma sauvegarde</button>
-        <label class="btn ghost file-btn">\u{1F4C2} Importer un fichier<input type="file" accept=".json,application/json" hidden></label>
-      </div>
-      <details class="paste">
-        <summary>Coller une sauvegarde</summary>
-        <textarea rows="4" placeholder='{"version":1, \u2026}'></textarea>
-        <button class="btn ghost small" data-import-text>Importer le texte</button>
-      </details>
-      <hr>
-      <h2 class="h3">Zone sensible</h2>
-      <button class="btn danger" data-reset>R\xE9initialiser ma progression</button>
+    <section class="card settings-teaser">
+      <h2 class="h3">\u2699\uFE0F R\xE9glages</h2>
+      <p class="small muted">Compte et synchronisation, langue, son et vitesse de la voix${code === "zh" ? ", pinyin" : ""}, objectif quotidien, application, notifications et sauvegarde.</p>
+      <a class="btn ghost" href="#reglages">Ouvrir les r\xE9glages \u2192</a>
     </section>
   </div>`;
-  paintApp(app2);
-  const offPwa = onPwa(() => paintApp(app2));
-  app2._cleanup = offPwa;
   const form = app2.querySelector(".profile-form");
-  let avatar = p.avatar, goal = p.dailyGoal, voice2 = state.settings.voiceSpeed || 1, pyq = state.settings.pinyinQuiz || "auto";
+  let avatar = p.avatar;
   form.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => {
     avatar = b.dataset.a;
     form.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("on", x === b));
-  });
-  form.querySelectorAll("[data-g]").forEach((b) => b.onclick = () => {
-    goal = +b.dataset.g;
-    form.querySelectorAll("[data-g]").forEach((x) => x.classList.toggle("on", x === b));
-  });
-  form.querySelectorAll("[data-pyq]").forEach((b) => b.onclick = () => {
-    pyq = b.dataset.pyq;
-    form.querySelectorAll("[data-pyq]").forEach((x) => x.classList.toggle("on", x === b));
-  });
-  form.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
-    voice2 = +b.dataset.v;
-    form.querySelectorAll("[data-v]").forEach((x) => x.classList.toggle("on", x === b));
-    const prev = state.settings.voiceSpeed;
-    state.settings.voiceSpeed = voice2;
-    speak(L.hello);
-    state.settings.voiceSpeed = prev;
   });
   form.onsubmit = (e) => {
     e.preventDefault();
     const pseudo = form.pseudo.value.trim() || p.pseudo;
     commit((s) => {
-      s.profile = { ...s.profile, pseudo, avatar, dailyGoal: goal };
-      s.settings.tts = form.tts.checked;
-      s.settings.voiceSpeed = voice2;
-      s.settings.pinyinQuiz = pyq;
+      s.profile = { ...s.profile, pseudo, avatar };
     });
     toast("Profil enregistr\xE9 \u2713", "ok");
     renderProfil(app2);
   };
-  app2.querySelector("[data-export]").onclick = async () => {
-    try {
-      await navigator.clipboard.writeText(exportState());
-      toast("Sauvegarde copi\xE9e dans le presse-papiers \u2713", "ok");
-    } catch {
-      modal({ title: "Votre sauvegarde", body: `<p class="small muted">Copiez ce texte manuellement :</p><textarea class="export-box" rows="8" readonly>${esc(exportState())}</textarea>` });
-      setTimeout(() => document.querySelector(".export-box")?.select(), 50);
-    }
-  };
-  const doImport = (text) => {
-    try {
-      const data = JSON.parse(text);
-      if (!data || typeof data !== "object" || !("lessons" in data)) throw new Error();
-      replaceState(data);
-      toast("Sauvegarde import\xE9e \u2713", "ok");
-      location.hash = "tableau";
-    } catch {
-      toast("Fichier de sauvegarde invalide", "error");
-    }
-  };
-  app2.querySelector("input[type=file]").onchange = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => doImport(r.result);
-    r.readAsText(f);
-  };
-  app2.querySelector("[data-import-text]").onclick = () => doImport(app2.querySelector(".paste textarea").value);
-  app2.querySelector("[data-reset]").onclick = async () => {
-    const v = await modal({
-      title: "Tout r\xE9initialiser ?",
-      body: "<p>Votre progression, votre carnet et votre cahier d'erreurs seront effac\xE9s. Cette action est irr\xE9versible.</p>",
-      actions: [{ label: "Annuler", value: "no", kind: "ghost" }, { label: "Oui, tout effacer", value: "yes", kind: "danger" }]
-    });
-    if (v === "yes") {
-      replaceState(defaultState());
-      location.hash = "parcours";
-      window.dispatchEvent(new HashChangeEvent("hashchange"));
-    }
-  };
-}
-async function paintApp(app2) {
-  const zone = app2.querySelector('[data-zone="app"]');
-  if (!zone) return;
-  let install;
-  if (isStandalone()) install = `<p class="small hint-ok">\u2713 Vous utilisez l'application install\xE9e.</p>`;
-  else if (canPrompt()) install = `<p class="small muted">Ajoutez Impara \xE0 votre \xE9cran d'accueil : plein \xE9cran, acc\xE8s direct, et les le\xE7ons marchent m\xEAme sans r\xE9seau.</p>
-      <button class="btn primary" data-install>\u{1F4F2} Installer l'application</button>`;
-  else if (isIOS()) install = `<p class="small muted">Sur iPhone : ouvrez ce site dans <b>Safari</b>, touchez <b>Partager</b> <span aria-hidden="true">\u238B</span> puis <b>\xAB Sur l'\xE9cran d'accueil \xBB</b>.</p>`;
-  else install = `<p class="small muted">Pour installer l'application : menu du navigateur (\u22EE) \u2192 <b>\xAB Installer l'application \xBB</b> ou <b>\xAB Ajouter \xE0 l'\xE9cran d'accueil \xBB</b>.</p>`;
-  const st = await pushState();
-  const push2 = {
-    unsupported: `<p class="small muted">\u{1F515} Les notifications ne sont pas disponibles sur ce navigateur.</p>`,
-    "needs-install": `<p class="small muted">\u{1F514} Sur iPhone, installez d'abord l'application (ci-dessus) puis activez les notifications depuis l'application.</p>`,
-    "needs-login": `<p class="small muted">\u{1F514} Connectez-vous pour recevoir une notification quand un ami vous \xE9crit ou vous d\xE9fie.</p>`,
-    denied: `<p class="small muted">\u{1F515} Notifications bloqu\xE9es : autorisez-les dans les r\xE9glages du navigateur pour ce site.</p>`,
-    on: `<p class="small hint-ok">\u{1F514} Notifications activ\xE9es sur cet appareil.</p><button class="btn ghost small" data-push-off>D\xE9sactiver</button>`,
-    off: `<p class="small muted">\u{1F514} Soyez pr\xE9venu quand un ami vous \xE9crit, vous ajoute ou vous lance un d\xE9fi, m\xEAme site ferm\xE9.</p>
-      <button class="btn primary" data-push-on>\u{1F514} Activer les notifications</button>`
-  }[st];
-  zone.innerHTML = install + `<div class="push-zone">${push2}</div>`;
-  zone.querySelector("[data-install]")?.addEventListener("click", async () => {
-    if (await promptInstall()) toast("Application install\xE9e \u2713", "ok");
-  });
-  zone.querySelector("[data-push-on]")?.addEventListener("click", async (e) => {
-    e.target.disabled = true;
-    e.target.textContent = "Activation\u2026";
-    try {
-      await enablePush();
-      toast("Notifications activ\xE9es \u{1F514}", "ok");
-    } catch (err) {
-      toast(err.message, "warn");
-    }
-    paintApp(app2);
-  });
-  zone.querySelector("[data-push-off]")?.addEventListener("click", async () => {
-    await disablePush();
-    toast("Notifications d\xE9sactiv\xE9es");
-    paintApp(app2);
-  });
 }
 
 // js/views/compte.js
@@ -4575,7 +4383,7 @@ function renderCompte(app2) {
     <section class="card account-card">
       <p>Ce site fonctionne en <b>mode local</b> : la progression est enregistr\xE9e dans ce navigateur uniquement.</p>
       <p class="muted small">Pour activer les comptes (une sauvegarde en ligne par personne, sur tous ses appareils), l'administrateur du site doit renseigner <code>js/config.js</code> avec les cl\xE9s de son projet Supabase \u2014 voir <code>GUIDE-MISE-EN-LIGNE.md</code>.</p>
-      <a class="btn ghost" href="#${state.profile ? "profil" : "parcours"}">\u2190 Retour</a>
+      <a class="btn ghost" href="#${state.profile ? "reglages" : "parcours"}">\u2190 Retour</a>
     </section>`;
     return;
   }
@@ -4705,6 +4513,317 @@ function bindForm(app2, handler) {
     }
   };
   setTimeout(() => form.querySelector("input")?.focus(), 50);
+}
+
+// js/core/pwa.js
+var deferred = null;
+var listeners3 = /* @__PURE__ */ new Set();
+var onPwa = (fn) => (listeners3.add(fn), () => listeners3.delete(fn));
+var emit2 = () => listeners3.forEach((fn) => fn());
+var isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+var isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+var canPrompt = () => !!deferred;
+var swSupported = () => "serviceWorker" in navigator && location.protocol === "https:";
+function initPwa() {
+  if (swSupported()) navigator.serviceWorker.register("sw.js").catch(() => {
+  });
+  addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    emit2();
+  });
+  addEventListener("appinstalled", () => {
+    deferred = null;
+    emit2();
+  });
+}
+async function promptInstall() {
+  if (!deferred) return false;
+  deferred.prompt();
+  const { outcome } = await deferred.userChoice.catch(() => ({ outcome: "dismissed" }));
+  deferred = null;
+  emit2();
+  return outcome === "accepted";
+}
+var pushSupported = () => swSupported() && "PushManager" in window && "Notification" in window;
+var pushNeedsInstall = () => isIOS() && !isStandalone();
+var b64ToBytes = (s) => {
+  const pad = "=".repeat((4 - s.length % 4) % 4);
+  const raw = atob((s + pad).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+};
+async function vapidKey() {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/notify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify({ action: "vapid" })
+  });
+  if (!res.ok) throw new Error("Service de notifications indisponible pour le moment.");
+  const { publicKey } = await res.json();
+  if (!publicKey) throw new Error("Service de notifications indisponible pour le moment.");
+  return publicKey;
+}
+async function currentSub() {
+  if (!pushSupported()) return null;
+  const reg = await navigator.serviceWorker.getRegistration();
+  return reg ? reg.pushManager.getSubscription() : null;
+}
+async function pushState() {
+  if (!isConfigured() || !pushSupported()) return pushNeedsInstall() ? "needs-install" : "unsupported";
+  if (pushNeedsInstall()) return "needs-install";
+  if (!cloudInfo().user) return "needs-login";
+  if (Notification.permission === "denied") return "denied";
+  return await currentSub() && Notification.permission === "granted" ? "on" : "off";
+}
+async function enablePush() {
+  if (!cloudInfo().user) throw new Error("Connectez-vous d'abord \xE0 votre compte.");
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") throw new Error("Notifications refus\xE9es. Vous pouvez les autoriser dans les r\xE9glages du navigateur.");
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(await vapidKey()) });
+  const j = sub.toJSON();
+  const sb2 = await getClient();
+  const { error } = await sb2.rpc("save_push_subscription", { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
+  if (error) throw new Error(error.message);
+}
+async function disablePush() {
+  const sub = await currentSub();
+  if (!sub) return;
+  const sb2 = await getClient();
+  await sb2.rpc("remove_push_subscription", { p_endpoint: sub.endpoint }).catch(() => {
+  });
+  await sub.unsubscribe().catch(() => {
+  });
+}
+
+// js/views/reglages.js
+var SYNC = {
+  off: ["\u26AA", "Mode local"],
+  guest: ["\u26AA", "Non connect\xE9"],
+  syncing: ["\u{1F504}", "Synchronisation\u2026"],
+  synced: ["\u2705", "Synchronis\xE9"],
+  offline: ["\u{1F4F4}", "Hors ligne : les changements partiront au retour du r\xE9seau"],
+  error: ["\u26A0\uFE0F", "Probl\xE8me de synchronisation"]
+};
+var seg = (name, items, current) => `<div class="seg wide" role="group">${items.map(([v, l, small]) => `<button type="button" data-${name}="${v}" class="${String(v) === String(current) ? "on" : ""}">${l}${small ? `<small>${small}</small>` : ""}</button>`).join("")}</div>`;
+var saved = () => toast("R\xE9glage enregistr\xE9 \u2713", "ok");
+function renderReglages(app2) {
+  const p = state.profile;
+  app2.innerHTML = `
+  <header class="page-head"><p class="eyebrow">R\xE9glages</p><h1>\u2699\uFE0F R\xE9glages</h1>
+    <p class="muted">Chaque modification est enregistr\xE9e imm\xE9diatement.</p></header>
+  <div class="settings-grid">
+    <div class="settings-col">
+      <section class="card set-card" id="set-compte"><h2 class="h3">\u{1F464} Compte</h2><div data-zone="account"></div></section>
+
+      <section class="card set-card"><h2 class="h3">\u{1F30D} Langue apprise</h2>
+        <div class="lang-pick">${Object.values(LANGS).map((l) => `<button type="button" class="lang-chip ${l.code === code ? "on" : ""}" data-lang="${l.code}">
+          <span class="flag">${flagSVG(l.code)}</span>${l.label}</button>`).join("")}</div>
+        <p class="small muted">Chaque langue garde sa propre progression ; votre profil est commun.</p>
+      </section>
+
+      <section class="card set-card"><h2 class="h3">\u{1F3AF} Objectif quotidien</h2>
+        ${seg("goal", GOALS.map(([v, l]) => [v, l, `${v} XP/jour`]), p.dailyGoal)}
+      </section>
+
+      <section class="card set-card"><h2 class="h3">\u{1F50A} Son et prononciation</h2>
+        <label class="switch"><input type="checkbox" data-tts ${state.settings.tts ? "checked" : ""}><span></span> ${L.tts}</label>
+        <p class="set-label">Vitesse de la voix</p>
+        ${seg("voice", VOICE_SPEEDS, state.settings.voiceSpeed || 1)}
+        <p class="small muted">Touchez une vitesse pour l'\xE9couter. Le bouton \u{1F422} \xE0 c\xF4t\xE9 de chaque \u{1F50A} lit encore plus lentement.</p>
+      </section>
+
+      ${code === "zh" ? `<section class="card set-card"><h2 class="h3">\u{1F004} Pinyin dans les quiz</h2>
+        ${seg("pyq", PINYIN_MODES, state.settings.pinyinQuiz || "auto")}
+        <p class="small muted">Le pinyin s'affiche au-dessus des caract\xE8res dans les le\xE7ons et les quiz. Par d\xE9faut : HSK 1 et HSK 2.</p>
+      </section>` : ""}
+    </div>
+
+    <div class="settings-col">
+      <section class="card set-card"><h2 class="h3">\u{1F4F2} Application et notifications</h2><div data-zone="app"><p class="small muted">\u2026</p></div></section>
+
+      <section class="card set-card"><h2 class="h3">\u{1F4BE} Sauvegarde</h2>
+        <p class="small muted">${isPersistent() ? "Votre progression est enregistr\xE9e automatiquement dans ce navigateur" + (cloudInfo().user ? " et en ligne." : ".") : "\u26A0\uFE0F Le stockage local est indisponible ici : la progression sera perdue en fermant la page. Exportez-la pour la conserver."}
+          Vous pouvez aussi en garder une copie ou la transf\xE9rer \xE0 la main.</p>
+        <div class="btn-row">
+          <button class="btn ghost small" data-export>\u{1F4CB} Copier ma sauvegarde</button>
+          <label class="btn ghost small file-btn">\u{1F4C2} Importer un fichier<input type="file" accept=".json,application/json" hidden></label>
+        </div>
+        <details class="paste"><summary>Coller une sauvegarde</summary>
+          <textarea rows="4" placeholder='{"version":1, \u2026}'></textarea>
+          <button class="btn ghost small" data-import-text>Importer le texte</button></details>
+      </section>
+
+      <section class="card set-card danger-zone"><h2 class="h3">\u26A0\uFE0F Zone sensible</h2>
+        <p class="small muted">Efface la progression en ${esc(L.label.toLowerCase())} : le\xE7ons, carnet et cahier d'erreurs.</p>
+        <button class="btn danger small" data-reset>R\xE9initialiser ma progression</button>
+      </section>
+
+      <section class="card set-card"><h2 class="h3">\u2139\uFE0F \xC0 propos</h2>
+        <p class="small muted">Impara \xB7 italien &amp; mandarin. Code source : <a href="sources-impara.zip">sources-impara.zip</a>.</p>
+      </section>
+    </div>
+  </div>`;
+  const $2 = (s) => app2.querySelector(s);
+  paintAccount(app2);
+  paintApp(app2);
+  const offCloud = onCloud(() => paintAccount(app2));
+  const offPwa = onPwa(() => paintApp(app2));
+  app2._cleanup = () => {
+    offCloud();
+    offPwa();
+  };
+  const pick = (name, apply) => app2.querySelectorAll(`[data-${name}]`).forEach((b) => b.onclick = () => {
+    app2.querySelectorAll(`[data-${name}]`).forEach((x) => x.classList.toggle("on", x === b));
+    apply(b.dataset[name]);
+    saved();
+  });
+  pick("goal", (v) => commit((s) => {
+    s.profile = { ...s.profile, dailyGoal: +v };
+  }));
+  pick("voice", (v) => {
+    commit((s) => {
+      s.settings.voiceSpeed = +v;
+    });
+    speak(L.hello, { force: true });
+  });
+  pick("pyq", (v) => commit((s) => {
+    s.settings.pinyinQuiz = v;
+  }));
+  $2("[data-tts]").onchange = (e) => {
+    commit((s) => {
+      s.settings.tts = e.target.checked;
+    });
+    saved();
+  };
+  app2.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () => {
+    if (b.dataset.lang !== code) setLang(b.dataset.lang);
+  });
+  $2("[data-export]").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(exportState());
+      toast("Sauvegarde copi\xE9e dans le presse-papiers \u2713", "ok");
+    } catch {
+      modal({ title: "Votre sauvegarde", body: `<p class="small muted">Copiez ce texte manuellement :</p><textarea class="export-box" rows="8" readonly>${esc(exportState())}</textarea>` });
+      setTimeout(() => document.querySelector(".export-box")?.select(), 50);
+    }
+  };
+  const doImport = (text) => {
+    try {
+      const data = JSON.parse(text);
+      if (!data || typeof data !== "object" || !("lessons" in data)) throw new Error();
+      replaceState(data);
+      toast("Sauvegarde import\xE9e \u2713", "ok");
+      location.hash = "tableau";
+    } catch {
+      toast("Fichier de sauvegarde invalide", "error");
+    }
+  };
+  $2("input[type=file]").onchange = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => doImport(r.result);
+    r.readAsText(f);
+  };
+  $2("[data-import-text]").onclick = () => doImport($2(".paste textarea").value);
+  $2("[data-reset]").onclick = async () => {
+    const v = await modal({
+      title: "Tout r\xE9initialiser ?",
+      body: `<p>Votre progression en ${esc(L.label.toLowerCase())}, votre carnet et votre cahier d'erreurs seront effac\xE9s. Cette action est irr\xE9versible.</p>`,
+      actions: [{ label: "Annuler", value: "no", kind: "ghost" }, { label: "Oui, tout effacer", value: "yes", kind: "danger" }]
+    });
+    if (v === "yes") {
+      replaceState(defaultState());
+      location.hash = "parcours";
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    }
+  };
+}
+function paintAccount(app2) {
+  const zone = app2.querySelector('[data-zone="account"]');
+  if (!zone) return;
+  const p = state.profile, i = cloudInfo();
+  const who2 = `<div class="acc-row"><span class="acc-avatar">${esc(p.avatar)}</span>
+      <div><b>${esc(p.pseudo)}</b><p class="muted small">${i.user ? esc(i.user.email) : "Pas de compte en ligne"}</p></div>
+      <a class="btn ghost small acc-edit" href="#profil">Modifier</a></div>`;
+  if (!isConfigured()) {
+    zone.innerHTML = who2 + `<p class="small muted">Mode local : la progression reste dans ce navigateur.</p>`;
+    return;
+  }
+  if (!i.user) {
+    zone.innerHTML = who2 + `<p class="small muted">Cr\xE9ez un compte gratuit pour retrouver votre progression sur tous vos appareils et ajouter des amis.</p>
+      <a class="btn primary" href="#compte">\u2601\uFE0F Se connecter / cr\xE9er un compte</a>`;
+    return;
+  }
+  const [icon, label] = SYNC[i.status] || SYNC.synced;
+  zone.innerHTML = who2 + `
+    <div class="sync-box sync-${i.status}"><span class="sync-icon">${icon}</span>
+      <div><b>${label}</b><p class="small muted">${i.lastSync ? `Derni\xE8re synchronisation : ${new Date(i.lastSync).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : ""}${i.message ? ` \xB7 ${esc(i.message)}` : ""}</p></div></div>
+    <div class="btn-row">
+      <button class="btn ghost small" data-sync>\u{1F504} Synchroniser</button>
+      <a class="btn ghost small" href="#amis">\u{1F465} Mes amis</a>
+      <button class="btn ghost small danger-txt" data-logout>Se d\xE9connecter</button>
+    </div>`;
+  zone.querySelector("[data-sync]").onclick = async () => {
+    await syncNow();
+    const ok = cloudInfo().status === "synced";
+    toast(ok ? "Synchronis\xE9 \u2713" : cloudInfo().message, ok ? "ok" : "warn");
+  };
+  zone.querySelector("[data-logout]").onclick = async () => {
+    const v = await modal({
+      title: "Se d\xE9connecter ?",
+      body: "<p>Votre progression est sauvegard\xE9e en ligne. Elle sera retir\xE9e de cet appareil et vous la retrouverez en vous reconnectant.</p>",
+      actions: [{ label: "Annuler", value: "no" }, { label: "Se d\xE9connecter", value: "yes", kind: "danger" }]
+    });
+    if (v === "yes") {
+      await signOut();
+      toast("D\xE9connect\xE9", "ok");
+      location.hash = "parcours";
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    }
+  };
+}
+async function paintApp(app2) {
+  const zone = app2.querySelector('[data-zone="app"]');
+  if (!zone) return;
+  let install;
+  if (isStandalone()) install = `<p class="small hint-ok">\u2713 Vous utilisez l'application install\xE9e.</p>`;
+  else if (canPrompt()) install = `<p class="small muted">Ajoutez Impara \xE0 votre \xE9cran d'accueil : plein \xE9cran, acc\xE8s direct, et les le\xE7ons marchent m\xEAme sans r\xE9seau.</p>
+      <button class="btn primary small" data-install>\u{1F4F2} Installer l'application</button>`;
+  else if (isIOS()) install = `<p class="small muted">Sur iPhone : ouvrez ce site dans <b>Safari</b>, touchez <b>Partager</b> puis <b>\xAB Sur l'\xE9cran d'accueil \xBB</b>.</p>`;
+  else install = `<p class="small muted">Pour installer l'application : menu du navigateur (\u22EE) \u2192 <b>\xAB Installer l'application \xBB</b> ou <b>\xAB Ajouter \xE0 l'\xE9cran d'accueil \xBB</b>.</p>`;
+  const st = await pushState();
+  const push2 = {
+    unsupported: `<p class="small muted">\u{1F515} Les notifications ne sont pas disponibles sur ce navigateur.</p>`,
+    "needs-install": `<p class="small muted">\u{1F514} Sur iPhone, installez d'abord l'application, puis activez les notifications depuis l'application.</p>`,
+    "needs-login": `<p class="small muted">\u{1F514} Connectez-vous pour \xEAtre pr\xE9venu quand un ami vous \xE9crit ou vous d\xE9fie.</p>`,
+    denied: `<p class="small muted">\u{1F515} Notifications bloqu\xE9es : autorisez-les dans les r\xE9glages du navigateur pour ce site.</p>`,
+    on: `<p class="small hint-ok">\u{1F514} Notifications activ\xE9es sur cet appareil.</p><button class="btn ghost small" data-push-off>D\xE9sactiver</button>`,
+    off: `<p class="small muted">\u{1F514} Soyez pr\xE9venu quand un ami vous \xE9crit, vous ajoute ou vous lance un d\xE9fi, m\xEAme site ferm\xE9.</p>
+      <button class="btn primary small" data-push-on>\u{1F514} Activer les notifications</button>`
+  }[st];
+  zone.innerHTML = install + `<div class="push-zone">${push2}</div>`;
+  zone.querySelector("[data-install]")?.addEventListener("click", async () => {
+    if (await promptInstall()) toast("Application install\xE9e \u2713", "ok");
+  });
+  zone.querySelector("[data-push-on]")?.addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = "Activation\u2026";
+    try {
+      await enablePush();
+      toast("Notifications activ\xE9es \u{1F514}", "ok");
+    } catch (err) {
+      toast(err.message, "warn");
+    }
+    paintApp(app2);
+  });
+  zone.querySelector("[data-push-off]")?.addEventListener("click", async () => {
+    await disablePush();
+    toast("Notifications d\xE9sactiv\xE9es");
+    paintApp(app2);
+  });
 }
 
 // js/core/social.js
@@ -5825,7 +5944,8 @@ var ROUTES = [
   [/^carnet$/, (a) => renderCarnet(a), "carnet"],
   [/^erreurs$/, (a) => renderErreurs(a), "erreurs"],
   [/^profil$/, (a) => renderProfil(a), "profil"],
-  [/^compte$/, (a) => renderCompte(a), "profil"],
+  [/^compte$/, (a) => renderCompte(a), "reglages"],
+  [/^reglages$/, (a) => renderReglages(a), "reglages"],
   [/^reviser$/, (a) => {
     openReview();
     renderCarnet(a);
@@ -5902,18 +6022,14 @@ function renderSocialBadge() {
     b.hidden = !n;
   });
 }
-var CLOUD_ICONS = { guest: ["\u2601\uFE0F", "Se connecter"], syncing: ["\u{1F504}", "Synchronisation\u2026"], synced: ["\u2705", "Synchronis\xE9"], offline: ["\u{1F4F4}", "Hors ligne"], error: ["\u26A0\uFE0F", "Erreur de synchronisation"] };
+var SYNC_LABELS = { off: "", guest: "Non connect\xE9", syncing: "Synchronisation\u2026", synced: "Synchronis\xE9", offline: "Hors ligne", error: "Probl\xE8me de synchronisation" };
 function renderCloud(i) {
-  const pill = $("#hdr-cloud");
-  if (!isConfigured()) {
-    pill.hidden = true;
-    return;
-  }
-  pill.hidden = false;
-  const [icon, label] = CLOUD_ICONS[i.status] || CLOUD_ICONS.guest;
-  pill.innerHTML = `${icon}<span>${i.user ? "" : label}</span>`;
-  pill.title = i.user ? `${label} \xB7 ${i.user.email}` : label;
-  pill.className = `pill cloud-pill cloud-${i.status}`;
+  const gear = $("#hdr-gear"), dot = gear.querySelector(".sync-dot");
+  const label = isConfigured() ? SYNC_LABELS[i.status] || "" : "";
+  gear.title = label ? `R\xE9glages \xB7 ${label}${i.user ? " \xB7 " + i.user.email : ""}` : "R\xE9glages";
+  gear.setAttribute("aria-label", gear.title);
+  dot.hidden = !isConfigured() || i.status === "synced" || i.status === "off";
+  dot.className = `sync-dot dot-${i.status}`;
 }
 function initLangSwitch() {
   const btn = $("#lang-btn"), menu = $("#lang-menu");
