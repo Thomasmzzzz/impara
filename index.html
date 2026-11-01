@@ -375,6 +375,8 @@ tbody tr:nth-child(even) td { background: #fcfbf8; }
 .face small { text-transform: uppercase; letter-spacing: .1em; font-weight: 700; font-size: .72rem; opacity: .65; }
 .face b { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.2rem); text-align: center; }
 .face em { font-size: .85rem; opacity: .7; }
+.card-type button { font-size: .85rem; }
+.flashcard .big-py { font-size: clamp(2rem, 7vw, 2.8rem); font-weight: 700; letter-spacing: .01em; }
 .flash-nav { display: flex; align-items: center; gap: 16px; font-weight: 700; }
 
 /* — Cahier d'erreurs — */
@@ -3544,7 +3546,21 @@ var statInner = (icon, val, label) => `<span class="stat-icon">${icon}</span><b>
 var stat = (icon, val, label) => `<div class="stat">${statInner(icon, val, label)}</div>`;
 
 // js/views/carnet.js
-var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false };
+var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false, cardType: readType() };
+var CARD_TYPES = [["hanzi", "\u6C49\u5B57 \u2192 pinyin + sens"], ["pinyin", "Pinyin \u2192 sens"]];
+function readType() {
+  try {
+    return localStorage.getItem("impara.cardType") === "pinyin" ? "pinyin" : "hanzi";
+  } catch {
+    return "hanzi";
+  }
+}
+function saveType(t) {
+  try {
+    localStorage.setItem("impara.cardType", t);
+  } catch {
+  }
+}
 function renderCarnet(app2) {
   const all = Object.values(state.vocab).sort((a, b) => b.added - a.added);
   app2.innerHTML = `
@@ -3578,17 +3594,23 @@ function renderCarnet(app2) {
           <span class="tag" style="--lvl:${LEVELS3.find((l) => l.id === w.levelId)?.color}" title="${esc(getLesson3(w.lessonId)?.title || "")}">${lvlLabel2(w.levelId)}</span>
         </li>`).join("")}</ul>` : `<p class="empty">Aucun r\xE9sultat.</p>`;
     } else {
-      if (!ui.deck.length || ui.deck.some((w2) => !list.includes(w2))) {
-        ui.deck = shuffle(list);
+      const hasPinyin = list.some((w2) => w2.py);
+      const pinyinMode = hasPinyin && ui.cardType === "pinyin";
+      const pool = pinyinMode ? list.filter((w2) => w2.py) : list;
+      if (!ui.deck.length || ui.deck.some((w2) => !pool.includes(w2)) || ui.deck.length !== pool.length) {
+        ui.deck = shuffle(pool);
         ui.pos = 0;
       }
       const w = ui.deck[ui.pos];
+      const typeSwitch = hasPinyin ? `<div class="seg card-type" role="group" aria-label="Type de flashcard">
+          ${CARD_TYPES.map(([t, label]) => `<button class="${ui.cardType === t ? "on" : ""}" data-type="${t}">${label}</button>`).join("")}</div>` : "";
+      const faces = !w ? "" : pinyinMode ? `<span class="face front"><small>Pinyin</small><b class="big-py">${esc(w.py)}</b><em>Touchez pour voir la traduction</em></span>
+           <span class="face back"><small>${esc(w.py)}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>` : `<span class="face front"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b><em>${esc(L.cardHint)}</em></span>
+           <span class="face back"><small>${esc(w.py || "Fran\xE7ais")}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>`;
       body.innerHTML = w ? `
         <div class="flash-wrap">
-          <button class="flashcard ${ui.flipped ? "flipped" : ""}" aria-label="Retourner la carte">
-            <span class="face front"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b><em>${esc(L.cardHint)}</em></span>
-            <span class="face back"><small>${esc(w.py || "Fran\xE7ais")}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>
-          </button>
+          ${typeSwitch}
+          <button class="flashcard ${ui.flipped ? "flipped" : ""}" aria-label="Retourner la carte">${faces}</button>
           <div class="flash-nav">
             <button class="btn ghost" data-nav="-1">\u2190 Pr\xE9c\xE9dent</button>
             <span>${ui.pos + 1} / ${ui.deck.length}</span>
@@ -3608,8 +3630,16 @@ function renderCarnet(app2) {
         draw();
       });
       body.querySelector("[data-shuffle]")?.addEventListener("click", () => {
-        ui.deck = shuffle(list);
+        ui.deck = shuffle(pool);
         ui.pos = 0;
+        ui.flipped = false;
+        draw();
+      });
+      body.querySelectorAll("[data-type]").forEach((b) => b.onclick = () => {
+        if (ui.cardType === b.dataset.type) return;
+        ui.cardType = b.dataset.type;
+        saveType(ui.cardType);
+        ui.deck = [];
         ui.flipped = false;
         draw();
       });
