@@ -123,6 +123,8 @@ body.focus-mode .topbar, body.focus-mode .tabbar { display: none; }
 .speak { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); font-size: .95rem; display: grid; place-items: center; transition: background .15s, transform .1s; }
 .speak:hover { background: var(--verde-l); }
 .speak:active { transform: scale(.92); }
+.speak-pair { flex: none; display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+.speak.slow { width: 28px; height: 28px; font-size: .8rem; }
 .empty, .empty-state { color: var(--muted); }
 .empty-state { text-align: center; padding: 48px 20px; }
 .empty-state span { font-size: 3rem; display: block; margin-bottom: 8px; }
@@ -257,7 +259,7 @@ tbody tr:nth-child(even) td { background: #fcfbf8; }
 .mnemo-icon { font-size: 2rem; }
 .vocab-grid { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
 .vocab-grid li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center; padding: 10px; border-radius: 12px; background: var(--paper); }
-.vocab-grid .speak { grid-row: span 2; }
+.vocab-grid .speak-pair { grid-row: span 2; }
 .lesson-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 22px; padding: 20px 22px; border-radius: var(--radius); background: var(--ink); color: #fff; }
 .lesson-cta p { margin: 0; font-weight: 600; }
 
@@ -360,7 +362,7 @@ tbody tr:nth-child(even) td { background: #fcfbf8; }
 .chip-btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 .word-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
 .word-list li { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 12px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
-.word-list .speak { grid-row: span 2; }
+.word-list .speak-pair { grid-row: span 2; }
 .word-list .tag { grid-row: span 2; grid-column: 3; }
 .word-list .it { grid-column: 2; } .word-list .fr { grid-column: 2; }
 .flash-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
@@ -501,7 +503,7 @@ body.lang-zh h1 em, body.lang-zh .hero em { color: var(--accent); }
 small.py { display: block; margin-top: 2px; font-size: .78rem; }
 .examples .it.zh { font-size: 1.3rem; line-height: 1.3; }
 .vocab-grid li.has-py { grid-template-rows: auto auto auto; }
-.vocab-grid li.has-py .speak { grid-row: span 3; }
+.vocab-grid li.has-py .speak-pair { grid-row: span 3; }
 .vocab-grid .it.zh { font-size: 1.3rem; }
 .big-zh { font-size: clamp(2.6rem, 9vw, 4rem) !important; }
 .tile .zh { display: block; font-size: 1.25rem; }
@@ -2597,8 +2599,8 @@ function defaultState() {
     version: SCHEMA_VERSION,
     profile: null,
     // { pseudo, avatar, dailyGoal, createdAt }
-    settings: { tts: true },
-    // lecture audio des exemples
+    settings: { tts: true, voiceSpeed: 1 },
+    // lecture audio des exemples ; vitesse de la voix (1 = normale)
     lessons: {},
     // { [lessonId]: { best, total, passed, attempts, date } }
     exams: {},
@@ -2742,7 +2744,9 @@ try {
   speechSynthesis.onvoiceschanged = pickVoice;
 } catch {
 }
-function speak(text) {
+var VOICE_SPEEDS = [[1, "Normale"], [0.8, "Pos\xE9e"], [0.65, "Lente"]];
+var SLOW_FACTOR = 0.55;
+function speak(text, { slow = false } = {}) {
   if (!state.settings.tts) return;
   let t = String(text).split("|")[0].replace(/[✓✗]/g, "");
   if (L.speakFilter) t = t.replace(L.speakFilter, "");
@@ -2752,14 +2756,15 @@ function speak(text) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(t);
     u.lang = L.speech;
-    u.rate = L.rate;
+    const base = L.rate * (state.settings.voiceSpeed || 1);
+    u.rate = slow ? Math.max(0.35, base * SLOW_FACTOR) : base;
     if (voice) u.voice = voice;
     speechSynthesis.speak(u);
   } catch {
     toast("Audio indisponible sur ce navigateur", "warn");
   }
 }
-var speakBtn = (text) => `<button class="speak" data-speak="${esc(text)}" aria-label="\xC9couter \xAB ${esc(text)} \xBB" title="\xC9couter">\u{1F50A}</button>`;
+var speakBtn = (text) => `<span class="speak-pair"><button class="speak" data-speak="${esc(text)}" aria-label="\xC9couter \xAB ${esc(text)} \xBB" title="\xC9couter">\u{1F50A}</button><button class="speak slow" data-speak="${esc(text)}" data-slow aria-label="\xC9couter lentement \xAB ${esc(text)} \xBB" title="\xC9couter lentement">\u{1F422}</button></span>`;
 function toast(msg, type = "info") {
   const root = $("#toast-root");
   const el = document.createElement("div");
@@ -3961,6 +3966,10 @@ function renderProfil(app2) {
         <div class="seg wide">${GOALS.map(([v, l]) => `<button type="button" data-g="${v}" class="${v === p.dailyGoal ? "on" : ""}">${l}<small>${v} XP</small></button>`).join("")}</div>
       </fieldset>
       <label class="switch"><input type="checkbox" name="tts" ${state.settings.tts ? "checked" : ""}><span></span> ${L.tts}</label>
+      <fieldset class="field"><legend>Vitesse de la voix</legend>
+        <div class="seg wide">${VOICE_SPEEDS.map(([v, l]) => `<button type="button" data-v="${v}" class="${v === (state.settings.voiceSpeed || 1) ? "on" : ""}">${l}</button>`).join("")}</div>
+        <p class="small muted">Le bouton \u{1F422} \xE0 c\xF4t\xE9 de chaque \u{1F50A} lit encore plus lentement.</p>
+      </fieldset>
       <button class="btn primary" type="submit">Enregistrer</button>
     </form>
 
@@ -3988,7 +3997,7 @@ function renderProfil(app2) {
     </section>
   </div>`;
   const form = app2.querySelector(".profile-form");
-  let avatar = p.avatar, goal = p.dailyGoal;
+  let avatar = p.avatar, goal = p.dailyGoal, voice2 = state.settings.voiceSpeed || 1;
   form.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => {
     avatar = b.dataset.a;
     form.querySelectorAll("[data-a]").forEach((x) => x.classList.toggle("on", x === b));
@@ -3997,12 +4006,21 @@ function renderProfil(app2) {
     goal = +b.dataset.g;
     form.querySelectorAll("[data-g]").forEach((x) => x.classList.toggle("on", x === b));
   });
+  form.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
+    voice2 = +b.dataset.v;
+    form.querySelectorAll("[data-v]").forEach((x) => x.classList.toggle("on", x === b));
+    const prev = state.settings.voiceSpeed;
+    state.settings.voiceSpeed = voice2;
+    speak(L.hello);
+    state.settings.voiceSpeed = prev;
+  });
   form.onsubmit = (e) => {
     e.preventDefault();
     const pseudo = form.pseudo.value.trim() || p.pseudo;
     commit((s) => {
       s.profile = { ...s.profile, pseudo, avatar, dailyGoal: goal };
       s.settings.tts = form.tts.checked;
+      s.settings.voiceSpeed = voice2;
     });
     toast("Profil enregistr\xE9 \u2713", "ok");
     renderProfil(app2);
@@ -5150,7 +5168,7 @@ document.addEventListener("click", (e) => {
   const sp = e.target.closest("[data-speak]");
   if (sp) {
     e.preventDefault();
-    speak(sp.dataset.speak);
+    speak(sp.dataset.speak, { slow: "slow" in sp.dataset });
     return;
   }
   const sc = e.target.closest("[data-scroll]");
