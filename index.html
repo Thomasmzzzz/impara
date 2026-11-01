@@ -715,6 +715,7 @@ rt { font-family: var(--font); font-size: .58em; font-weight: 600; color: var(--
 .option span, .fill-sentence, .q-text, .tile { line-height: 2.1; }
 .option.correct rt, .option.wrong rt { color: inherit; opacity: .8; }
 .tag rt { color: inherit; opacity: .85; } .tag { line-height: 1.9; }
+.s-board-name small { display: block; font-weight: 600; font-size: .75rem; color: var(--muted); }
 
 </style>
 </head>
@@ -2934,12 +2935,16 @@ function weekKey(d = /* @__PURE__ */ new Date()) {
   const y = t.getUTCFullYear(), w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7);
   return `${y}-W${String(w).padStart(2, "0")}`;
 }
-var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : 0;
+function historyWeekXp(s) {
+  const week = weekKey();
+  return (s.history || []).filter((h) => h.date && weekKey(new Date(h.date)) === week).reduce((n, h) => n + (h.kind === "practice" ? h.score * 5 : h.score * XP_PER_CORRECT + (h.passed && h.kind !== "review" ? 20 : 0)), 0);
+}
+var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : historyWeekXp(state);
 function addXp(s, xp) {
   const today = dayKey(), week = weekKey();
   s.xp += xp;
   s.daily = s.daily.date === today ? { date: today, xp: s.daily.xp + xp } : { date: today, xp };
-  s.weekly = s.weekly?.week === week ? { week, xp: s.weekly.xp + xp } : { week, xp };
+  s.weekly = s.weekly?.week === week ? { week, xp: s.weekly.xp + xp } : { week, xp: historyWeekXp(s) + xp };
   if (s.streak.last !== today) {
     s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
   }
@@ -4962,7 +4967,13 @@ async function start2() {
       S.unread[m.sender] = (S.unread[m.sender] || 0) + 1;
       emit3("message", m);
       if (!S.profiles[m.sender]) refresh();
-    }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).subscribe();
+    }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "user_stats" }, (p) => {
+      const r = p.new;
+      if (r?.user_id && r.user_id !== uid()) {
+        (S.stats[r.user_id] ||= {})[r.lang] = { ...r.summary, updated_at: r.updated_at };
+        emit3("all");
+      }
+    }).subscribe();
   }
   poll = setInterval(() => {
     if (document.visibilityState === "visible") refresh().catch(() => {
@@ -4999,8 +5010,10 @@ function initSocial() {
 function leaderboard() {
   const week = weekKey();
   const total = (id, override) => Object.entries({ ...statsOf(id), ...override || {} }).reduce((n, [, s]) => n + (s?.week === week ? s.weekXp || 0 : 0), 0);
-  const me = S.me ? [{ ...S.me, isMe: true, xp: total(S.me.id, { [code]: mySummary() }) }] : [];
-  return [...me, ...friends().map((f) => ({ ...f, xp: total(f.id) }))].sort((a, b) => b.xp - a.xp);
+  const all = (id, override) => Object.values({ ...statsOf(id), ...override || {} }).reduce((n, s) => n + (s?.xp || 0), 0);
+  const mine = { [code]: mySummary() };
+  const me = S.me ? [{ ...S.me, isMe: true, xp: total(S.me.id, mine), allXp: all(S.me.id, mine) }] : [];
+  return [...me, ...friends().map((f) => ({ ...f, xp: total(f.id), allXp: all(f.id) }))].sort((a, b) => b.xp - a.xp || b.allXp - a.allXp);
 }
 
 // js/views/amis.js
@@ -5188,8 +5201,8 @@ function renderAmis(app2) {
     const medal = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
     z("board").innerHTML = board.length > 1 ? `<ol class="s-board">${board.map((p, i) => `
         <li class="${p.isMe ? "me" : ""}"><span class="s-rank">${p.xp ? medal[i] || i + 1 : "\u2013"}</span>${av(p, "sm")}
-          <span class="s-board-name">${p.isMe ? "Vous" : who(p)}</span><b>${p.xp} XP</b></li>`).join("")}</ol>
-        <p class="muted small">XP gagn\xE9s depuis lundi, toutes langues confondues. Remise \xE0 z\xE9ro chaque lundi.</p>` : `<p class="muted small">Ajoutez des amis pour comparer vos XP de la semaine.</p>`;
+          <span class="s-board-name">${p.isMe ? "Vous" : who(p)}<small>${p.allXp} XP au total</small></span><b>${p.xp} XP</b></li>`).join("")}</ol>
+        <p class="muted small">XP gagn\xE9s cette semaine (depuis lundi 0 h), toutes langues confondues. Mis \xE0 jour en direct d\xE8s qu'un ami gagne des XP.</p>` : `<p class="muted small">Ajoutez des amis pour comparer vos XP de la semaine.</p>`;
     const out = outgoing();
     z("sent").innerHTML = out.length ? `<section class="card"><h2 class="h3">\u{1F4E4} Demandes envoy\xE9es</h2><ul class="s-list">
       ${out.map((r) => `<li class="s-row">${av(r.to)}<div class="s-row-txt"><b>${who(r.to)}</b>${handle(r.to)}<small class="muted">En attente</small></div>
