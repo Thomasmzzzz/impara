@@ -2929,7 +2929,7 @@ var yesterdayKey = () => {
   return dayKey(d);
 };
 function weekKey(d = /* @__PURE__ */ new Date()) {
-  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   const day = t.getUTCDay() || 7;
   t.setUTCDate(t.getUTCDate() + 4 - day);
   const y = t.getUTCFullYear(), w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7);
@@ -2938,6 +2938,11 @@ function weekKey(d = /* @__PURE__ */ new Date()) {
 function historyWeekXp(s) {
   const week = weekKey();
   return (s.history || []).filter((h) => h.date && weekKey(new Date(h.date)) === week).reduce((n, h) => n + (h.kind === "practice" ? h.score * 5 : h.score * XP_PER_CORRECT + (h.passed && h.kind !== "review" ? 20 : 0)), 0);
+}
+function nextWeekReset(now = /* @__PURE__ */ new Date()) {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  d.setUTCDate(d.getUTCDate() + ((8 - (d.getUTCDay() || 7)) % 7 || 7));
+  return d;
 }
 var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : historyWeekXp(state);
 function addXp(s, xp) {
@@ -5202,7 +5207,8 @@ function renderAmis(app2) {
     z("board").innerHTML = board.length > 1 ? `<ol class="s-board">${board.map((p, i) => `
         <li class="${p.isMe ? "me" : ""}"><span class="s-rank">${p.xp ? medal[i] || i + 1 : "\u2013"}</span>${av(p, "sm")}
           <span class="s-board-name">${p.isMe ? "Vous" : who(p)}<small>${p.allXp} XP au total</small></span><b>${p.xp} XP</b></li>`).join("")}</ol>
-        <p class="muted small">XP gagn\xE9s cette semaine (depuis lundi 0 h), toutes langues confondues. Mis \xE0 jour en direct d\xE8s qu'un ami gagne des XP.</p>` : `<p class="muted small">Ajoutez des amis pour comparer vos XP de la semaine.</p>`;
+        <p class="muted small">XP gagn\xE9s cette semaine, toutes langues confondues, mis \xE0 jour en direct. Remise \xE0 z\xE9ro au m\xEAme moment pour tout le monde :
+          <b>${nextWeekReset().toLocaleString("fr-FR", { weekday: "long", hour: "2-digit", minute: "2-digit" })}</b> (votre heure).</p>` : `<p class="muted small">Ajoutez des amis pour comparer vos XP de la semaine.</p>`;
     const out = outgoing();
     z("sent").innerHTML = out.length ? `<section class="card"><h2 class="h3">\u{1F4E4} Demandes envoy\xE9es</h2><ul class="s-list">
       ${out.map((r) => `<li class="s-row">${av(r.to)}<div class="s-row-txt"><b>${who(r.to)}</b>${handle(r.to)}<small class="muted">En attente</small></div>
