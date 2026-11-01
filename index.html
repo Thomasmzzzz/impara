@@ -538,6 +538,105 @@ code { background: var(--paper-2); padding: 1px 6px; border-radius: 6px; font-si
 .topnav a { white-space: nowrap; }
 @media (max-width: 1180px) { .cloud-pill span { display: none; } }
 
+/* 8. ESPACE AMIS ------------------------------------------------------ */
+[data-tab][hidden] { display: none !important; }
+.back-link { display: inline-block; margin-bottom: 14px; font-weight: 700; text-decoration: none; color: var(--ink-2); }
+.back-link:hover { color: var(--ink); }
+.link-btn { background: none; border: 0; padding: 0; color: var(--verde-d); font-weight: 700; text-decoration: underline; font-size: inherit; }
+.danger-txt { color: var(--rosso); }
+.s-loading { text-align: center; padding: 60px 0; }
+.flag.mini svg { width: 20px; height: 14px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .1); display: block; }
+.flag.mini { vertical-align: -2px; margin-right: 4px; }
+.s-me { color: var(--ink); }
+.s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.s-col { display: grid; gap: 20px; min-width: 0; }
+.s-page .card h2.h3 { margin-bottom: 14px; }
+.s-highlight { border-color: color-mix(in srgb, var(--oro) 60%, var(--line)); background: #fffaf0; }
+.s-add-row { display: flex; align-items: center; gap: 8px; }
+.s-add-row input { flex: 1; min-width: 0; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-s); background: var(--paper); }
+.s-add-row input:focus { border-color: var(--verde); outline: none; background: #fff; }
+.s-at { font-weight: 800; color: var(--muted); font-size: 1.1rem; }
+.s-add .form-msg { margin-top: 10px; }
+.s-list, .s-ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.s-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radius-s); border: 1px solid var(--line); background: var(--card); color: inherit; text-decoration: none; }
+.s-friend:hover { border-color: var(--ink-2); }
+.s-row-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.s-row-txt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s-row-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.s-handle { color: var(--muted); font-size: .82rem; font-weight: 600; }
+.s-avatar { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--paper-2); font-size: 1.4rem; line-height: 1; }
+.s-avatar.sm { width: 36px; height: 36px; font-size: 1.15rem; }
+.s-avatar.lg { width: 60px; height: 60px; font-size: 2rem; }
+.s-avatar.xl { width: 76px; height: 76px; font-size: 2.6rem; }
+.s-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.s-lang-chip { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; background: var(--paper-2); font-size: .78rem; font-weight: 700; }
+.s-unread { flex: none; background: var(--rosso); color: #fff; font-weight: 800; font-size: .78rem; padding: 4px 9px; border-radius: 999px; }
+.s-go { color: var(--muted); font-size: 1.5rem; line-height: 1; }
+
+.s-challenge { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-s); border: 1px solid var(--line); background: var(--card); }
+.s-challenge.todo { border-color: var(--oro); background: #fffaf0; }
+.s-challenge.win { border-left: 4px solid var(--verde); }
+.s-challenge.lose { border-left: 4px solid var(--rosso); }
+.s-challenge.draw { border-left: 4px solid var(--blu); }
+.s-challenge.off { opacity: .6; }
+.s-ch-icon { font-size: 1.3rem; }
+.s-ch-body { flex: 1; min-width: 0; }
+.s-ch-body p { margin: 0; font-size: .92rem; }
+.s-ch-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.s-outcome { margin-right: 2px; }
+
+.s-friend-head { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; flex-wrap: wrap; }
+.s-friend-head h1 { margin: 0; }
+.s-friend-id { flex: 1; min-width: 160px; }
+.s-friend-id p { margin: 4px 0 0; }
+.s-friend-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.s-cmp + .s-cmp { margin-top: 18px; padding-top: 18px; border-top: 1px dashed var(--line); }
+.s-cmp-lang { display: flex; align-items: center; font-weight: 800; margin-bottom: 10px; }
+.s-cmp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.s-cmp-who { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 2px; }
+.s-cmp-lvl { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }
+.s-cmp-lvl small { font-family: var(--font); font-size: .8rem; color: var(--muted); font-weight: 600; }
+.s-cmp-col .small { margin: 6px 0 0; }
+.s-bar { height: 8px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+.s-bar span { display: block; height: 100%; background: var(--verde); border-radius: 99px; }
+body.lang-zh .s-bar span { background: var(--accent, var(--verde)); }
+
+.s-chat { display: flex; flex-direction: column; height: min(640px, calc(100vh - 160px)); min-height: 380px; position: sticky; top: 88px; }
+.s-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px 2px 10px; }
+.s-msg { max-width: 82%; padding: 9px 13px; border-radius: 16px; background: var(--paper-2); align-self: flex-start; border-bottom-left-radius: 5px; }
+.s-msg.me { align-self: flex-end; background: var(--verde); color: #fff; border-bottom-left-radius: 16px; border-bottom-right-radius: 5px; }
+body.lang-zh .s-msg.me { background: var(--accent, var(--verde)); }
+.s-msg p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.s-msg time { display: block; font-size: .7rem; opacity: .7; margin-top: 3px; text-align: right; }
+.s-empty { text-align: center; margin: auto 0; }
+.s-send { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 12px; }
+.s-send textarea { flex: 1; resize: none; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--paper); max-height: 140px; line-height: 1.4; }
+.s-send textarea:focus { border-color: var(--verde); outline: none; background: #fff; }
+.s-send .btn { padding: 11px 16px; }
+
+.s-defi-intro, .s-defi-res { max-width: 640px; margin: 0 auto; text-align: center; }
+.s-defi-intro .btn.big { margin-top: 10px; min-width: 240px; }
+.s-vs, .s-res { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 14px 0 18px; }
+.s-vs-x { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--muted); }
+.s-res-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 120px; }
+.s-res-col p { margin: 0; }
+.s-res-who { font-weight: 800; }
+.s-defi-res.win h1 { color: var(--verde-d); }
+.s-defi-res .result-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+@media (max-width: 860px) {
+  .s-grid { grid-template-columns: 1fr; }
+  .s-chat { position: static; height: 70vh; }
+}
+@media (max-width: 520px) {
+  .s-friend-actions { align-items: flex-start; width: 100%; }
+  .s-cmp-cols { gap: 10px; }
+  .s-challenge { flex-wrap: wrap; }
+  .s-ch-actions { width: 100%; justify-content: flex-start; padding-left: 48px; }
+  .s-res { gap: 10px; }
+  .s-res-col { min-width: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -557,6 +656,7 @@ code { background: var(--paper-2); padding: 1px 6px; border-radius: 6px; font-si
       <a href="#tableau" data-tab="tableau">📊 Tableau de bord</a>
       <a href="#carnet" data-tab="carnet">📒 Carnet</a>
       <a href="#erreurs" data-tab="erreurs">🔁 Erreurs <span class="err-badge" hidden></span></a>
+      <a href="#amis" data-tab="amis" hidden>👥 Amis <span class="err-badge social-badge" hidden></span></a>
     </nav>
     <div class="hdr-stats">
       <span class="pill" title="Série de jours">🔥 <b id="hdr-streak">0</b></span>
@@ -576,6 +676,7 @@ code { background: var(--paper-2); padding: 1px 6px; border-radius: 6px; font-si
     <a href="#tableau" data-tab="tableau"><span>📊</span>Suivi</a>
     <a href="#carnet" data-tab="carnet"><span>📒</span>Carnet</a>
     <a href="#erreurs" data-tab="erreurs"><span>🔁<em class="err-badge" hidden></em></span>Erreurs</a>
+    <a href="#amis" data-tab="amis" hidden><span>👥<em class="err-badge social-badge" hidden></em></span>Amis</a>
     <a href="#profil" data-tab="profil"><span class="hdr-avatar">👤</span>Profil</a>
   </nav>
 
@@ -2569,9 +2670,9 @@ function load() {
     for (const lang of Object.values(LANGS)) {
       if (lang.storageKey === KEY) continue;
       try {
-        const other = JSON.parse(localStorage.getItem(lang.storageKey) || "null");
-        if (other?.profile) {
-          s.profile = { ...other.profile, createdAt: Date.now() };
+        const other2 = JSON.parse(localStorage.getItem(lang.storageKey) || "null");
+        if (other2?.profile) {
+          s.profile = { ...other2.profile, createdAt: Date.now() };
           break;
         }
       } catch {
@@ -3228,7 +3329,7 @@ function runQuiz(root, { title, questions, onFinish, onQuit }) {
       if (phase === "answer") action.disabled = !ready;
     });
   }
-  function check() {
+  function check2() {
     const { ref, q } = questions[i];
     const res = api.check();
     results.push({ ref, correct: res.correct, given: res.given });
@@ -3252,7 +3353,7 @@ function runQuiz(root, { title, questions, onFinish, onQuit }) {
       onFinish(results);
     }
   }
-  action.onclick = () => phase === "answer" ? check() : next();
+  action.onclick = () => phase === "answer" ? check2() : next();
   el(".quiz-quit").onclick = () => {
     cleanup();
     onQuit();
@@ -3668,8 +3769,8 @@ async function pull() {
       next = mergeStates(local, remote);
     }
     if (!next.profile) {
-      const other = await sb.from(TABLE).select("state").eq("user_id", info.user.id).neq("lang", code).limit(1);
-      const prof = other.data?.[0]?.state?.profile;
+      const other2 = await sb.from(TABLE).select("state").eq("user_id", info.user.id).neq("lang", code).limit(1);
+      const prof = other2.data?.[0]?.state?.profile;
       if (prof) next = { ...next, profile: prof };
     }
     next.owner = info.user.id;
@@ -3791,6 +3892,7 @@ async function updatePassword(password) {
   emit({ recovery: false });
 }
 var syncNow = () => pull();
+var getClient = () => client();
 
 // js/views/profil.js
 var GOALS = [[20, "D\xE9tente"], [50, "R\xE9gulier"], [100, "Intensif"]];
@@ -4097,6 +4199,825 @@ function bindForm(app2, handler) {
   setTimeout(() => form.querySelector("input")?.focus(), 50);
 }
 
+// js/core/social.js
+var USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+var S = {
+  ready: false,
+  // données chargées au moins une fois
+  me: null,
+  // { id, username, pseudo, avatar } ou null (pas encore de nom d'utilisateur)
+  profiles: {},
+  // { [id]: profil }
+  friendships: [],
+  // lignes brutes
+  stats: {},
+  // { [userId]: { [lang]: résumé } }
+  challenges: [],
+  unread: {}
+  // { [friendId]: nombre }
+};
+var social = () => S;
+var listeners3 = /* @__PURE__ */ new Set();
+var onSocial = (fn) => (listeners3.add(fn), () => listeners3.delete(fn));
+var emit2 = (what = "all", detail) => listeners3.forEach((fn) => fn(what, detail));
+var uid = () => cloudInfo().user?.id || null;
+var isAvailable = () => isConfigured() && !!uid();
+var ERRORS = {
+  not_found: "Aucun utilisateur ne porte ce nom.",
+  self: "C'est votre propre nom d'utilisateur \u{1F642}",
+  already_friends: "Vous \xEAtes d\xE9j\xE0 amis.",
+  already_sent: "Demande d\xE9j\xE0 envoy\xE9e : elle attend sa r\xE9ponse.",
+  no_profile: "Choisissez d'abord votre nom d'utilisateur.",
+  not_friends: "Vous devez \xEAtre amis pour faire cela.",
+  challenge_not_playable: "Ce d\xE9fi n'est pas (ou plus) jouable.",
+  already_played: "Vous avez d\xE9j\xE0 jou\xE9 ce d\xE9fi."
+};
+function socialError(e) {
+  const m = String(e?.message || e || "");
+  for (const [k, v] of Object.entries(ERRORS)) if (m.includes(k)) return v;
+  if (/duplicate key|unique/i.test(m)) return "Ce nom d'utilisateur est d\xE9j\xE0 pris.";
+  if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return "Serveur injoignable. V\xE9rifiez votre connexion.";
+  return m || "Une erreur est survenue.";
+}
+var check = ({ data, error }) => {
+  if (error) throw error;
+  return data;
+};
+var loading = null;
+function refresh() {
+  if (!isAvailable()) return Promise.resolve();
+  if (loading) return loading;
+  loading = (async () => {
+    const sb2 = await getClient();
+    const me = uid();
+    const [mine, fr, ch, unread] = await Promise.all([
+      sb2.from("profiles").select("*").eq("id", me).maybeSingle().then(check),
+      sb2.from("friendships").select("*").then(check),
+      sb2.from("challenges").select("*").order("created_at", { ascending: false }).limit(60).then(check),
+      sb2.from("messages").select("sender").eq("recipient", me).is("read_at", null).then(check)
+    ]);
+    S.me = mine;
+    S.friendships = fr;
+    S.challenges = ch;
+    S.unread = {};
+    unread.forEach((m) => S.unread[m.sender] = (S.unread[m.sender] || 0) + 1);
+    const ids = [...new Set(fr.flatMap((f) => [f.requester, f.addressee]).concat(ch.flatMap((c) => [c.challenger, c.opponent])))].filter((x) => x !== me);
+    if (mine) S.profiles[me] = mine;
+    if (ids.length) {
+      const [profs, stats] = await Promise.all([
+        sb2.from("profiles").select("id, username, pseudo, avatar").in("id", ids).then(check),
+        sb2.from("user_stats").select("user_id, lang, summary, updated_at").in("user_id", [...ids, me]).then(check)
+      ]);
+      profs.forEach((p) => S.profiles[p.id] = p);
+      S.stats = {};
+      stats.forEach((r) => (S.stats[r.user_id] ||= {})[r.lang] = { ...r.summary, updated_at: r.updated_at });
+    } else {
+      const stats = await sb2.from("user_stats").select("user_id, lang, summary, updated_at").eq("user_id", me).then(check);
+      S.stats = {};
+      stats.forEach((r) => (S.stats[r.user_id] ||= {})[r.lang] = { ...r.summary, updated_at: r.updated_at });
+    }
+    S.ready = true;
+    emit2("all");
+  })().finally(() => loading = null);
+  return loading;
+}
+var other = (f, me = uid()) => f.requester === me ? f.addressee : f.requester;
+function friends() {
+  return S.friendships.filter((f) => f.status === "accepted").map((f) => ({ ...S.profiles[other(f)], friendshipId: f.id, since: f.created_at })).filter((p) => p.id).sort((a, b) => (S.unread[b.id] || 0) - (S.unread[a.id] || 0) || (a.pseudo || a.username).localeCompare(b.pseudo || b.username));
+}
+var incoming = () => S.friendships.filter((f) => f.status === "pending" && f.addressee === uid()).map((f) => ({ ...f, from: S.profiles[f.requester] }));
+var outgoing = () => S.friendships.filter((f) => f.status === "pending" && f.requester === uid()).map((f) => ({ ...f, to: S.profiles[f.addressee] }));
+var friendByUsername = (u) => friends().find((f) => f.username === u);
+var statsOf = (id) => S.stats[id] || {};
+function view(c) {
+  const me = uid();
+  const iAmChallenger = c.challenger === me;
+  const side = iAmChallenger ? "challenger" : "opponent", oside = iAmChallenger ? "opponent" : "challenger";
+  const mine = c[`${side}_score`] != null ? { score: c[`${side}_score`], total: c[`${side}_total`], ms: c[`${side}_ms`], lang: c[`${side}_lang`] } : null;
+  const theirs = c[`${oside}_score`] != null ? { score: c[`${oside}_score`], total: c[`${oside}_total`], ms: c[`${oside}_ms`], lang: c[`${oside}_lang`] } : null;
+  let stage;
+  if (c.status === "declined") stage = "declined";
+  else if (c.status === "cancelled") stage = "cancelled";
+  else if (c.status === "pending") stage = iAmChallenger ? "waiting_accept" : "to_accept";
+  else if (!mine) stage = "to_play";
+  else if (!theirs) stage = "waiting_play";
+  else stage = "done";
+  let outcome = null;
+  if (stage === "done") {
+    const a = mine.score / mine.total, b = theirs.score / theirs.total;
+    outcome = a > b ? "win" : a < b ? "lose" : mine.ms < theirs.ms ? "win" : mine.ms > theirs.ms ? "lose" : "draw";
+  }
+  return { ...c, iAmChallenger, friend: S.profiles[iAmChallenger ? c.opponent : c.challenger], mine, theirs, stage, outcome };
+}
+var challengesWith = (friendId) => S.challenges.filter((c) => c.challenger === friendId || c.opponent === friendId).map(view);
+var allChallenges = () => S.challenges.map(view);
+function badgeCount() {
+  if (!isAvailable() || !S.ready) return 0;
+  const unread = Object.values(S.unread).reduce((a, b) => a + b, 0);
+  const todo = allChallenges().filter((c) => c.stage === "to_accept" || c.stage === "to_play").length;
+  return incoming().length + unread + todo;
+}
+async function rpc(name, args) {
+  const sb2 = await getClient();
+  return check(await sb2.rpc(name, args));
+}
+async function createProfile(username) {
+  const u = username.trim().toLowerCase();
+  if (!USERNAME_RE.test(u)) throw new Error("3 \xE0 20 caract\xE8res : lettres minuscules, chiffres ou _ (sans espace ni accent).");
+  const sb2 = await getClient();
+  try {
+    check(await sb2.from("profiles").insert({ id: uid(), username: u, pseudo: state.profile?.pseudo || u, avatar: state.profile?.avatar || "\u{1F464}" }));
+  } catch (e) {
+    throw new Error(socialError(e));
+  }
+  await refresh();
+  pushStats(true);
+}
+async function addFriend(username) {
+  const r = await rpc("send_friend_request", { p_username: username.trim().toLowerCase().replace(/^@/, "") }).catch((e) => {
+    throw new Error(socialError(e));
+  });
+  if (r !== "sent" && r !== "accepted") throw new Error(socialError(r));
+  await refresh();
+  return r;
+}
+async function acceptFriend(id) {
+  await rpc("accept_friend_request", { p_id: id });
+  await refresh();
+}
+async function removeFriendship(id) {
+  const sb2 = await getClient();
+  check(await sb2.from("friendships").delete().eq("id", id));
+  await refresh();
+}
+async function loadMessages(friendId, limit = 80) {
+  const sb2 = await getClient();
+  const me = uid();
+  const rows = check(await sb2.from("messages").select("*").or(`and(sender.eq.${me},recipient.eq.${friendId}),and(sender.eq.${friendId},recipient.eq.${me})`).order("created_at", { ascending: false }).limit(limit));
+  return rows.reverse();
+}
+async function sendMessage(friendId, body) {
+  const text = body.trim().slice(0, 1e3);
+  if (!text) return null;
+  const sb2 = await getClient();
+  try {
+    return check(await sb2.from("messages").insert({ sender: uid(), recipient: friendId, body: text }).select().single());
+  } catch (e) {
+    throw new Error(socialError(e));
+  }
+}
+async function markRead(friendId) {
+  if (!S.unread[friendId]) return;
+  delete S.unread[friendId];
+  emit2("unread");
+  await rpc("mark_messages_read", { p_friend: friendId }).catch(() => {
+  });
+}
+async function createChallenge(friendId, n = 10) {
+  const id = await rpc("create_challenge", { p_opponent: friendId, p_n: n }).catch((e) => {
+    throw new Error(socialError(e));
+  });
+  await refresh();
+  return id;
+}
+async function respondChallenge(id, accept) {
+  await rpc("respond_challenge", { p_id: id, p_accept: accept }).catch((e) => {
+    throw new Error(socialError(e));
+  });
+  await refresh();
+}
+async function cancelChallenge(id) {
+  await rpc("cancel_challenge", { p_id: id }).catch((e) => {
+    throw new Error(socialError(e));
+  });
+  await refresh();
+}
+async function submitChallenge(id, { score, total, ms }) {
+  await rpc("submit_challenge", { p_id: id, p_lang: code, p_score: score, p_total: total, p_ms: Math.round(ms) }).catch((e) => {
+    throw new Error(socialError(e));
+  });
+  await refresh();
+}
+async function getChallenge(id) {
+  const sb2 = await getClient();
+  const c = check(await sb2.from("challenges").select("*").eq("id", id).maybeSingle());
+  if (c) {
+    const i = S.challenges.findIndex((x) => x.id === id);
+    if (i >= 0) S.challenges[i] = c;
+    else S.challenges.unshift(c);
+  }
+  return c ? view(c) : null;
+}
+function mySummary() {
+  const g = globalProgress(), lvl = currentLevel();
+  return {
+    xp: state.xp,
+    streak: streakCount(),
+    level: lvlLabel2(lvl),
+    levelName: lvl.name,
+    pct: g.pct,
+    done: g.done,
+    total: g.total,
+    lessons: Object.values(state.lessons).filter((l) => l.passed).length,
+    words: Object.keys(state.vocab).length
+  };
+}
+var lastSent = "";
+var statsTimer = null;
+async function pushStats(force = false) {
+  if (!isAvailable() || !S.me || !state.profile) return;
+  const sum = mySummary(), key = JSON.stringify(sum);
+  if (!force && key === lastSent) return;
+  lastSent = key;
+  const sb2 = await getClient();
+  const { error } = await sb2.from("user_stats").upsert({ user_id: uid(), lang: code, summary: sum, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+  if (error) {
+    lastSent = "";
+    return;
+  }
+  (S.stats[uid()] ||= {})[code] = { ...sum, updated_at: (/* @__PURE__ */ new Date()).toISOString() };
+  if (state.profile && (S.me.pseudo !== state.profile.pseudo || S.me.avatar !== state.profile.avatar)) {
+    const { error: e2 } = await sb2.from("profiles").update({ pseudo: state.profile.pseudo, avatar: state.profile.avatar }).eq("id", uid());
+    if (!e2) {
+      S.me.pseudo = state.profile.pseudo;
+      S.me.avatar = state.profile.avatar;
+    }
+  }
+}
+var channel = null;
+var poll = null;
+var startedFor = null;
+async function start2() {
+  const me = uid();
+  if (!me || startedFor === me) return;
+  stop();
+  startedFor = me;
+  await refresh().catch(() => {
+  });
+  pushStats(true);
+  const sb2 = await getClient();
+  if (sb2.channel) {
+    channel = sb2.channel(`social-${me}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `recipient=eq.${me}` }, (p) => {
+      const m = p.new;
+      S.unread[m.sender] = (S.unread[m.sender] || 0) + 1;
+      emit2("message", m);
+      if (!S.profiles[m.sender]) refresh();
+    }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).subscribe();
+  }
+  poll = setInterval(() => {
+    if (document.visibilityState === "visible") refresh().catch(() => {
+    });
+  }, 3e4);
+}
+function stop() {
+  if (channel) {
+    getClient().then((sb2) => sb2.removeChannel?.(channel));
+    channel = null;
+  }
+  clearInterval(poll);
+  poll = null;
+  startedFor = null;
+  Object.assign(S, { ready: false, me: null, profiles: {}, friendships: [], stats: {}, challenges: [], unread: {} });
+  emit2("all");
+}
+function initSocial() {
+  if (!isConfigured()) return;
+  onCloud((i) => {
+    if (i.user) start2();
+    else if (startedFor) stop();
+  });
+  if (uid()) start2();
+  subscribe(() => {
+    clearTimeout(statsTimer);
+    statsTimer = setTimeout(() => pushStats(), 4e3);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && uid()) refresh().catch(() => {
+    });
+  });
+}
+
+// js/views/amis.js
+var who = (p) => esc(p?.pseudo || p?.username || "Ami");
+var av = (p, cls = "") => `<span class="s-avatar ${cls}">${esc(p?.avatar || "\u{1F464}")}</span>`;
+var handle = (p) => p?.username ? `<span class="s-handle">@${esc(p.username)}</span>` : "";
+var stillHere = (hash) => location.hash === hash;
+function when(ts) {
+  const d = new Date(ts), now = /* @__PURE__ */ new Date();
+  const hm = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  if (d.toDateString() === now.toDateString()) return hm;
+  const y = new Date(now);
+  y.setDate(now.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return `hier ${hm}`;
+  return `${d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} ${hm}`;
+}
+var secs = (ms) => ms < 6e4 ? `${Math.round(ms / 1e3)} s` : `${Math.floor(ms / 6e4)} min ${String(Math.round(ms % 6e4 / 1e3)).padStart(2, "0")}`;
+function gate(app2, title) {
+  if (!isConfigured()) {
+    app2.innerHTML = `<header class="page-head"><p class="eyebrow">Amis</p><h1>\u{1F465} ${title}</h1></header>
+      <section class="card"><p>L'espace amis n\xE9cessite les comptes en ligne, qui ne sont pas activ\xE9s sur ce site.</p></section>`;
+    return true;
+  }
+  if (!isAvailable()) {
+    app2.innerHTML = `<header class="page-head"><p class="eyebrow">Amis</p><h1>\u{1F465} ${title}</h1>
+      <p class="muted">Ajoutez vos amis, suivez leurs progr\xE8s, discutez et lancez-vous des d\xE9fis.</p></header>
+      <section class="card account-card"><p>Connectez-vous pour acc\xE9der \xE0 l'espace amis.</p>
+      <a class="btn primary" href="#compte">\u2601\uFE0F Se connecter ou cr\xE9er un compte</a></section>`;
+    return true;
+  }
+  return false;
+}
+var loading2 = (app2) => app2.innerHTML = `<p class="muted s-loading">Chargement\u2026</p>`;
+function loadThen(app2, render) {
+  const hash = location.hash;
+  loading2(app2);
+  refresh().then(() => {
+    if (stillHere(hash) && social().ready) render();
+  }).catch((e) => {
+    if (!stillHere(hash)) return;
+    app2.innerHTML = `<section class="card account-card"><p class="form-msg error">${esc(socialError(e))}</p>
+        <button class="btn primary" data-retry>R\xE9essayer</button></section>`;
+    app2.querySelector("[data-retry]").onclick = () => loadThen(app2, render);
+  });
+}
+function challengeCard(c, { showFriend = true } = {}) {
+  const f = c.friend;
+  const langs = (r) => r?.lang ? `<span class="flag mini">${flagSVG(r.lang)}</span>` : "";
+  let status = "", actions = "", cls = "";
+  switch (c.stage) {
+    case "to_accept":
+      status = `<b>${who(f)}</b> vous d\xE9fie sur ${c.n} questions`;
+      cls = "todo";
+      actions = `<button class="btn primary small" data-ch-accept="${c.id}">Accepter</button><button class="btn ghost small" data-ch-decline="${c.id}">Refuser</button>`;
+      break;
+    case "waiting_accept":
+      status = `En attente de la r\xE9ponse de <b>${who(f)}</b>`;
+      actions = `<button class="btn ghost small" data-ch-cancel="${c.id}">Annuler</button>`;
+      break;
+    case "to_play":
+      status = c.theirs ? `<b>${who(f)}</b> a jou\xE9 : \xE0 vous !` : `D\xE9fi accept\xE9 : \xE0 vous de jouer !`;
+      cls = "todo";
+      actions = `<a class="btn primary small" href="#defi-${c.id}">\u2694\uFE0F Jouer</a>`;
+      break;
+    case "waiting_play":
+      status = `Votre score : <b>${c.mine.score}/${c.mine.total}</b> ${langs(c.mine)} \xB7 en attente de ${who(f)}`;
+      break;
+    case "done": {
+      const t = { win: ["\u{1F3C6} Victoire", "win"], lose: ["D\xE9faite", "lose"], draw: ["\u{1F91D} \xC9galit\xE9", "draw"] }[c.outcome];
+      cls = t[1];
+      status = `<b class="s-outcome">${t[0]}</b> \xB7 vous ${c.mine.score}/${c.mine.total} ${langs(c.mine)} <small>(${secs(c.mine.ms)})</small>
+        \u2014 ${who(f)} ${c.theirs.score}/${c.theirs.total} ${langs(c.theirs)} <small>(${secs(c.theirs.ms)})</small>`;
+      break;
+    }
+    case "declined":
+      status = `${c.iAmChallenger ? `${who(f)} a refus\xE9` : "Vous avez refus\xE9"} le d\xE9fi`;
+      cls = "off";
+      break;
+    case "cancelled":
+      status = "D\xE9fi annul\xE9";
+      cls = "off";
+      break;
+  }
+  return `<li class="s-challenge ${cls}">
+    ${showFriend ? av(f, "sm") : `<span class="s-ch-icon">\u2694\uFE0F</span>`}
+    <div class="s-ch-body"><p>${status}</p><small class="muted">${c.n} questions \xB7 ${when(c.created_at)}</small></div>
+    ${actions ? `<div class="s-ch-actions">${actions}</div>` : ""}
+  </li>`;
+}
+function bindChallengeActions(root) {
+  root.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-ch-accept],[data-ch-decline],[data-ch-cancel]");
+    if (!b) return;
+    b.disabled = true;
+    try {
+      if (b.dataset.chAccept) {
+        await respondChallenge(b.dataset.chAccept, true);
+        toast("D\xE9fi accept\xE9 \u2694\uFE0F", "ok");
+        if (location.hash === `#defi-${b.dataset.chAccept}`) window.dispatchEvent(new HashChangeEvent("hashchange"));
+        else location.hash = `defi-${b.dataset.chAccept}`;
+      } else if (b.dataset.chDecline) {
+        await respondChallenge(b.dataset.chDecline, false);
+        toast("D\xE9fi refus\xE9");
+      } else {
+        await cancelChallenge(b.dataset.chCancel);
+        toast("D\xE9fi annul\xE9");
+      }
+    } catch (err) {
+      toast(err.message, "warn");
+      b.disabled = false;
+    }
+  });
+}
+async function askChallenge(friend) {
+  const v = await modal({
+    title: `\u2694\uFE0F D\xE9fier ${who(friend)}`,
+    body: `<p>Chacun r\xE9pond \xE0 des questions de <b>sa propre langue</b>, tir\xE9es des le\xE7ons qu'il a d\xE9bloqu\xE9es.
+      Le meilleur score gagne ; \xE0 \xE9galit\xE9, le plus rapide.</p><p class="muted small">${who(friend)} doit d'abord accepter le d\xE9fi.</p>`,
+    actions: [{ label: "Annuler", value: "" }, { label: "5 questions", value: "5" }, { label: "10 questions", value: "10", kind: "primary" }, { label: "15 questions", value: "15" }]
+  });
+  if (!v) return;
+  try {
+    await createChallenge(friend.id, +v);
+    toast(`D\xE9fi envoy\xE9 \xE0 ${friend.pseudo || friend.username} \u2694\uFE0F`, "ok");
+  } catch (e) {
+    toast(e.message, "warn");
+  }
+}
+function renderAmis(app2) {
+  if (gate(app2, "Amis")) return;
+  const S2 = social();
+  if (!S2.ready) {
+    loadThen(app2, () => renderAmis(app2));
+    return;
+  }
+  if (!S2.me) return renderUsername(app2);
+  app2.innerHTML = `<div class="s-page">
+  <header class="page-head s-head">
+    <div><p class="eyebrow">Amis</p><h1>\u{1F465} Mes amis</h1>
+    <p class="muted">Votre nom d'utilisateur : <b class="s-me">@${esc(S2.me.username)}</b> <button class="link-btn" data-copy>Copier</button></p></div>
+  </header>
+  <div class="s-grid">
+    <div class="s-col">
+      <form class="card s-add" autocomplete="off">
+        <h2 class="h3">\u2795 Ajouter un ami</h2>
+        <div class="s-add-row"><span class="s-at">@</span>
+          <input name="u" required maxlength="21" placeholder="nom d'utilisateur de votre ami" aria-label="Nom d'utilisateur de l'ami" autocapitalize="none" spellcheck="false">
+          <button class="btn primary" type="submit">Envoyer</button></div>
+        <p class="form-msg" role="alert"></p>
+        <p class="muted small">Votre ami verra votre demande et pourra l'accepter. Une fois amis, vous voyez la progression l'un de l'autre.</p>
+      </form>
+      <div data-zone="requests"></div>
+      <div data-zone="todo"></div>
+      <section class="card"><h2 class="h3">Mes amis</h2><div data-zone="friends"></div></section>
+    </div>
+    <div class="s-col">
+      <section class="card"><h2 class="h3">\u2694\uFE0F D\xE9fis</h2><div data-zone="challenges"></div></section>
+      <div data-zone="sent"></div>
+    </div>
+  </div></div>`;
+  const page = app2.firstElementChild;
+  const paint = () => {
+    const z = (n) => app2.querySelector(`[data-zone="${n}"]`);
+    const inc = incoming();
+    z("requests").innerHTML = inc.length ? `<section class="card s-highlight"><h2 class="h3">\u{1F4EC} Demandes re\xE7ues</h2><ul class="s-list">
+      ${inc.map((r) => `<li class="s-row">${av(r.from)}<div class="s-row-txt"><b>${who(r.from)}</b>${handle(r.from)}</div>
+        <div class="s-row-actions"><button class="btn primary small" data-accept="${r.id}">Accepter</button><button class="btn ghost small" data-remove="${r.id}">Refuser</button></div></li>`).join("")}
+      </ul></section>` : "";
+    const all = allChallenges();
+    const todo = all.filter((c) => c.stage === "to_accept" || c.stage === "to_play");
+    z("todo").innerHTML = todo.length ? `<section class="card s-highlight"><h2 class="h3">\u{1F514} \xC0 faire</h2><ul class="s-ch-list">${todo.map((c) => challengeCard(c)).join("")}</ul></section>` : "";
+    const fr = friends();
+    z("friends").innerHTML = fr.length ? `<ul class="s-list">${fr.map((f) => {
+      const st = statsOf(f.id), n = S2.unread[f.id] || 0;
+      const chips = Object.keys(LANGS).filter((c) => st[c]).map((c) => `<span class="s-lang-chip"><span class="flag mini">${flagSVG(c)}</span>${esc(st[c].level)} \xB7 ${st[c].pct}%</span>`).join("");
+      return `<li><a class="s-row s-friend" href="#ami-${esc(f.username)}">${av(f)}
+        <div class="s-row-txt"><b>${who(f)}</b>${handle(f)}<div class="s-chips">${chips || `<small class="muted">Pas encore de progression</small>`}</div></div>
+        ${n ? `<span class="s-unread" title="${n} message(s) non lu(s)">\u{1F4AC} ${n}</span>` : ""}<span class="s-go">\u203A</span></a></li>`;
+    }).join("")}</ul>` : `<p class="muted">Vous n'avez pas encore d'amis ici. Envoyez votre nom d'utilisateur <b>@${esc(S2.me.username)}</b> \xE0 vos amis, ou ajoutez le leur ci-contre.</p>`;
+    const rest = all.filter((c) => !todo.includes(c)).slice(0, 12);
+    z("challenges").innerHTML = rest.length ? `<ul class="s-ch-list">${rest.map((c) => challengeCard(c)).join("")}</ul>` : `<p class="muted small">${fr.length ? "Ouvrez la fiche d'un ami pour le d\xE9fier." : "Ajoutez un ami pour lancer votre premier d\xE9fi."}</p>`;
+    const out = outgoing();
+    z("sent").innerHTML = out.length ? `<section class="card"><h2 class="h3">\u{1F4E4} Demandes envoy\xE9es</h2><ul class="s-list">
+      ${out.map((r) => `<li class="s-row">${av(r.to)}<div class="s-row-txt"><b>${who(r.to)}</b>${handle(r.to)}<small class="muted">En attente</small></div>
+        <div class="s-row-actions"><button class="btn ghost small" data-remove="${r.id}">Annuler</button></div></li>`).join("")}</ul></section>` : "";
+  };
+  paint();
+  const form = app2.querySelector(".s-add"), msg = form.querySelector(".form-msg");
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector("button");
+    btn.disabled = true;
+    msg.className = "form-msg";
+    msg.textContent = "";
+    try {
+      const r = await addFriend(form.u.value);
+      msg.className = "form-msg ok";
+      msg.textContent = r === "accepted" ? "\u{1F389} Vous \xEAtes maintenant amis !" : "\u2713 Demande envoy\xE9e.";
+      form.u.value = "";
+    } catch (err) {
+      msg.className = "form-msg error";
+      msg.textContent = err.message;
+    }
+    btn.disabled = false;
+  };
+  app2.querySelector("[data-copy]").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(S2.me.username);
+      toast("Nom d'utilisateur copi\xE9 \u2713", "ok");
+    } catch {
+      toast(`Votre nom : @${S2.me.username}`);
+    }
+  };
+  page.addEventListener("click", async (e) => {
+    const a = e.target.closest("[data-accept]"), r = e.target.closest("[data-remove]");
+    if (!a && !r) return;
+    (a || r).disabled = true;
+    try {
+      if (a) {
+        await acceptFriend(+a.dataset.accept);
+        toast("\u{1F389} Nouvel ami !", "ok");
+      } else {
+        await removeFriendship(+r.dataset.remove);
+      }
+    } catch (err) {
+      toast(socialError(err), "warn");
+      (a || r).disabled = false;
+    }
+  });
+  bindChallengeActions(page);
+  const off = onSocial(() => paint());
+  app2._cleanup = off;
+}
+function renderUsername(app2) {
+  const suggestion = (state.profile?.pseudo || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9_]/g, "").slice(0, 20);
+  app2.innerHTML = `
+  <header class="page-head"><p class="eyebrow">Amis</p><h1>\u{1F465} Choisissez votre nom d'utilisateur</h1>
+    <p class="muted">C'est gr\xE2ce \xE0 lui que vos amis pourront vous ajouter. Il est unique et visible des autres utilisateurs.</p></header>
+  <form class="card account-card auth-form" data-form="username" autocomplete="off">
+    <label class="field"><span>Nom d'utilisateur</span>
+      <div class="s-add-row"><span class="s-at">@</span><input name="u" required minlength="3" maxlength="20" value="${esc(suggestion.length >= 3 ? suggestion : "")}" placeholder="ex. thomas_92" autocapitalize="none" spellcheck="false"></div></label>
+    <p class="muted small">3 \xE0 20 caract\xE8res : lettres minuscules, chiffres et \xAB _ \xBB. Pas d'espace ni d'accent.</p>
+    <p class="form-msg" role="alert"></p>
+    <button class="btn primary big" type="submit">Valider</button>
+  </form>`;
+  const form = app2.querySelector("form"), msg = form.querySelector(".form-msg");
+  form.u.oninput = () => {
+    const v = form.u.value.toLowerCase().replace(/\s/g, "_");
+    if (v !== form.u.value) form.u.value = v;
+  };
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector("button[type=submit]");
+    btn.disabled = true;
+    msg.className = "form-msg";
+    msg.textContent = "";
+    try {
+      await createProfile(form.u.value);
+      toast("Nom d'utilisateur enregistr\xE9 \u2713", "ok");
+      renderAmis(app2);
+    } catch (err) {
+      msg.className = "form-msg error";
+      msg.textContent = err.message;
+      btn.disabled = false;
+    }
+  };
+  setTimeout(() => form.u.focus(), 50);
+}
+function renderAmi(app2, username) {
+  if (gate(app2, "Amis")) return;
+  const S2 = social();
+  const hash = location.hash;
+  if (!S2.ready) {
+    loadThen(app2, () => renderAmi(app2, username));
+    return;
+  }
+  if (!S2.me) {
+    location.hash = "amis";
+    return;
+  }
+  const f = friendByUsername(username);
+  if (!f) {
+    app2.innerHTML = `<section class="card account-card"><p>@${esc(username)} ne fait pas (ou plus) partie de vos amis.</p><a class="btn ghost" href="#amis">\u2190 Mes amis</a></section>`;
+    return;
+  }
+  app2.innerHTML = `<div class="s-page">
+  <a class="back-link" href="#amis">\u2190 Mes amis</a>
+  <header class="s-friend-head card">
+    ${av(f, "xl")}
+    <div class="s-friend-id"><h1>${who(f)}</h1>${handle(f)}<p class="muted small">Amis depuis le ${new Date(f.since).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p></div>
+    <div class="s-friend-actions"><button class="btn primary" data-challenge>\u2694\uFE0F Lancer un d\xE9fi</button>
+      <button class="link-btn danger-txt" data-unfriend>Retirer des amis</button></div>
+  </header>
+  <div class="s-grid">
+    <div class="s-col">
+      <section class="card"><h2 class="h3">\u{1F4C8} Progression</h2><div data-zone="compare"></div></section>
+      <section class="card"><h2 class="h3">\u2694\uFE0F D\xE9fis entre vous</h2><div data-zone="challenges"></div></section>
+    </div>
+    <section class="card s-chat">
+      <h2 class="h3">\u{1F4AC} Messages</h2>
+      <div class="s-msgs" aria-live="polite"><p class="muted small">Chargement\u2026</p></div>
+      <form class="s-send" autocomplete="off">
+        <textarea name="m" rows="1" maxlength="1000" placeholder="\xC9crire \xE0 ${who(f)}\u2026" aria-label="Message"></textarea>
+        <button class="btn primary" type="submit" aria-label="Envoyer">\u27A4</button>
+      </form>
+    </section>
+  </div></div>`;
+  const page = app2.firstElementChild;
+  const z = (n) => app2.querySelector(`[data-zone="${n}"]`);
+  const paint = () => {
+    const theirs = statsOf(f.id);
+    let mine = statsOf(S2.me.id);
+    mine = { ...mine, [code]: mySummary() };
+    const langs = Object.keys(LANGS).filter((c) => theirs[c] || mine[c]?.level);
+    z("compare").innerHTML = langs.length ? langs.map((c) => {
+      const t = theirs[c], m = mine[c]?.level ? mine[c] : null;
+      const col = (s, label) => s ? `<div class="s-cmp-col"><p class="s-cmp-who">${label}</p>
+          <p class="s-cmp-lvl">${esc(s.level)} <small>${esc(s.levelName || "")}</small></p>
+          <div class="s-bar"><span style="width:${s.pct}%"></span></div>
+          <p class="small muted">${s.pct} % du parcours \xB7 \u26A1 ${s.xp} XP \xB7 \u{1F525} ${s.streak} j \xB7 \u{1F4D2} ${s.words} mots</p></div>` : `<div class="s-cmp-col"><p class="s-cmp-who">${label}</p><p class="muted small">Pas encore commenc\xE9</p></div>`;
+      return `<div class="s-cmp"><p class="s-cmp-lang"><span class="flag mini">${flagSVG(c)}</span>${esc(LANGS[c].label)}</p>
+        <div class="s-cmp-cols">${col(t, who(f))}${col(m, "Vous")}</div></div>`;
+    }).join("") : `<p class="muted">${who(f)} n'a pas encore commenc\xE9 de parcours.</p>`;
+    const chs = challengesWith(f.id);
+    z("challenges").innerHTML = chs.length ? `<ul class="s-ch-list">${chs.slice(0, 15).map((c) => challengeCard(c, { showFriend: false })).join("")}</ul>` : `<p class="muted small">Aucun d\xE9fi pour l'instant. Lancez le premier !</p>`;
+  };
+  paint();
+  const box = app2.querySelector(".s-msgs");
+  const shown = /* @__PURE__ */ new Set();
+  const bubble = (m) => `<div class="s-msg ${m.sender === S2.me.id ? "me" : "them"}" data-id="${m.id}"><p>${esc(m.body)}</p><time>${when(m.created_at)}</time></div>`;
+  const add = (list, { initial = false } = {}) => {
+    const fresh = list.filter((m) => !shown.has(m.id));
+    if (initial) box.innerHTML = "";
+    fresh.forEach((m) => shown.add(m.id));
+    if (!fresh.length && initial) box.innerHTML = `<p class="muted small s-empty">Aucun message. Dites bonjour \xE0 ${who(f)} \u{1F44B}</p>`;
+    if (!fresh.length) return;
+    box.querySelector(".s-empty")?.remove();
+    box.insertAdjacentHTML("beforeend", fresh.map(bubble).join(""));
+    box.scrollTop = box.scrollHeight;
+  };
+  loadMessages(f.id).then((list) => {
+    if (stillHere(hash)) {
+      add(list, { initial: true });
+      markRead(f.id);
+    }
+  }).catch((e) => box.innerHTML = `<p class="form-msg error">${esc(socialError(e))}</p>`);
+  const form = app2.querySelector(".s-send"), ta = form.m;
+  const grow = () => {
+    ta.style.height = "auto";
+    ta.style.height = Math.min(ta.scrollHeight, 140) + "px";
+  };
+  ta.oninput = grow;
+  ta.onkeydown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  };
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const text = ta.value.trim();
+    if (!text) return;
+    ta.value = "";
+    grow();
+    try {
+      const m = await sendMessage(f.id, text);
+      if (m) add([m]);
+    } catch (err) {
+      ta.value = text;
+      toast(err.message, "warn");
+    }
+  };
+  const poll2 = setInterval(() => {
+    if (document.visibilityState === "visible") loadMessages(f.id, 30).then((l) => {
+      if (stillHere(hash)) {
+        add(l);
+        markRead(f.id);
+      }
+    }).catch(() => {
+    });
+  }, 12e3);
+  app2.querySelector("[data-challenge]").onclick = () => askChallenge(f);
+  app2.querySelector("[data-unfriend]").onclick = async () => {
+    const v = await modal({
+      title: `Retirer ${who(f)} ?`,
+      body: "<p>Vous ne verrez plus sa progression et ne pourrez plus vous \xE9crire. Vous pourrez le r\xE9inviter plus tard.</p>",
+      actions: [{ label: "Annuler", value: "" }, { label: "Retirer", value: "yes", kind: "danger" }]
+    });
+    if (v !== "yes") return;
+    try {
+      await removeFriendship(f.friendshipId);
+      toast("Ami retir\xE9");
+      location.hash = "amis";
+    } catch (e) {
+      toast(socialError(e), "warn");
+    }
+  };
+  bindChallengeActions(page);
+  const off = onSocial((what, m) => {
+    if (what === "message") {
+      if (m.sender === f.id) {
+        add([m]);
+        markRead(f.id);
+      }
+      return;
+    }
+    if (what === "unread") return;
+    if (!friendByUsername(username)) {
+      location.hash = "amis";
+      return;
+    }
+    paint();
+  });
+  app2._cleanup = () => {
+    off();
+    clearInterval(poll2);
+  };
+}
+function pickQuestions(n) {
+  const pool = [];
+  ALL_LESSONS3.filter((l) => isLessonUnlocked(l)).forEach((l) => l.quiz.forEach((q, i) => pool.push({ ref: `${l.id}:${i}`, q })));
+  LEVELS3.forEach((lvl) => {
+    if (isExamPassed(lvl.id)) lvl.exam.forEach((q, i) => pool.push({ ref: `exam-${lvl.id}:${i}`, q }));
+  });
+  return shuffle(pool).slice(0, n);
+}
+function renderDefi(app2, id) {
+  if (gate(app2, "D\xE9fi")) return;
+  const hash = location.hash;
+  loading2(app2);
+  getChallenge(id).then((c) => {
+    if (!stillHere(hash)) return;
+    if (!c) {
+      app2.innerHTML = `<section class="card account-card"><p>Ce d\xE9fi est introuvable.</p><a class="btn ghost" href="#amis">\u2190 Amis</a></section>`;
+      return;
+    }
+    if (c.stage !== "to_play") return showDefi(app2, c);
+    const qs = pickQuestions(c.n);
+    app2.innerHTML = `
+    <a class="back-link" href="#amis">\u2190 Amis</a>
+    <section class="card s-defi-intro">
+      <p class="eyebrow">D\xE9fi</p>
+      <div class="s-vs">${av(social().me, "xl")}<span class="s-vs-x">VS</span>${av(c.friend, "xl")}</div>
+      <h1>\u2694\uFE0F Vous contre ${who(c.friend)}</h1>
+      <p class="lead">${qs.length} questions de <b>${esc(L.label.toLowerCase())}</b> <span class="flag mini">${flagSVG(code)}</span>, tir\xE9es des le\xE7ons que vous avez d\xE9bloqu\xE9es.</p>
+      <p class="muted">Le meilleur score gagne ; \xE0 \xE9galit\xE9, le plus rapide. Une seule tentative : le chrono d\xE9marre quand vous cliquez.</p>
+      <p class="muted small">Vous apprenez aussi une autre langue ? Changez de langue en haut de la page avant de commencer.</p>
+      ${c.theirs ? `<p class="chip">${who(c.friend)} a d\xE9j\xE0 jou\xE9 : \xE0 vous de faire mieux !</p>` : ""}
+      <button class="btn primary big" data-go>C'est parti !</button>
+    </section>`;
+    app2.querySelector("[data-go]").onclick = () => play(app2, c, qs);
+  }).catch((e) => {
+    app2.innerHTML = `<section class="card"><p class="form-msg error">${esc(socialError(e))}</p></section>`;
+  });
+}
+function play(app2, c, questions) {
+  document.body.classList.add("focus-mode");
+  const t0 = performance.now();
+  runQuiz(app2, {
+    title: `D\xE9fi contre ${c.friend?.pseudo || c.friend?.username || "un ami"}`,
+    questions,
+    onQuit: async () => {
+      document.body.classList.remove("focus-mode");
+      location.hash = "amis";
+    },
+    onFinish: async (results) => {
+      document.body.classList.remove("focus-mode");
+      const ms = performance.now() - t0;
+      const score = results.filter((r) => r.correct).length;
+      app2.innerHTML = `<p class="muted s-loading">Envoi de votre score\u2026</p>`;
+      try {
+        await submitChallenge(c.id, { score, total: results.length, ms });
+        const v = await getChallenge(c.id);
+        showDefi(app2, v, true);
+      } catch (e) {
+        app2.innerHTML = `<section class="card account-card"><p class="form-msg error">${esc(e.message)}</p>
+          <p>Votre score : ${score}/${results.length}</p><a class="btn ghost" href="#amis">\u2190 Amis</a></section>`;
+      }
+    }
+  });
+}
+function showDefi(app2, c, justPlayed = false) {
+  const f = c.friend;
+  const line = (r, label, p) => r ? `<div class="s-res-col">${av(p, "lg")}<p class="s-res-who">${label}</p>
+      ${ring(Math.round(r.score / r.total * 100), 96, 9)}<p><b>${r.score}/${r.total}</b> <span class="flag mini">${flagSVG(r.lang)}</span></p><p class="muted small">\u23F1 ${secs(r.ms)}</p></div>` : `<div class="s-res-col">${av(p, "lg")}<p class="s-res-who">${label}</p><p class="muted">${c.stage === "to_accept" || c.stage === "waiting_accept" ? "\u2014" : "Pas encore jou\xE9"}</p></div>`;
+  const head = {
+    done: { win: "\u{1F3C6} Victoire !", lose: `${who(f)} l'emporte`, draw: "\u{1F91D} \xC9galit\xE9 parfaite" }[c.outcome],
+    waiting_play: "Score envoy\xE9 \u2713",
+    to_accept: `${who(f)} vous d\xE9fie`,
+    waiting_accept: `En attente de ${who(f)}`,
+    declined: "D\xE9fi refus\xE9",
+    cancelled: "D\xE9fi annul\xE9"
+  }[c.stage] || "D\xE9fi";
+  const sub = {
+    waiting_play: `Le r\xE9sultat s'affichera quand ${who(f)} aura jou\xE9.`,
+    done: c.outcome === "win" ? "Bien jou\xE9 ! Pr\xEAt pour la revanche ?" : c.outcome === "lose" ? "La revanche vous attend !" : "M\xEAme score, m\xEAme temps : impressionnant."
+  }[c.stage] || "";
+  app2.innerHTML = `<div class="s-page">
+  <a class="back-link" href="#ami-${esc(f?.username || "")}">\u2190 ${who(f)}</a>
+  <section class="card s-defi-res ${c.outcome || ""}">
+    <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions</p>
+    <h1>${head}</h1>${sub ? `<p class="muted">${sub}</p>` : ""}
+    <div class="s-res">${line(c.mine, "Vous", social().me)}<span class="s-vs-x">VS</span>${line(c.theirs, who(f), f)}</div>
+    <div class="result-actions">
+      ${c.stage === "to_accept" ? `<button class="btn primary big" data-ch-accept="${c.id}">Accepter le d\xE9fi</button>` : ""}
+      ${c.stage === "done" && f ? `<button class="btn primary big" data-rematch>\u2694\uFE0F Revanche</button>` : ""}
+      <a class="btn ghost" href="#ami-${esc(f?.username || "")}">\u{1F4AC} Voir ${who(f)}</a>
+    </div>
+  </section></div>`;
+  if (justPlayed && c.outcome === "win") celebrate();
+  app2.querySelector("[data-rematch]")?.addEventListener("click", () => askChallenge(f));
+  bindChallengeActions(app2.firstElementChild);
+  const off = onSocial((what) => {
+    if (what !== "all") return;
+    const fresh = allChallenges().find((x) => x.id === c.id);
+    if (fresh && fresh.stage !== c.stage) {
+      off();
+      showDefi(app2, fresh, fresh.stage === "done" && justPlayed);
+    }
+  });
+  app2._cleanup = off;
+}
+
 // js/app.js
 var app = $("#app");
 var ROUTES = [
@@ -4106,6 +5027,9 @@ var ROUTES = [
   [/^erreurs$/, (a) => renderErreurs(a), "erreurs"],
   [/^profil$/, (a) => renderProfil(a), "profil"],
   [/^compte$/, (a) => renderCompte(a), "profil"],
+  [/^amis$/, (a) => renderAmis(a), "amis"],
+  [/^ami-(.+)$/, (a, m) => renderAmi(a, m[1]), "amis"],
+  [/^defi-(.+)$/, (a, m) => renderDefi(a, m[1]), "amis"],
   [/^revision$/, (a) => renderRevision(a), "erreurs"],
   [/^lecon-(.+)$/, (a, m) => renderLecon(a, m[1]), "parcours"],
   [/^quiz-(.+)$/, (a, m) => renderQuiz(a, m[1]), "parcours"],
@@ -4161,6 +5085,15 @@ function renderHeader() {
     b.hidden = !n;
   });
   $("#hdr-pseudo").textContent = p ? p.pseudo : "";
+  renderSocialBadge();
+}
+function renderSocialBadge() {
+  $$("[data-tab=amis]").forEach((a) => a.hidden = !isConfigured());
+  const n = badgeCount();
+  $$(".social-badge").forEach((b) => {
+    b.textContent = n > 9 ? "9+" : n;
+    b.hidden = !n;
+  });
 }
 var CLOUD_ICONS = { guest: ["\u2601\uFE0F", "Se connecter"], syncing: ["\u{1F504}", "Synchronisation\u2026"], synced: ["\u2705", "Synchronis\xE9"], offline: ["\u{1F4F4}", "Hors ligne"], error: ["\u26A0\uFE0F", "Erreur de synchronisation"] };
 function renderCloud(i) {
@@ -4242,11 +5175,14 @@ initLangSwitch();
 onCloud((i) => {
   renderCloud(i);
   if (location.hash === "#compte" && !document.querySelector(".auth-form")) renderCompte(app);
+  if (location.hash === "#amis" && !document.querySelector(".s-page, .auth-form") && !document.body.classList.contains("focus-mode")) renderAmis(app);
 });
 window.addEventListener("impara:remote-update", () => {
   if (!document.body.classList.contains("focus-mode")) route();
 });
 initCloud();
+initSocial();
+onSocial(renderSocialBadge);
 subscribe(renderHeader);
 renderHeader();
 route();
