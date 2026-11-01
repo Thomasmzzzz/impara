@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Impara — apprenez l'italien ou le mandarin de A1 à C2 avec un parcours gamifié, des quiz et un suivi personnalisé.">
   <meta name="theme-color" content="#c23b32">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Impara">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Impara — Apprendre une langue de A1 à C2</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -640,6 +647,62 @@ body.lang-zh .s-msg.me { background: var(--accent, var(--verde)); }
   .s-res { gap: 10px; }
   .s-res-col { min-width: 0; }
 }
+
+/* 9. RÉVISION ESPACÉE ET ENTRAÎNEMENT -------------------------------- */
+.head-actions { margin-top: 12px; }
+.hero-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.count-pill { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px; background: var(--rosso); color: #fff; font-size: .72rem; font-weight: 800; }
+.srs-stats { margin: 0; text-align: center; }
+.new-chip { margin-bottom: -6px; }
+.grade-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(440px, 100%); }
+.btn.grade { flex-direction: column; gap: 2px; padding: 10px 6px; font-size: .92rem; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); }
+.btn.grade small { font-weight: 600; font-size: .72rem; color: var(--muted); }
+.btn.grade.again { border-color: #f0b4ae; background: var(--rosso-l); }
+.btn.grade.hard { border-color: #f0d49c; background: #fff6e2; }
+.btn.grade.good { border-color: #a9dcc0; background: var(--verde-l); }
+.srs-done { text-align: center; width: min(440px, 100%); }
+.big-emoji { font-size: 3rem; display: block; margin-bottom: 6px; }
+
+.train-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.train-card { text-decoration: none; color: inherit; transition: transform .15s, border-color .15s; }
+.train-card:hover { transform: translateY(-2px); border-color: var(--ink-2); }
+.train-card.disabled { opacity: .55; }
+.train-card.disabled:hover { transform: none; border-color: var(--line); }
+.train-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+.train-card p { margin: 0; }
+
+.listen-bar { display: flex; justify-content: center; gap: 12px; margin-bottom: 18px; }
+.listen-btn { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; width: 104px; padding: 14px 10px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--card); font-size: 2rem; box-shadow: 0 3px 0 var(--line); }
+.listen-btn span { font-size: .78rem; font-weight: 700; color: var(--ink-2); }
+.listen-btn:active { transform: translateY(2px); box-shadow: none; }
+.listen-btn.slow { font-size: 1.6rem; }
+
+.trace-card { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.trace-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; width: 100%; }
+.trace-title { font-size: 2.2rem; margin: 0; }
+.trace-info { margin: 2px 0 0; }
+.trace-box { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.trace-writer { width: 300px; height: 300px; max-width: 100%; border-radius: 18px; background:
+  linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat,
+  linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat, var(--paper); border: 1.5px solid var(--line); display: grid; place-items: center; touch-action: none; }
+.trace-msg { min-height: 1.4em; margin: 0; text-align: center; font-weight: 600; font-size: .92rem; }
+.trace-actions { justify-content: center; margin: 0; }
+.trace-list { width: 100%; }
+.trace-list summary { cursor: pointer; font-weight: 700; text-align: center; }
+.trace-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+.trace-chips .chip-btn { font-size: 1.1rem; }
+@media (max-width: 520px) {
+  .grade-row { gap: 6px; }
+  .btn.grade { font-size: .82rem; }
+}
+.s-board { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.s-board li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-s); background: var(--paper); }
+.s-board li.me { background: var(--verde-l); }
+.s-rank { width: 26px; text-align: center; font-weight: 800; font-size: 1.05rem; }
+.s-board-name { flex: 1; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.push-zone { margin-top: 12px; }
+.s-push-hint p { margin-bottom: 10px; } .s-push-hint .btn-row { margin: 0; }
+.s-col > div:empty { display: none; }
 
 </style>
 </head>
@@ -2618,6 +2681,10 @@ function defaultState() {
     // série de jours actifs
     daily: { date: null, xp: 0 },
     // XP gagnés aujourd'hui
+    weekly: { week: null, xp: 0 },
+    // XP gagnés cette semaine (classement entre amis)
+    srs: {},
+    // { [mot]: { box, due, reps, last } } répétition espacée des flashcards
     history: [],
     // [{ date, label, score, total, kind }]
     owner: null,
@@ -2653,6 +2720,8 @@ function hydrate(obj) {
     settings: { ...base.settings, ...obj.settings || {} },
     streak: { ...base.streak, ...obj.streak || {} },
     daily: { ...base.daily, ...obj.daily || {} },
+    weekly: { ...base.weekly, ...obj.weekly || {} },
+    srs: { ...obj.srs || {} },
     version: SCHEMA_VERSION
   };
 }
@@ -2748,8 +2817,8 @@ try {
 }
 var VOICE_SPEEDS = [[1, "Normale"], [0.8, "Pos\xE9e"], [0.65, "Lente"]];
 var SLOW_FACTOR = 0.55;
-function speak(text, { slow = false } = {}) {
-  if (!state.settings.tts) return;
+function speak(text, { slow = false, force = false } = {}) {
+  if (!state.settings.tts && !force) return;
   let t = String(text).split("|")[0].replace(/[✓✗]/g, "");
   if (L.speakFilter) t = t.replace(L.speakFilter, "");
   t = t.trim();
@@ -2846,6 +2915,34 @@ var yesterdayKey = () => {
   d.setDate(d.getDate() - 1);
   return dayKey(d);
 };
+function weekKey(d = /* @__PURE__ */ new Date()) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = t.getUTCFullYear(), w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7);
+  return `${y}-W${String(w).padStart(2, "0")}`;
+}
+var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : 0;
+function addXp(s, xp) {
+  const today = dayKey(), week = weekKey();
+  s.xp += xp;
+  s.daily = s.daily.date === today ? { date: today, xp: s.daily.xp + xp } : { date: today, xp };
+  s.weekly = s.weekly?.week === week ? { week, xp: s.weekly.xp + xp } : { week, xp };
+  if (s.streak.last !== today) {
+    s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
+  }
+}
+function recordPractice({ label, score, total, xpPer = 5 }) {
+  const xpGained = score * xpPer;
+  commit((s) => {
+    addXp(s, xpGained);
+    if (total) {
+      s.history.unshift({ date: Date.now(), label, score, total, kind: "practice", passed: score / total >= PASS_LESSON });
+      s.history = s.history.slice(0, 20);
+    }
+  });
+  return { score, total, ratio: total ? score / total : 0, xpGained };
+}
 var isLessonDone = (id) => !!state.lessons[id]?.passed;
 var isExamPassed = (levelId) => !!state.exams[levelId]?.passed;
 function isLevelUnlocked(levelIndex) {
@@ -2934,19 +3031,69 @@ function recordQuiz({ kind, id, label, results }) {
         }
       }
     });
-    const today = dayKey();
-    s.xp += xpGained;
-    s.daily = s.daily.date === today ? { date: today, xp: s.daily.xp + xpGained } : { date: today, xp: xpGained };
-    if (s.streak.last !== today) {
-      s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
-    }
+    addXp(s, xpGained);
     s.history.unshift({ date: Date.now(), label, score, total, kind, passed });
     s.history = s.history.slice(0, 20);
   });
   return { score, total, ratio, passed, passMark, xpGained, newWords, firstPass, mastered, stars: starsFor(ratio) };
 }
 
+// js/core/srs.js
+var INTERVALS = [0, 1, 2, 4, 8, 16, 32];
+var MAX_BOX = INTERVALS.length - 1;
+var dayKey2 = (d = /* @__PURE__ */ new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+var addDays = (n) => {
+  const d = /* @__PURE__ */ new Date();
+  d.setDate(d.getDate() + n);
+  return dayKey2(d);
+};
+var cardOf = (w) => state.srs?.[w.zh] || null;
+var isDue = (w) => {
+  const c = cardOf(w);
+  return !c || c.due <= dayKey2();
+};
+var dueWords = (list) => list.filter(isDue);
+var isNew = (w) => !cardOf(w);
+function grade(w, answer) {
+  commit((s) => {
+    s.srs ||= {};
+    const c = s.srs[w.zh] || { box: 0, reps: 0 };
+    if (answer === "again") {
+      c.box = 0;
+      c.due = dayKey2();
+      c.lapses = (c.lapses || 0) + 1;
+    } else if (answer === "hard") {
+      c.box = Math.max(1, c.box);
+      c.due = addDays(1);
+    } else {
+      c.box = Math.min(MAX_BOX, c.box + 1);
+      c.due = addDays(INTERVALS[c.box]);
+    }
+    c.reps = (c.reps || 0) + 1;
+    c.last = Date.now();
+    s.srs[w.zh] = c;
+  });
+}
+function preview(w) {
+  const c = cardOf(w) || { box: 0 };
+  const label = (n) => n <= 0 ? "maintenant" : n === 1 ? "demain" : `dans ${n} j`;
+  return { again: label(0), hard: label(1), good: label(INTERVALS[Math.min(MAX_BOX, c.box + 1)]) };
+}
+function srsStats(list) {
+  let due = 0, fresh = 0, known = 0;
+  list.forEach((w) => {
+    const c = cardOf(w);
+    if (!c) fresh++;
+    else {
+      if (c.due <= dayKey2()) due++;
+      if (c.box >= 4) known++;
+    }
+  });
+  return { due, fresh, known, todo: due + fresh };
+}
+
 // js/views/parcours.js
+var srsTodo = () => srsStats(Object.values(state.vocab)).todo;
 var OFFSETS = [0, 56, 84, 56, 0, -56, -84, -56];
 function renderParcours(app2) {
   const g = globalProgress();
@@ -2960,6 +3107,8 @@ function renderParcours(app2) {
         <p class="muted">${g.done} \xE9tapes sur ${g.total} valid\xE9es \xB7 niveau actuel <b>${lvlLabel2(currentLevel())}</b></p>
         ${next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
                ${next.kind === "lesson" ? `Continuer : ${esc(next.lesson.title)}` : `Passer l'examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
+        <div class="hero-links">${srsTodo() ? `<a class="btn ghost small" href="#reviser">\u{1F4C5} ${srsTodo()} mot${srsTodo() > 1 ? "s" : ""} \xE0 r\xE9viser</a>` : ""}
+          <a class="btn ghost small" href="#entrainement">\u{1F3AF} Entra\xEEnement</a></div>
       </div>
       <div class="hero-meter" aria-label="Progression globale ${g.pct} %">
         <div class="meter-track"><span style="width:${g.pct}%"></span></div>
@@ -3170,6 +3319,32 @@ function italianBar(input) {
 }
 var accentBar = (input) => L.keyboard === "tones" ? toneBar(input) : italianBar(input);
 var TYPES = {
+  /* Écoute : le mot est prononcé, on choisit la bonne réponse (🔊 rejoue, 🐢 lentement) */
+  listen: {
+    label: "\xC9coutez puis choisissez",
+    mount(area, q, onReady) {
+      area.innerHTML = `<div class="listen-bar">
+          <button type="button" class="listen-btn" data-play aria-label="R\xE9\xE9couter">\u{1F50A}<span>\xC9couter</span></button>
+          <button type="button" class="listen-btn slow" data-play-slow aria-label="\xC9couter lentement">\u{1F422}<span>Lentement</span></button>
+        </div><div class="listen-opts"></div>`;
+      const play2 = (slow) => speak(q.say, { slow, force: true });
+      area.querySelector("[data-play]").onclick = () => play2(false);
+      area.querySelector("[data-play-slow]").onclick = () => play2(true);
+      setTimeout(() => play2(false), 250);
+      const sub = area.querySelector(".listen-opts");
+      const api = TYPES.mcq.mount(sub, q, onReady);
+      area._keys = (e) => {
+        if (e.key === " " && e.target === document.body) {
+          e.preventDefault();
+          play2(false);
+        } else sub._keys?.(e);
+      };
+      return { check() {
+        const r = api.check();
+        return { ...r, note: q.reveal ? `On entendait : ${q.reveal}` : r.note };
+      } };
+    }
+  },
   mcq: {
     label: "Choisissez la bonne r\xE9ponse",
     mount(area, q, onReady) {
@@ -3546,20 +3721,26 @@ var statInner = (icon, val, label) => `<span class="stat-icon">${icon}</span><b>
 var stat = (icon, val, label) => `<div class="stat">${statInner(icon, val, label)}</div>`;
 
 // js/views/carnet.js
-var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false, cardType: readType() };
+var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false, cardType: readType("cardType", "hanzi"), study: readType("study", "srs"), deckKey: null, done: 0 };
 var CARD_TYPES = [["hanzi", "\u6C49\u5B57 \u2192 pinyin + sens"], ["pinyin", "Pinyin \u2192 sens"]];
-function readType() {
+function readType(k, def) {
   try {
-    return localStorage.getItem("impara.cardType") === "pinyin" ? "pinyin" : "hanzi";
+    return localStorage.getItem("impara." + k) || def;
   } catch {
-    return "hanzi";
+    return def;
   }
 }
-function saveType(t) {
+function saveType(t, study) {
   try {
     localStorage.setItem("impara.cardType", t);
+    localStorage.setItem("impara.study", study);
   } catch {
   }
+}
+function openReview() {
+  ui.mode = "cards";
+  ui.study = "srs";
+  ui.deckKey = null;
 }
 function renderCarnet(app2) {
   const all = Object.values(state.vocab).sort((a, b) => b.added - a.added);
@@ -3568,6 +3749,10 @@ function renderCarnet(app2) {
     <p class="eyebrow">Carnet de vocabulaire</p>
     <h1>\u{1F4D2} ${all.length} mot${all.length > 1 ? "s" : ""} et expressions</h1>
     <p class="muted">Chaque le\xE7on r\xE9ussie enrichit automatiquement votre carnet.</p>
+    <div class="btn-row head-actions">
+      ${all.length ? `<button class="btn primary small" data-go-srs>\u{1F4C5} R\xE9viser${srsStats(all).todo ? ` (${srsStats(all).todo})` : ""}</button>` : ""}
+      <a class="btn ghost small" href="#entrainement">\u{1F3AF} Entra\xEEnement : \xE9coute, tons, trac\xE9</a>
+    </div>
   </header>
   ${all.length ? `
   <div class="toolbar">
@@ -3594,65 +3779,123 @@ function renderCarnet(app2) {
           <span class="tag" style="--lvl:${LEVELS3.find((l) => l.id === w.levelId)?.color}" title="${esc(getLesson3(w.lessonId)?.title || "")}">${lvlLabel2(w.levelId)}</span>
         </li>`).join("")}</ul>` : `<p class="empty">Aucun r\xE9sultat.</p>`;
     } else {
-      const hasPinyin = list.some((w2) => w2.py);
-      const pinyinMode = hasPinyin && ui.cardType === "pinyin";
-      const pool = pinyinMode ? list.filter((w2) => w2.py) : list;
-      if (!ui.deck.length || ui.deck.some((w2) => !pool.includes(w2)) || ui.deck.length !== pool.length) {
-        ui.deck = shuffle(pool);
-        ui.pos = 0;
-      }
-      const w = ui.deck[ui.pos];
-      const typeSwitch = hasPinyin ? `<div class="seg card-type" role="group" aria-label="Type de flashcard">
-          ${CARD_TYPES.map(([t, label]) => `<button class="${ui.cardType === t ? "on" : ""}" data-type="${t}">${label}</button>`).join("")}</div>` : "";
-      const faces = !w ? "" : pinyinMode ? `<span class="face front"><small>Pinyin</small><b class="big-py">${esc(w.py)}</b><em>Touchez pour voir la traduction</em></span>
-           <span class="face back"><small>${esc(w.py)}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>` : `<span class="face front"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b><em>${esc(L.cardHint)}</em></span>
-           <span class="face back"><small>${esc(w.py || "Fran\xE7ais")}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>`;
-      body.innerHTML = w ? `
-        <div class="flash-wrap">
-          ${typeSwitch}
-          <button class="flashcard ${ui.flipped ? "flipped" : ""}" aria-label="Retourner la carte">${faces}</button>
-          <div class="flash-nav">
-            <button class="btn ghost" data-nav="-1">\u2190 Pr\xE9c\xE9dent</button>
-            <span>${ui.pos + 1} / ${ui.deck.length}</span>
-            <button class="btn ghost" data-nav="1">Suivant \u2192</button>
-          </div>
-          <button class="btn ghost small" data-shuffle>\u{1F500} M\xE9langer</button>
-        </div>` : `<p class="empty">Aucun mot pour ce filtre.</p>`;
-      body.querySelector(".flashcard")?.addEventListener("click", () => {
-        ui.flipped = !ui.flipped;
-        body.querySelector(".flashcard").classList.toggle("flipped");
-        if (!ui.flipped) return;
-        speak(w.zh);
-      });
-      body.querySelectorAll("[data-nav]").forEach((b) => b.onclick = () => {
-        ui.pos = (ui.pos + +b.dataset.nav + ui.deck.length) % ui.deck.length;
-        ui.flipped = false;
-        draw();
-      });
-      body.querySelector("[data-shuffle]")?.addEventListener("click", () => {
-        ui.deck = shuffle(pool);
-        ui.pos = 0;
-        ui.flipped = false;
-        draw();
-      });
-      body.querySelectorAll("[data-type]").forEach((b) => b.onclick = () => {
-        if (ui.cardType === b.dataset.type) return;
-        ui.cardType = b.dataset.type;
-        saveType(ui.cardType);
-        ui.deck = [];
-        ui.flipped = false;
-        draw();
-      });
+      drawCards(list);
     }
   }
+  function drawCards(list) {
+    const hasPinyin = list.some((w2) => w2.py);
+    const pinyinMode = hasPinyin && ui.cardType === "pinyin";
+    const pool = pinyinMode ? list.filter((w2) => w2.py) : list;
+    const srs = ui.study === "srs";
+    const st = srsStats(pool);
+    const source = srs ? dueWords(pool) : pool;
+    const key = `${ui.study}|${ui.cardType}|${ui.level}|${ui.query}`;
+    if (ui.deckKey !== key || !srs && ui.deck.some((w2) => !pool.includes(w2))) {
+      ui.deckKey = key;
+      ui.deck = srs ? [...shuffle(source.filter((w2) => !isNew(w2))), ...shuffle(source.filter(isNew)).slice(0, 20)] : shuffle(pool);
+      ui.pos = 0;
+      ui.flipped = false;
+      ui.done = 0;
+    }
+    const w = ui.deck[ui.pos];
+    const studySwitch = `<div class="seg" role="group" aria-label="Mode de r\xE9vision">
+        <button class="${srs ? "on" : ""}" data-study="srs">\u{1F4C5} R\xE9vision du jour${st.todo ? ` <span class="count-pill">${st.todo}</span>` : ""}</button>
+        <button class="${!srs ? "on" : ""}" data-study="free">\u{1F500} Libre</button></div>`;
+    const typeSwitch = hasPinyin ? `<div class="seg card-type" role="group" aria-label="Type de flashcard">
+        ${CARD_TYPES.map(([t, label]) => `<button class="${ui.cardType === t ? "on" : ""}" data-type="${t}">${label}</button>`).join("")}</div>` : "";
+    const statsLine = `<p class="srs-stats small muted">\u{1F195} ${st.fresh} nouveau${st.fresh > 1 ? "x" : ""} \xB7 \u{1F501} ${st.due} \xE0 revoir \xB7 \u2705 ${st.known} bien connu${st.known > 1 ? "s" : ""}</p>`;
+    if (!w) {
+      body.innerHTML = `<div class="flash-wrap">${studySwitch}${typeSwitch}
+        <div class="card srs-done"><span class="big-emoji">\u{1F389}</span>
+          <h2>${srs ? "R\xE9vision du jour termin\xE9e !" : "Aucun mot pour ce filtre."}</h2>
+          ${srs ? `<p class="muted">${ui.done ? `${ui.done} carte${ui.done > 1 ? "s" : ""} r\xE9vis\xE9e${ui.done > 1 ? "s" : ""}. ` : ""}Revenez demain : les mots reviendront au bon moment.</p>
+          <button class="btn ghost" data-study="free">\u{1F500} Continuer en mode libre</button>` : ""}
+        </div>${statsLine}</div>`;
+      bindCardControls(pool);
+      return;
+    }
+    const faces = pinyinMode ? `<span class="face front"><small>Pinyin</small><b class="big-py">${esc(w.py)}</b><em>Touchez pour voir la traduction</em></span>
+         <span class="face back"><small>${esc(w.py)}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>` : `<span class="face front"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b><em>${esc(L.cardHint)}</em></span>
+         <span class="face back"><small>${esc(w.py || "Fran\xE7ais")}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>`;
+    const pv = preview(w);
+    const controls = srs ? ui.flipped ? `<div class="grade-row">
+            <button class="btn grade again" data-grade="again">\u{1F615} \xC0 revoir<small>${pv.again}</small></button>
+            <button class="btn grade hard" data-grade="hard">\u{1F914} Difficile<small>${pv.hard}</small></button>
+            <button class="btn grade good" data-grade="good">\u{1F604} Je savais<small>${pv.good}</small></button></div>` : `<div class="flash-nav"><button class="btn primary" data-flip>Retourner la carte</button><span>${ui.pos + 1} / ${ui.deck.length}</span></div>` : `<div class="flash-nav">
+          <button class="btn ghost" data-nav="-1">\u2190 Pr\xE9c\xE9dent</button>
+          <span>${ui.pos + 1} / ${ui.deck.length}</span>
+          <button class="btn ghost" data-nav="1">Suivant \u2192</button></div>
+        <button class="btn ghost small" data-shuffle>\u{1F500} M\xE9langer</button>`;
+    body.innerHTML = `
+      <div class="flash-wrap">
+        ${studySwitch}${typeSwitch}
+        ${srs && isNew(w) ? `<span class="chip new-chip">\u{1F195} Nouveau mot</span>` : ""}
+        <button class="flashcard ${ui.flipped ? "flipped" : ""}" aria-label="Retourner la carte">${faces}</button>
+        ${controls}
+        ${srs ? statsLine : ""}
+      </div>`;
+    const flip = () => {
+      ui.flipped = !ui.flipped;
+      if (srs) {
+        draw();
+      } else body.querySelector(".flashcard").classList.toggle("flipped");
+      if (ui.flipped) speak(w.zh);
+    };
+    body.querySelector(".flashcard").addEventListener("click", flip);
+    body.querySelector("[data-flip]")?.addEventListener("click", flip);
+    body.querySelectorAll("[data-nav]").forEach((b) => b.onclick = () => {
+      ui.pos = (ui.pos + +b.dataset.nav + ui.deck.length) % ui.deck.length;
+      ui.flipped = false;
+      draw();
+    });
+    body.querySelector("[data-shuffle]")?.addEventListener("click", () => {
+      ui.deck = shuffle(pool);
+      ui.pos = 0;
+      ui.flipped = false;
+      draw();
+    });
+    body.querySelectorAll("[data-grade]").forEach((b) => b.onclick = () => {
+      const g = b.dataset.grade;
+      grade(w, g);
+      if (g === "good") recordPractice({ label: "Flashcards", score: 1, total: 0, xpPer: 2 });
+      ui.done++;
+      ui.deck.splice(ui.pos, 1);
+      if (g === "again") ui.deck.push(w);
+      if (ui.pos >= ui.deck.length) ui.pos = 0;
+      ui.flipped = false;
+      draw();
+    });
+    bindCardControls(pool);
+  }
+  function bindCardControls() {
+    body.querySelectorAll("[data-study]").forEach((b) => b.onclick = () => {
+      if (ui.study === b.dataset.study) return;
+      ui.study = b.dataset.study;
+      saveType(ui.cardType, ui.study);
+      ui.deckKey = null;
+      draw();
+    });
+    body.querySelectorAll("[data-type]").forEach((b) => b.onclick = () => {
+      if (ui.cardType === b.dataset.type) return;
+      ui.cardType = b.dataset.type;
+      saveType(ui.cardType, ui.study);
+      ui.deckKey = null;
+      draw();
+    });
+  }
+  app2.querySelector("[data-go-srs]")?.addEventListener("click", () => {
+    ui.mode = "cards";
+    ui.study = "srs";
+    ui.deckKey = null;
+    app2.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("on", x.dataset.mode === "cards"));
+    draw();
+  });
   app2.querySelector(".search").oninput = (e) => {
     ui.query = e.target.value;
-    ui.deck = [];
     draw();
   };
   app2.querySelectorAll("[data-level]").forEach((b) => b.onclick = () => {
     ui.level = b.dataset.level;
-    ui.deck = [];
     app2.querySelectorAll("[data-level]").forEach((x) => x.classList.toggle("on", x === b));
     draw();
   });
@@ -3764,6 +4007,10 @@ function mergeStates(a, b) {
   out.errors = { ...newer.errors || {} };
   out.mastered = Math.max(a.mastered || 0, b.mastered || 0);
   out.xp = Math.max(a.xp || 0, b.xp || 0);
+  out.srs = { ...older.srs || {}, ...newer.srs || {} };
+  for (const [k, c] of Object.entries(older.srs || {})) if ((c.last || 0) > (out.srs[k]?.last || 0)) out.srs[k] = c;
+  const ws = [a.weekly, b.weekly].filter((w) => w?.week).sort((p, q) => q.week.localeCompare(p.week) || q.xp - p.xp);
+  out.weekly = ws[0] || out.weekly || { week: null, xp: 0 };
   const ds = [a.daily, b.daily].filter(Boolean).sort((p, q) => (q.date || "").localeCompare(p.date || "") || q.xp - p.xp);
   out.daily = ds[0] || out.daily;
   const ss = [a.streak, b.streak].filter(Boolean).sort((p, q) => (q.last || "").localeCompare(p.last || "") || q.count - p.count);
@@ -3929,6 +4176,88 @@ async function updatePassword(password) {
 var syncNow = () => pull();
 var getClient = () => client();
 
+// js/core/pwa.js
+var deferred = null;
+var listeners3 = /* @__PURE__ */ new Set();
+var onPwa = (fn) => (listeners3.add(fn), () => listeners3.delete(fn));
+var emit2 = () => listeners3.forEach((fn) => fn());
+var isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+var isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+var canPrompt = () => !!deferred;
+var swSupported = () => "serviceWorker" in navigator && location.protocol === "https:";
+function initPwa() {
+  if (swSupported()) navigator.serviceWorker.register("sw.js").catch(() => {
+  });
+  addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    emit2();
+  });
+  addEventListener("appinstalled", () => {
+    deferred = null;
+    emit2();
+  });
+}
+async function promptInstall() {
+  if (!deferred) return false;
+  deferred.prompt();
+  const { outcome } = await deferred.userChoice.catch(() => ({ outcome: "dismissed" }));
+  deferred = null;
+  emit2();
+  return outcome === "accepted";
+}
+var pushSupported = () => swSupported() && "PushManager" in window && "Notification" in window;
+var pushNeedsInstall = () => isIOS() && !isStandalone();
+var b64ToBytes = (s) => {
+  const pad = "=".repeat((4 - s.length % 4) % 4);
+  const raw = atob((s + pad).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+};
+async function vapidKey() {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/notify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify({ action: "vapid" })
+  });
+  if (!res.ok) throw new Error("Service de notifications indisponible pour le moment.");
+  const { publicKey } = await res.json();
+  if (!publicKey) throw new Error("Service de notifications indisponible pour le moment.");
+  return publicKey;
+}
+async function currentSub() {
+  if (!pushSupported()) return null;
+  const reg = await navigator.serviceWorker.getRegistration();
+  return reg ? reg.pushManager.getSubscription() : null;
+}
+async function pushState() {
+  if (!isConfigured() || !pushSupported()) return pushNeedsInstall() ? "needs-install" : "unsupported";
+  if (pushNeedsInstall()) return "needs-install";
+  if (!cloudInfo().user) return "needs-login";
+  if (Notification.permission === "denied") return "denied";
+  return await currentSub() && Notification.permission === "granted" ? "on" : "off";
+}
+async function enablePush() {
+  if (!cloudInfo().user) throw new Error("Connectez-vous d'abord \xE0 votre compte.");
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") throw new Error("Notifications refus\xE9es. Vous pouvez les autoriser dans les r\xE9glages du navigateur.");
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(await vapidKey()) });
+  const j = sub.toJSON();
+  const sb2 = await getClient();
+  const { error } = await sb2.rpc("save_push_subscription", { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth });
+  if (error) throw new Error(error.message);
+}
+async function disablePush() {
+  const sub = await currentSub();
+  if (!sub) return;
+  const sb2 = await getClient();
+  await sb2.rpc("remove_push_subscription", { p_endpoint: sub.endpoint }).catch(() => {
+  });
+  await sub.unsubscribe().catch(() => {
+  });
+}
+
 // js/views/profil.js
 var GOALS = [[20, "D\xE9tente"], [50, "R\xE9gulier"], [100, "Intensif"]];
 function renderOnboarding(app2, onDone) {
@@ -4009,6 +4338,9 @@ function renderProfil(app2) {
       <p class="small muted">${cloudInfo().user ? `Connect\xE9 avec <b>${esc(cloudInfo().user.email)}</b> : votre progression est sauvegard\xE9e en ligne et synchronis\xE9e sur vos appareils.` : "Cr\xE9ez un compte gratuit pour retrouver votre progression sur tous vos appareils."}</p>
       <a class="btn ${cloudInfo().user ? "ghost" : "primary"}" href="#compte">${cloudInfo().user ? "G\xE9rer mon compte" : "Se connecter / cr\xE9er un compte"}</a>
       <hr>` : ""}
+      <h2 class="h3">\u{1F4F2} Application et notifications</h2>
+      <div data-zone="app"><p class="small muted">\u2026</p></div>
+      <hr>
       <h2 class="h3">\u{1F4BE} Sauvegarde</h2>
       <p class="small muted">${isPersistent() ? "Votre progression est enregistr\xE9e automatiquement dans ce navigateur." : "\u26A0\uFE0F Le stockage local est indisponible ici : la progression sera perdue en fermant la page. Exportez-la pour la conserver."}
         Pour la transf\xE9rer sur un autre appareil, copiez le code ci-dessous puis importez-le l\xE0-bas.</p>
@@ -4026,6 +4358,9 @@ function renderProfil(app2) {
       <button class="btn danger" data-reset>R\xE9initialiser ma progression</button>
     </section>
   </div>`;
+  paintApp(app2);
+  const offPwa = onPwa(() => paintApp(app2));
+  app2._cleanup = offPwa;
   const form = app2.querySelector(".profile-form");
   let avatar = p.avatar, goal = p.dailyGoal, voice2 = state.settings.voiceSpeed || 1;
   form.querySelectorAll("[data-a]").forEach((b) => b.onclick = () => {
@@ -4095,6 +4430,46 @@ function renderProfil(app2) {
       window.dispatchEvent(new HashChangeEvent("hashchange"));
     }
   };
+}
+async function paintApp(app2) {
+  const zone = app2.querySelector('[data-zone="app"]');
+  if (!zone) return;
+  let install;
+  if (isStandalone()) install = `<p class="small hint-ok">\u2713 Vous utilisez l'application install\xE9e.</p>`;
+  else if (canPrompt()) install = `<p class="small muted">Ajoutez Impara \xE0 votre \xE9cran d'accueil : plein \xE9cran, acc\xE8s direct, et les le\xE7ons marchent m\xEAme sans r\xE9seau.</p>
+      <button class="btn primary" data-install>\u{1F4F2} Installer l'application</button>`;
+  else if (isIOS()) install = `<p class="small muted">Sur iPhone : ouvrez ce site dans <b>Safari</b>, touchez <b>Partager</b> <span aria-hidden="true">\u238B</span> puis <b>\xAB Sur l'\xE9cran d'accueil \xBB</b>.</p>`;
+  else install = `<p class="small muted">Pour installer l'application : menu du navigateur (\u22EE) \u2192 <b>\xAB Installer l'application \xBB</b> ou <b>\xAB Ajouter \xE0 l'\xE9cran d'accueil \xBB</b>.</p>`;
+  const st = await pushState();
+  const push2 = {
+    unsupported: `<p class="small muted">\u{1F515} Les notifications ne sont pas disponibles sur ce navigateur.</p>`,
+    "needs-install": `<p class="small muted">\u{1F514} Sur iPhone, installez d'abord l'application (ci-dessus) puis activez les notifications depuis l'application.</p>`,
+    "needs-login": `<p class="small muted">\u{1F514} Connectez-vous pour recevoir une notification quand un ami vous \xE9crit ou vous d\xE9fie.</p>`,
+    denied: `<p class="small muted">\u{1F515} Notifications bloqu\xE9es : autorisez-les dans les r\xE9glages du navigateur pour ce site.</p>`,
+    on: `<p class="small hint-ok">\u{1F514} Notifications activ\xE9es sur cet appareil.</p><button class="btn ghost small" data-push-off>D\xE9sactiver</button>`,
+    off: `<p class="small muted">\u{1F514} Soyez pr\xE9venu quand un ami vous \xE9crit, vous ajoute ou vous lance un d\xE9fi, m\xEAme site ferm\xE9.</p>
+      <button class="btn primary" data-push-on>\u{1F514} Activer les notifications</button>`
+  }[st];
+  zone.innerHTML = install + `<div class="push-zone">${push2}</div>`;
+  zone.querySelector("[data-install]")?.addEventListener("click", async () => {
+    if (await promptInstall()) toast("Application install\xE9e \u2713", "ok");
+  });
+  zone.querySelector("[data-push-on]")?.addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = "Activation\u2026";
+    try {
+      await enablePush();
+      toast("Notifications activ\xE9es \u{1F514}", "ok");
+    } catch (err) {
+      toast(err.message, "warn");
+    }
+    paintApp(app2);
+  });
+  zone.querySelector("[data-push-off]")?.addEventListener("click", async () => {
+    await disablePush();
+    toast("Notifications d\xE9sactiv\xE9es");
+    paintApp(app2);
+  });
 }
 
 // js/views/compte.js
@@ -4265,9 +4640,9 @@ var S = {
   // { [friendId]: nombre }
 };
 var social = () => S;
-var listeners3 = /* @__PURE__ */ new Set();
-var onSocial = (fn) => (listeners3.add(fn), () => listeners3.delete(fn));
-var emit2 = (what = "all", detail) => listeners3.forEach((fn) => fn(what, detail));
+var listeners4 = /* @__PURE__ */ new Set();
+var onSocial = (fn) => (listeners4.add(fn), () => listeners4.delete(fn));
+var emit3 = (what = "all", detail) => listeners4.forEach((fn) => fn(what, detail));
 var uid = () => cloudInfo().user?.id || null;
 var isAvailable = () => isConfigured() && !!uid();
 var ERRORS = {
@@ -4325,7 +4700,7 @@ function refresh() {
       stats.forEach((r) => (S.stats[r.user_id] ||= {})[r.lang] = { ...r.summary, updated_at: r.updated_at });
     }
     S.ready = true;
-    emit2("all");
+    emit3("all");
   })().finally(() => loading = null);
   return loading;
 }
@@ -4417,7 +4792,7 @@ async function sendMessage(friendId, body) {
 async function markRead(friendId) {
   if (!S.unread[friendId]) return;
   delete S.unread[friendId];
-  emit2("unread");
+  emit3("unread");
   await rpc("mark_messages_read", { p_friend: friendId }).catch(() => {
   });
 }
@@ -4467,7 +4842,9 @@ function mySummary() {
     done: g.done,
     total: g.total,
     lessons: Object.values(state.lessons).filter((l) => l.passed).length,
-    words: Object.keys(state.vocab).length
+    words: Object.keys(state.vocab).length,
+    week: weekKey(),
+    weekXp: weeklyXp()
   };
 }
 var lastSent = "";
@@ -4508,7 +4885,7 @@ async function start2() {
     channel = sb2.channel(`social-${me}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `recipient=eq.${me}` }, (p) => {
       const m = p.new;
       S.unread[m.sender] = (S.unread[m.sender] || 0) + 1;
-      emit2("message", m);
+      emit3("message", m);
       if (!S.profiles[m.sender]) refresh();
     }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).subscribe();
   }
@@ -4526,7 +4903,7 @@ function stop() {
   poll = null;
   startedFor = null;
   Object.assign(S, { ready: false, me: null, profiles: {}, friendships: [], stats: {}, challenges: [], unread: {} });
-  emit2("all");
+  emit3("all");
 }
 function initSocial() {
   if (!isConfigured()) return;
@@ -4543,6 +4920,12 @@ function initSocial() {
     if (document.visibilityState === "visible" && uid()) refresh().catch(() => {
     });
   });
+}
+function leaderboard() {
+  const week = weekKey();
+  const total = (id, override) => Object.entries({ ...statsOf(id), ...override || {} }).reduce((n, [, s]) => n + (s?.week === week ? s.weekXp || 0 : 0), 0);
+  const me = S.me ? [{ ...S.me, isMe: true, xp: total(S.me.id, { [code]: mySummary() }) }] : [];
+  return [...me, ...friends().map((f) => ({ ...f, xp: total(f.id) }))].sort((a, b) => b.xp - a.xp);
 }
 
 // js/views/amis.js
@@ -4694,11 +5077,13 @@ function renderAmis(app2) {
         <p class="form-msg" role="alert"></p>
         <p class="muted small">Votre ami verra votre demande et pourra l'accepter. Une fois amis, vous voyez la progression l'un de l'autre.</p>
       </form>
+      <div data-zone="push"></div>
       <div data-zone="requests"></div>
       <div data-zone="todo"></div>
       <section class="card"><h2 class="h3">Mes amis</h2><div data-zone="friends"></div></section>
     </div>
     <div class="s-col">
+      <section class="card"><h2 class="h3">\u{1F3C6} Classement de la semaine</h2><div data-zone="board"></div></section>
       <section class="card"><h2 class="h3">\u2694\uFE0F D\xE9fis</h2><div data-zone="challenges"></div></section>
       <div data-zone="sent"></div>
     </div>
@@ -4724,12 +5109,49 @@ function renderAmis(app2) {
     }).join("")}</ul>` : `<p class="muted">Vous n'avez pas encore d'amis ici. Envoyez votre nom d'utilisateur <b>@${esc(S2.me.username)}</b> \xE0 vos amis, ou ajoutez le leur ci-contre.</p>`;
     const rest = all.filter((c) => !todo.includes(c)).slice(0, 12);
     z("challenges").innerHTML = rest.length ? `<ul class="s-ch-list">${rest.map((c) => challengeCard(c)).join("")}</ul>` : `<p class="muted small">${fr.length ? "Ouvrez la fiche d'un ami pour le d\xE9fier." : "Ajoutez un ami pour lancer votre premier d\xE9fi."}</p>`;
+    const board = leaderboard();
+    const medal = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
+    z("board").innerHTML = board.length > 1 ? `<ol class="s-board">${board.map((p, i) => `
+        <li class="${p.isMe ? "me" : ""}"><span class="s-rank">${p.xp ? medal[i] || i + 1 : "\u2013"}</span>${av(p, "sm")}
+          <span class="s-board-name">${p.isMe ? "Vous" : who(p)}</span><b>${p.xp} XP</b></li>`).join("")}</ol>
+        <p class="muted small">XP gagn\xE9s depuis lundi, toutes langues confondues. Remise \xE0 z\xE9ro chaque lundi.</p>` : `<p class="muted small">Ajoutez des amis pour comparer vos XP de la semaine.</p>`;
     const out = outgoing();
     z("sent").innerHTML = out.length ? `<section class="card"><h2 class="h3">\u{1F4E4} Demandes envoy\xE9es</h2><ul class="s-list">
       ${out.map((r) => `<li class="s-row">${av(r.to)}<div class="s-row-txt"><b>${who(r.to)}</b>${handle(r.to)}<small class="muted">En attente</small></div>
         <div class="s-row-actions"><button class="btn ghost small" data-remove="${r.id}">Annuler</button></div></li>`).join("")}</ul></section>` : "";
   };
   paint();
+  pushState().then((st) => {
+    const zone = page.querySelector('[data-zone="push"]');
+    if (!zone || st !== "off" && st !== "needs-install") return;
+    let hidden = false;
+    try {
+      hidden = localStorage.getItem("impara.pushHint") === "no";
+    } catch {
+    }
+    if (hidden) return;
+    zone.innerHTML = `<section class="card s-push-hint"><p>\u{1F514} <b>Soyez pr\xE9venu</b> quand un ami vous \xE9crit ou vous lance un d\xE9fi.</p>
+      <div class="btn-row">${st === "off" ? `<button class="btn primary small" data-push-on>Activer les notifications</button>` : `<a class="btn ghost small" href="#profil">Installer l'application d'abord</a>`}
+      <button class="btn ghost small" data-push-no>Plus tard</button></div></section>`;
+    zone.querySelector("[data-push-no]").onclick = () => {
+      try {
+        localStorage.setItem("impara.pushHint", "no");
+      } catch {
+      }
+      zone.innerHTML = "";
+    };
+    zone.querySelector("[data-push-on]")?.addEventListener("click", async (e) => {
+      e.target.disabled = true;
+      try {
+        await enablePush();
+        toast("Notifications activ\xE9es \u{1F514}", "ok");
+        zone.innerHTML = "";
+      } catch (err) {
+        toast(err.message, "warn");
+        e.target.disabled = false;
+      }
+    });
+  });
   const form = app2.querySelector(".s-add"), msg = form.querySelector(".form-msg");
   form.onsubmit = async (e) => {
     e.preventDefault();
@@ -5066,6 +5488,241 @@ function showDefi(app2, c, justPlayed = false) {
   app2._cleanup = off;
 }
 
+// js/views/entrainement.js
+var isZh = () => code === "zh";
+var HAN = /[㐀-鿿]/;
+function wordPool(min = 8) {
+  const seen = /* @__PURE__ */ new Map();
+  Object.values(state.vocab).forEach((w) => seen.set(w.zh, { zh: w.zh, py: w.py || "", fr: w.fr, learned: true }));
+  if (seen.size < min) {
+    ALL_LESSONS3.filter((l) => isLessonUnlocked(l)).forEach((l) => {
+      [...l.vocab || [], ...(l.sections || []).flatMap((s) => s.examples || [])].map(tri).forEach(([zh, py, fr]) => {
+        if (!seen.has(zh) && zh.length <= 12) seen.set(zh, { zh, py, fr: String(fr).split(" \u2014 ")[0], learned: false });
+      });
+    });
+  }
+  return [...seen.values()];
+}
+var TONE_MARKS = ["\u0101\u0113\u012B\u014D\u016B\u01D6", "\xE1\xE9\xED\xF3\xFA\u01D8", "\u01CE\u011B\u01D0\u01D2\u01D4\u01DA", "\xE0\xE8\xEC\xF2\xF9\u01DC"];
+var toneOf = (syl) => {
+  for (let t = 0; t < 4; t++) if ([...syl].some((c) => TONE_MARKS[t].includes(c.toLowerCase()))) return t + 1;
+  return 0;
+};
+var TONE_LABELS = ["1er ton \u2014 \u0101 (haut et plat)", "2e ton \u2014 \xE1 (montant)", "3e ton \u2014 \u01CE (descend puis remonte)", "4e ton \u2014 \xE0 (descendant)"];
+function syllablePool() {
+  const out = /* @__PURE__ */ new Map();
+  const add = (ch, syl) => {
+    const t = toneOf(syl);
+    if (t && HAN.test(ch) && !out.has(ch)) out.set(ch, { ch, syl, tone: t });
+  };
+  const words = wordPool(999);
+  words.forEach(({ zh, py }) => {
+    if (!py) return;
+    const chars = [...zh].filter((c) => HAN.test(c));
+    const syls = py.trim().split(/\s+/);
+    if (chars.length === 1 && syls.length === 1) add(chars[0], syls[0]);
+    else if (chars.length === syls.length && chars.length === [...zh].length) chars.forEach((c, i) => add(c, syls[i]));
+  });
+  return [...out.values()];
+}
+function listeningQuestions(n = 10) {
+  const pool = wordPool();
+  if (pool.length < 4) return [];
+  const label = (w) => w.py ? `${w.zh} \xB7 ${w.py}` : w.zh;
+  return shuffle(pool).slice(0, n).map((w, i) => {
+    const others = shuffle(pool.filter((x) => x.zh !== w.zh && x.fr !== w.fr));
+    const meaning = i % 2 === 1;
+    const opts = shuffle([w, ...others.slice(0, 3)]);
+    return {
+      ref: `listen:${w.zh}`,
+      q: {
+        type: "listen",
+        say: w.zh,
+        q: meaning ? "Que signifie le mot entendu ?" : "Quel mot avez-vous entendu ?",
+        options: opts.map((x) => meaning ? x.fr : label(x)),
+        answer: opts.indexOf(w),
+        reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${w.fr}`
+      }
+    };
+  });
+}
+function toneQuestions(n = 10) {
+  const pool = syllablePool();
+  if (pool.length < 4) return [];
+  const picks = [];
+  while (picks.length < n) picks.push(...shuffle(pool));
+  return picks.slice(0, n).map((s) => ({
+    ref: `tone:${s.ch}`,
+    q: { type: "listen", say: s.ch, q: "Quel ton entendez-vous ?", options: TONE_LABELS, answer: s.tone - 1, reveal: `${s.ch} ${s.syl}` }
+  }));
+}
+function renderEntrainement(app2) {
+  const words = wordPool().length, syl = isZh() ? syllablePool().length : 0;
+  const card = (href, icon, title, desc, ok = true, why = "") => `
+    <a class="card train-card ${ok ? "" : "disabled"}" ${ok ? `href="#${href}"` : `aria-disabled="true"`}>
+      <span class="train-icon">${icon}</span><h2 class="h3">${title}</h2><p class="muted small">${ok ? desc : why}</p></a>`;
+  app2.innerHTML = `
+  <header class="page-head"><p class="eyebrow">Entra\xEEnement</p><h1>\u{1F3AF} S'entra\xEEner</h1>
+    <p class="muted">Des exercices courts \xE0 partir de votre vocabulaire. Chaque bonne r\xE9ponse rapporte 5 XP.</p></header>
+  <div class="train-grid">
+    ${card("ecoute", "\u{1F3A7}", "\xC9coute", "Un mot est prononc\xE9 : retrouvez-le ou donnez son sens. 10 questions.", words >= 4, "Terminez au moins une le\xE7on pour d\xE9bloquer l'\xE9coute.")}
+    ${isZh() ? card("tons", "\u{1F3B5}", "Les tons", "Une syllabe est prononc\xE9e : est-ce le 1er, 2e, 3e ou 4e ton ? 10 questions.", syl >= 4, "Terminez la premi\xE8re le\xE7on pour d\xE9bloquer les tons.") : ""}
+    ${isZh() ? card("trace", "\u270D\uFE0F", "Trac\xE9 des caract\xE8res", "Regardez l'ordre des traits, puis \xE9crivez le caract\xE8re au doigt ou \xE0 la souris.", words >= 1, "Terminez une le\xE7on pour d\xE9bloquer le trac\xE9.") : ""}
+    <a class="card train-card" href="#reviser"><span class="train-icon">\u{1F4C5}</span><h2 class="h3">Flashcards</h2><p class="muted small">R\xE9vision espac\xE9e : les mots difficiles reviennent plus souvent.</p></a>
+  </div>`;
+}
+function renderEcoute(app2) {
+  return practiceQuiz(app2, { title: "\xC9coute", questions: listeningQuestions(), again: "ecoute" });
+}
+function renderTons(app2) {
+  if (!isZh()) return false;
+  return practiceQuiz(app2, { title: "Les tons", questions: toneQuestions(), again: "tons" });
+}
+function practiceQuiz(app2, { title, questions, again }) {
+  if (!questions.length) return false;
+  if (!state.settings.tts) toast("Le son est coup\xE9 dans votre profil : il est quand m\xEAme jou\xE9 pour cet exercice.");
+  document.body.classList.add("focus-mode");
+  runQuiz(app2, {
+    title,
+    questions,
+    onQuit: () => {
+      document.body.classList.remove("focus-mode");
+      location.hash = "entrainement";
+    },
+    onFinish: (results) => {
+      document.body.classList.remove("focus-mode");
+      const score = results.filter((r2) => r2.correct).length;
+      const r = recordPractice({ label: title, score, total: results.length });
+      const pct = Math.round(r.ratio * 100);
+      app2.innerHTML = `
+      <section class="results ${pct >= 60 ? "ok" : "ko"}">
+        ${ring(pct, 150, 12)}
+        <h1>${pct === 100 ? "Sans faute ! \u{1F389}" : pct >= 60 ? "Bien jou\xE9 !" : "Continuez, \xE7a viendra !"}</h1>
+        <p class="lead">${score} / ${results.length} bonnes r\xE9ponses</p>
+        <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained} XP</span></div>
+        <div class="result-actions">
+          <a class="btn primary big" href="#${again}" data-reload>Recommencer</a>
+          <a class="btn ghost" href="#entrainement">Autres exercices</a>
+        </div>
+      </section>`;
+      if (pct === 100) celebrate();
+    }
+  });
+  return true;
+}
+var HW = null;
+var loadWriter = () => HW ||= import("https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/+esm").then((m) => m.default || m.HanziWriter);
+function renderTrace(app2, start3) {
+  if (!isZh()) return false;
+  const words = wordPool();
+  const chars = [];
+  words.forEach((w) => [...w.zh].forEach((c) => {
+    if (HAN.test(c) && !chars.some((x) => x.ch === c)) chars.push({ ch: c, w });
+  }));
+  if (!chars.length) return false;
+  let idx = Math.max(0, chars.findIndex((c) => c.ch === start3));
+  let writer = null, mode2 = "view";
+  app2.innerHTML = `
+  <a class="back-link" href="#entrainement">\u2190 Entra\xEEnement</a>
+  <section class="card trace-card">
+    <div class="trace-head">
+      <div><p class="eyebrow">Trac\xE9 des caract\xE8res</p><h1 class="trace-title"></h1><p class="trace-info muted"></p></div>
+      <button class="speak" data-say aria-label="\xC9couter">\u{1F50A}</button>
+    </div>
+    <div class="trace-box"><div class="trace-writer" aria-label="Zone de trac\xE9"></div><p class="trace-msg" aria-live="polite"></p></div>
+    <div class="btn-row trace-actions">
+      <button class="btn ghost" data-anim>\u25B6\uFE0F Voir l'ordre des traits</button>
+      <button class="btn primary" data-quiz>\u270D\uFE0F \xC0 moi d'\xE9crire</button>
+      <button class="btn ghost" data-outline>\u{1F441}\uFE0F Contour</button>
+    </div>
+    <div class="flash-nav"><button class="btn ghost" data-prev>\u2190 Pr\xE9c\xE9dent</button><span class="trace-pos"></span><button class="btn ghost" data-next>Suivant \u2192</button></div>
+    <details class="trace-list"><summary>Choisir un caract\xE8re (${chars.length})</summary>
+      <div class="trace-chips">${chars.map((c, i) => `<button class="chip-btn zh" data-pick="${i}">${esc(c.ch)}</button>`).join("")}</div></details>
+  </section>`;
+  const $2 = (s) => app2.querySelector(s);
+  const size = () => Math.min(300, $2(".trace-box").clientWidth - 8);
+  let outline = true;
+  async function show() {
+    const c = chars[idx];
+    $2(".trace-title").innerHTML = `<span class="zh">${esc(c.ch)}</span>`;
+    $2(".trace-info").textContent = `${c.w.zh}${c.w.py ? " \xB7 " + c.w.py : ""} \u2014 ${c.w.fr}`;
+    $2(".trace-pos").textContent = `${idx + 1} / ${chars.length}`;
+    $2(".trace-msg").textContent = "";
+    mode2 = "view";
+    const box = $2(".trace-writer");
+    box.innerHTML = `<p class="muted small">Chargement\u2026</p>`;
+    try {
+      const HanziWriter = await loadWriter();
+      if (chars[idx] !== c) return;
+      box.innerHTML = "";
+      const s = size();
+      box.style.width = box.style.height = s + "px";
+      writer = HanziWriter.create(box, c.ch, {
+        width: s,
+        height: s,
+        padding: 10,
+        showOutline: outline,
+        strokeColor: "#1d2733",
+        radicalColor: "#c23b32",
+        outlineColor: "#e7e1d5",
+        drawingColor: "#c23b32",
+        highlightColor: "#e8b04b",
+        strokeAnimationSpeed: 1,
+        delayBetweenStrokes: 250,
+        showCharacter: true,
+        onLoadCharDataError: () => {
+          box.innerHTML = `<p class="muted small">Trac\xE9 indisponible pour \xAB ${esc(c.ch)} \xBB.</p>`;
+          writer = null;
+        }
+      });
+    } catch {
+      box.innerHTML = `<p class="muted small">Connexion n\xE9cessaire pour charger le trac\xE9.</p>`;
+      writer = null;
+    }
+  }
+  $2("[data-anim]").onclick = () => {
+    if (!writer) return;
+    mode2 = "view";
+    $2(".trace-msg").textContent = "";
+    writer.showCharacter();
+    writer.animateCharacter();
+  };
+  $2("[data-quiz]").onclick = () => {
+    if (!writer) return;
+    mode2 = "quiz";
+    $2(".trace-msg").textContent = "Tracez les traits dans l'ordre. Apr\xE8s 3 erreurs sur un trait, un indice appara\xEEt.";
+    writer.quiz({
+      showHintAfterMisses: 3,
+      onComplete: ({ totalMistakes }) => {
+        const ok = totalMistakes <= 2;
+        $2(".trace-msg").textContent = ok ? `\u2713 Bravo ! ${totalMistakes ? totalMistakes + " petite(s) erreur(s)." : "Parfait, sans erreur."} +5 XP` : `Termin\xE9 avec ${totalMistakes} erreurs. R\xE9essayez pour gagner des XP.`;
+        if (ok) recordPractice({ label: `Trac\xE9 ${chars[idx].ch}`, score: 1, total: 0 });
+        speak(chars[idx].ch);
+      }
+    });
+  };
+  $2("[data-outline]").onclick = () => {
+    outline = !outline;
+    if (writer) outline ? writer.showOutline() : writer.hideOutline();
+  };
+  $2("[data-say]").onclick = () => speak(chars[idx].ch);
+  $2("[data-prev]").onclick = () => {
+    idx = (idx - 1 + chars.length) % chars.length;
+    show();
+  };
+  $2("[data-next]").onclick = () => {
+    idx = (idx + 1) % chars.length;
+    show();
+  };
+  app2.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => {
+    idx = +b.dataset.pick;
+    $2(".trace-list").open = false;
+    show();
+  });
+  show();
+  return true;
+}
+
 // js/app.js
 var app = $("#app");
 var ROUTES = [
@@ -5075,6 +5732,14 @@ var ROUTES = [
   [/^erreurs$/, (a) => renderErreurs(a), "erreurs"],
   [/^profil$/, (a) => renderProfil(a), "profil"],
   [/^compte$/, (a) => renderCompte(a), "profil"],
+  [/^reviser$/, (a) => {
+    openReview();
+    renderCarnet(a);
+  }, "carnet"],
+  [/^entrainement$/, (a) => renderEntrainement(a), "carnet"],
+  [/^ecoute$/, (a) => renderEcoute(a), "carnet"],
+  [/^tons$/, (a) => renderTons(a), "carnet"],
+  [/^trace(?:-(.+))?$/, (a, m) => renderTrace(a, m[1]), "carnet"],
   [/^amis$/, (a) => renderAmis(a), "amis"],
   [/^ami-(.+)$/, (a, m) => renderAmi(a, m[1]), "amis"],
   [/^defi-(.+)$/, (a, m) => renderDefi(a, m[1]), "amis"],
@@ -5228,6 +5893,7 @@ onCloud((i) => {
 window.addEventListener("impara:remote-update", () => {
   if (!document.body.classList.contains("focus-mode")) route();
 });
+initPwa();
 initCloud();
 initSocial();
 onSocial(renderSocialBadge);
