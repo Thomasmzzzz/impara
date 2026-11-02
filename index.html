@@ -10455,7 +10455,7 @@ function showDefi(app2, c, justPlayed = false) {
   }[c.stage] || "D\xE9fi";
   const sub = {
     waiting_play: `Vous serez pr\xE9venu d\xE8s que ${who(f)} aura jou\xE9.`,
-    done: c.mode === "speed" ? c.outcome === "draw" ? "Exactement le m\xEAme nombre de points !" : (() => {
+    done: c.stage !== "done" ? "" : c.mode === "speed" ? c.outcome === "draw" ? "Exactement le m\xEAme nombre de points !" : (() => {
       const w = c.outcome === "win" ? c.mine : c.theirs, l = c.outcome === "win" ? c.theirs : c.mine;
       const by = w.score < l.score ? " gr\xE2ce \xE0 la vitesse \u26A1" : w.score === l.score ? ", plus rapide \u26A1" : "";
       return `${c.outcome === "win" ? "Vous gagnez" : `${who(f)} gagne`} ${w.points} \xE0 ${l.points} pts${by}`;
