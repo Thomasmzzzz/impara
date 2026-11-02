@@ -1486,6 +1486,46 @@ html.dark .level-scene .sc-place { background: rgba(17, 21, 27, .7); color: #e9e
 .skel.sb.r { align-self: flex-end; } .skel.sb.w { width: 64%; }
 .nodes > .node-wrap.has-pop { z-index: 30; }
 
+/* =====================================================================
+   28. PROFIL D'UN AMI : en-tête compact
+   ===================================================================== */
+.fh-banner { position: relative; height: 150px; border-radius: 0 0 28px 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--banner) 70%, #fff), var(--banner) 60%, color-mix(in srgb, var(--banner) 80%, #000)); }
+.fh-banner::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, .45), transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 255, 255, .25), transparent 35%); pointer-events: none; }
+.fh-btn { position: absolute; top: 14px; z-index: 2; width: 42px; height: 42px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgba(255, 255, 255, .55); color: #1d2733; font-size: 1.6rem; text-decoration: none; backdrop-filter: blur(4px); }
+.fh-btn:first-child { left: 14px; padding-bottom: 3px; }
+.fh-friend { right: 14px; font-size: 1rem; }
+.fh-avatar { position: absolute; z-index: 2; left: 50%; bottom: -54px; transform: translateX(-50%); width: 116px; height: 116px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 70px; line-height: 1; background: color-mix(in srgb, var(--banner) 45%, #fff); box-shadow: 0 0 0 6px var(--card), 0 12px 24px -10px rgba(0, 0, 0, .35);
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.fh-body { padding-top: 64px !important; margin-top: 0 !important; text-align: center; border-radius: 0 0 24px 24px; }
+.fh-name { margin: 0; font-size: 1.9rem; }
+.fh-handle { margin: 2px 0 12px; color: var(--muted); font-size: .85rem; font-weight: 700; }
+.fh-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 16px; }
+.fh-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px; background: var(--paper-2); font-weight: 800; font-size: .82rem; }
+.fh-chip.fire { background: #ffedd5; color: #c2410c; } .fh-chip.gold { background: #fef3c7; color: #a16207; }
+html.dark .fh-chip.fire { background: #43281a; color: #fdba74; } html.dark .fh-chip.gold { background: #3d3214; color: #fcd34d; }
+.fh-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.fh-stat { border: 2px solid var(--line); border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: var(--card); }
+.fh-ico { font-size: 1.2rem; }
+.fh-stat b { font-size: 1.45rem; font-weight: 900; line-height: 1.1; }
+.fh-stat b i { font-style: normal; color: var(--muted); margin: 0 1px; }
+.fh-stat small { font-size: .72rem; font-weight: 700; color: var(--ink-2); }
+.fh-stat .fh-sub { color: var(--muted); font-weight: 600; font-size: .68rem; }
+.fh-mini { width: 80%; height: 6px; border-radius: 99px; background: var(--rosso-l); overflow: hidden; margin: 4px 0 1px; }
+.fh-mini span { display: block; height: 100%; background: var(--verde); }
+.fh-rival { border-radius: 16px; padding: 12px 14px; margin-bottom: 14px; background: var(--paper); text-align: left; }
+html.dark .fh-rival { background: var(--paper-2); }
+.fh-rival-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: .85rem; font-weight: 700; }
+.fh-rival-top small { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: .66rem; font-weight: 800; }
+.fh-rival-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; margin: 8px 0 6px; background: var(--line); }
+.fh-rival-bar .me { background: var(--verde); } .fh-rival-bar .her { background: #3b82f6; }
+.fh-rival-msg { margin: 0; font-size: .82rem; color: var(--ink-2); font-weight: 600; }
+.fh-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; padding: 10px; border: 2px dashed var(--line); border-radius: 14px; background: transparent; color: var(--ink-2); font-weight: 800; font-size: .88rem; cursor: pointer; }
+.fh-more span { font-size: 1.1rem; }
+.fh-more:hover { border-color: var(--blu); color: var(--blu); }
+.fh-friend { width: auto; padding: 0 14px; border-radius: 99px; font-size: .85rem; font-weight: 800; white-space: nowrap; color: var(--verde-d, #156b43); }
+.fh-body > *:not(.fh-name):not(.fh-handle):not([data-zone="head"]) { text-align: left; }
+
 </style>
 </head>
 <body>
@@ -11066,20 +11106,19 @@ function renderAmi(app2, username) {
     return ((n >> 16) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 1e3 > 150 ? "#1d2733" : "#ffffff";
   })();
   app2.innerHTML = `<div class="pf fp">
-    <section class="pf-banner" style="--banner:${esc(color)};--banner-ink:${ink}">
-      <a class="pf-icon" href="#amis" aria-label="Fermer">\u2715</a>
-      <h1 class="pf-title">${who(f)}</h1>
-      <span></span>
-      <span class="pf-avatar">${esc(f.avatar || "\u{1F464}")}</span>
+    <section class="fh-banner" style="--banner:${esc(color)};--banner-ink:${ink}">
+      <a class="fh-btn" href="#amis" aria-label="Retour">\u2039</a>
+      <button class="fh-btn fh-friend" data-friend-menu aria-label="Options d'amiti\xE9">\u2713 Ami</button>
+      <span class="fh-avatar">${esc(f.avatar || "\u{1F464}")}</span>
     </section>
-    <section class="pf-body">
-      <p class="pf-handle">@${esc(f.username)} \xB7 ami depuis ${new Date(f.since).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</p>
+    <section class="pf-body fh-body">
+      <h1 class="fh-name">${who(f)}</h1>
+      <p class="fh-handle">@${esc(f.username)} \xB7 ami depuis ${new Date(f.since).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</p>
       <div data-zone="head"></div>
       <div class="fp-actions">
         <button class="fp-btn msg" data-chat>\u{1F4AC}<b>Message</b><em class="err-badge" data-unread hidden></em></button>
         <button class="fp-btn duel" data-challenge>\u2694\uFE0F<b>D\xE9fi</b></button>
       </div>
-      <div class="fp-friendrow"><button class="btn ghost pf-add is-friend" data-friend-menu>\u{1F464}\u2713 AMIS</button></div>
 
       <h2 class="pf-h2">Bilan hebdomadaire</h2>
       <div data-zone="chart"></div>
@@ -11093,16 +11132,35 @@ function renderAmi(app2, username) {
   </div>`;
   const page = app2.firstElementChild;
   const z = (n) => page.querySelector(`[data-zone="${n}"]`);
+  let expanded = false;
   const paint = () => {
     if (!page.isConnected) return off?.();
     const theirs = statsOf(f.id);
     const mine = { ...statsOf(S2.me.id), [code]: mySummary() };
     const langs = Object.keys(LANGS).filter((c) => theirs[c]);
     const rec = record(f.id);
-    z("head").innerHTML = `<div class="pf-stats">
-        <div class="pf-stat"><div class="pf-flags">${langs.length ? langs.map((c) => `<span class="pf-flag" title="${esc(LANGS[c].label)}">${flagSVG(c)}</span>`).join("") : `<span class="muted small">\u2014</span>`}</div><span>Cours</span></div>
-        <div class="pf-stat"><b>${rec.win}\u2013${rec.lose}${rec.draw ? `\u2013${rec.draw}` : ""}</b><span>Duels (V\u2013D${rec.draw ? "\u2013N" : ""})</span></div>
-        <div class="pf-stat"><b>${Object.values(theirs).reduce((n2, x) => n2 + (x.week === weekKey() ? x.weekXp || 0 : 0), 0)}</b><span>XP cette semaine</span></div>
+    const week2 = weekKey(), wk = (st) => Object.values(st).reduce((n2, x) => n2 + (x?.week === week2 ? x.weekXp || 0 : 0), 0);
+    const herWeek = wk(theirs), myWeek = wk(mine);
+    const streak = Math.max(0, ...Object.values(theirs).map((x) => x?.streak || 0));
+    const board = leaderboard(), rank = board.findIndex((p) => p.id === f.id) + 1;
+    const games = rec.win + rec.lose + rec.draw, winPct = games ? Math.round(rec.win / games * 100) : 0;
+    const share = herWeek + myWeek ? Math.round(myWeek / (herWeek + myWeek) * 100) : 50;
+    z("head").innerHTML = `
+      <div class="fh-chips">
+        ${streak ? `<span class="fh-chip fire">\u{1F525} ${streak} j de s\xE9rie</span>` : ""}
+        ${langs.map((c) => `<span class="fh-chip"><span class="flag mini">${flagSVG(c)}</span>${esc(theirs[c].level || "")}</span>`).join("")}
+        ${rank && herWeek ? `<span class="fh-chip gold">\u{1F3C6} ${rank === 1 ? "1er" : rank + "e"} cette semaine</span>` : ""}
+      </div>
+      <div class="fh-stats">
+        <div class="fh-stat"><span class="fh-ico">\u2694\uFE0F</span><b>${rec.win}<i>\u2013</i>${rec.lose}${rec.draw ? `<i>\u2013</i>${rec.draw}` : ""}</b><small>Vos duels (V\u2013D)</small>
+          ${games ? `<div class="fh-mini"><span style="width:${winPct}%"></span></div><small class="fh-sub">${winPct} % de victoires</small>` : `<small class="fh-sub">aucun duel</small>`}</div>
+        <div class="fh-stat"><span class="fh-ico">\u26A1</span><b>${herWeek}</b><small>XP cette semaine</small><small class="fh-sub">vous : ${myWeek}</small></div>
+        <div class="fh-stat"><span class="fh-ico">\u{1F4D2}</span><b>${Math.max(0, ...Object.values(theirs).map((x) => x?.words || 0))}</b><small>Mots appris</small><small class="fh-sub">${langs.length} langue${langs.length > 1 ? "s" : ""}</small></div>
+      </div>
+      <div class="fh-rival">
+        <div class="fh-rival-top"><span>Vous <b>${myWeek}</b></span><small>Duel de la semaine</small><span><b>${herWeek}</b> ${who(f)}</span></div>
+        <div class="fh-rival-bar"><span class="me" style="width:${share}%"></span><span class="her" style="width:${100 - share}%"></span></div>
+        <p class="fh-rival-msg">${myWeek === herWeek ? "\xC9galit\xE9 parfaite cette semaine !" : myWeek > herWeek ? `Vous menez de ${myWeek - herWeek} XP \u{1F4AA}` : `${who(f)} m\xE8ne de ${herWeek - myWeek} XP : \xE0 vous de jouer !`}</p>
       </div>`;
     z("chart").innerHTML = weekChart(f, theirs, mine);
     z("recap").innerHTML = langs.length ? langs.map((c) => {
@@ -11118,7 +11176,13 @@ function renderAmi(app2, username) {
         </div></div>`;
     }).join("") : `<p class="muted small">${who(f)} n'a pas encore commenc\xE9 de parcours.</p>`;
     const chs = challengesWith(f.id);
-    z("challenges").innerHTML = chs.length ? `<ul class="s-ch-list">${chs.slice(0, 15).map((c) => challengeCard(c, { showFriend: false })).join("")}</ul>` : `<p class="muted small">Aucun d\xE9fi pour l'instant. Lancez le premier !</p>`;
+    const shown = expanded ? chs.slice(0, 30) : chs.slice(0, 3);
+    z("challenges").innerHTML = chs.length ? `<ul class="s-ch-list">${shown.map((c) => challengeCard(c, { showFriend: false })).join("")}</ul>
+        ${chs.length > 3 ? `<button class="fh-more" data-more aria-expanded="${expanded}">${expanded ? "Voir moins <span>\u25B4</span>" : `Voir les ${Math.min(chs.length, 30) - 3} autres d\xE9fis <span>\u25BE</span>`}</button>` : ""}` : `<p class="muted small">Aucun d\xE9fi pour l'instant. Lancez le premier !</p>`;
+    z("challenges").querySelector("[data-more]")?.addEventListener("click", () => {
+      expanded = !expanded;
+      paint();
+    });
     const n = S2.unread[f.id] || 0, b = page.querySelector("[data-unread]");
     b.textContent = n;
     b.hidden = !n;
