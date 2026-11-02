@@ -1306,6 +1306,12 @@ body.lang-zh .cf-go { background: var(--rosso); }
 .blanc-review li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; }
 .blanc-review li small { color: var(--rosso); font-weight: 800; }
 
+/* Test de mi-palier */
+.node.checkpoint { width: 74px; height: 74px; border-radius: 50%; font-size: 1.9rem; }
+.node.checkpoint.open { background: #7c3aed; box-shadow: 0 6px 0 #5b21b6; }
+.node.checkpoint.done { background: #a78bfa; box-shadow: 0 6px 0 #7c3aed; }
+.cp-wrap { --x: 0px; }
+
 </style>
 </head>
 <body>
@@ -6755,6 +6761,8 @@ function defaultState() {
     // { [lessonId]: { best, total, passed, attempts, date } }
     exams: {},
     // { [levelId]: { best, total, passed, attempts, date } }
+    checkpoints: {},
+    // { [levelId]: { best, total, passed, attempts, date } } tests de mi-palier
     vocab: {},
     // { [mot]: { zh (mot étudié), py (pinyin, optionnel), fr, levelId, lessonId, added } }
     errors: {},
@@ -6999,7 +7007,9 @@ var plain = (s) => String(s).replace("|", " ");
 
 // js/core/progress.js
 var PASS_LESSON = 0.6;
-var PASS_EXAM = 0.8;
+var PASS_EXAM = 1;
+var PASS_CHECKPOINT = 0.9;
+var CHECKPOINT_N = 10;
 var XP_PER_CORRECT = 10;
 var MASTERY_STREAK = 2;
 var dayKey = (d = /* @__PURE__ */ new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -7081,14 +7091,26 @@ function recordPractice({ label, score, total, xpPer = 5, key = null }) {
 }
 var isLessonDone = (id) => !!state.lessons[id]?.passed;
 var isExamPassed = (levelId) => !!state.exams[levelId]?.passed;
+var checkpointIndex = (level) => Math.ceil(level.lessons.length / 2);
+function isCheckpointPassed(level) {
+  if (state.checkpoints?.[level.id]?.passed) return true;
+  return level.lessons.slice(checkpointIndex(level)).some((l) => isLessonDone(l.id)) || isExamPassed(level.id);
+}
+function isCheckpointUnlocked(levelIndex) {
+  const lvl = LEVELS3[levelIndex];
+  return isLevelUnlocked(levelIndex) && lvl.lessons.slice(0, checkpointIndex(lvl)).every((l) => isLessonDone(l.id));
+}
+var stepHref = (n) => n.kind === "lesson" ? `lecon-${n.lesson.id}` : n.kind === "checkpoint" ? `mipalier-${n.level.id}` : `examen-${n.level.id}`;
 function isLevelUnlocked(levelIndex) {
   return levelIndex === 0 || isExamPassed(LEVELS3[levelIndex - 1].id);
 }
 function isLessonUnlocked(lesson) {
   if (!isLevelUnlocked(lesson.levelIndex)) return false;
   if (lesson.index === 0) return true;
-  const prev = LEVELS3[lesson.levelIndex].lessons[lesson.index - 1];
-  return isLessonDone(prev.id);
+  const lvl = LEVELS3[lesson.levelIndex];
+  const prev = lvl.lessons[lesson.index - 1];
+  if (!isLessonDone(prev.id)) return false;
+  return lesson.index !== checkpointIndex(lvl) || isCheckpointPassed(lvl) || isLessonDone(lesson.id);
 }
 function isExamUnlocked(levelIndex) {
   return isLevelUnlocked(levelIndex) && LEVELS3[levelIndex].lessons.every((l) => isLessonDone(l.id));
@@ -7116,6 +7138,7 @@ function nextStep() {
     if (!isLevelUnlocked(i)) break;
     const lvl = LEVELS3[i];
     const lesson = lvl.lessons.find((l) => !isLessonDone(l.id));
+    if (lesson && lesson.index === checkpointIndex(lvl) && !isCheckpointPassed(lvl)) return { kind: "checkpoint", level: lvl };
     if (lesson) return { kind: "lesson", lesson, level: lvl };
     if (!isExamPassed(lvl.id)) return { kind: "exam", level: lvl };
   }
@@ -7128,13 +7151,14 @@ function recordQuiz({ kind, id, label, results }) {
   const score = results.filter((r) => r.correct).length;
   const total = results.length;
   const ratio = total ? score / total : 0;
-  const passMark = kind === "exam" ? PASS_EXAM : PASS_LESSON;
+  const passMark = kind === "exam" ? PASS_EXAM : kind === "checkpoint" ? PASS_CHECKPOINT : PASS_LESSON;
   const passed = ratio >= passMark;
   const xpGained = score * XP_PER_CORRECT + (passed && kind !== "review" ? 20 : 0);
   let newWords = 0, firstPass = false, mastered = 0;
   commit((s) => {
-    if (kind === "lesson" || kind === "exam") {
-      const bucket = kind === "lesson" ? s.lessons : s.exams;
+    if (kind === "checkpoint") s.checkpoints ||= {};
+    if (kind === "lesson" || kind === "exam" || kind === "checkpoint") {
+      const bucket = kind === "lesson" ? s.lessons : kind === "exam" ? s.exams : s.checkpoints;
       const prev = bucket[id] || { best: 0, attempts: 0, passed: false };
       firstPass = passed && !prev.passed;
       bucket[id] = {
@@ -7295,8 +7319,8 @@ function renderParcours(app2) {
         <p class="eyebrow">${L.hello} ${pseudo} \u{1F44B}</p>
         <h1>Votre route vers<br><em>${L.heroEm}</em></h1>
         <p class="muted">${g.done} \xE9tapes sur ${g.total} valid\xE9es \xB7 niveau actuel <b>${lvlLabel2(currentLevel())}</b></p>
-        ${next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
-               ${next.kind === "lesson" ? `Continuer : ${pyText(next.lesson.levelId, next.lesson.title)}` : `Passer l'examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
+        ${next ? `<a class="btn primary big" href="#${stepHref(next)}">
+               ${next.kind === "lesson" ? `Continuer : ${pyText(next.lesson.levelId, next.lesson.title)}` : next.kind === "checkpoint" ? `Test de mi-palier ${lvlLabel2(next.level)}` : `Passer l'examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
         <div class="hero-links">${srsTodo() ? `<a class="btn ghost small" href="#reviser">\u{1F4C5} ${srsTodo()} mot${srsTodo() > 1 ? "s" : ""} \xE0 r\xE9viser</a>` : ""}
           <a class="btn ghost small" href="#entrainement">\u{1F3AF} Entra\xEEnement</a>
           <a class="btn ghost small" href="#blanc-${currentLevel().id}">\u{1F4DD} Examen blanc ${lvlLabel2(currentLevel())}</a></div>
@@ -7332,18 +7356,27 @@ function levelBlock(lvl, li) {
     </header>
     ${unlocked2 ? "" : `<p class="level-locked-msg">R\xE9ussissez l'examen ${lvlLabel2(LEVELS3[li - 1])} pour d\xE9bloquer ce palier.</p>`}
     <ol class="nodes">
-      ${lvl.lessons.map((lesson, i) => node(lesson, OFFSETS[i % OFFSETS.length])).join("")}
+      ${lvl.lessons.map((lesson, i) => (i === checkpointIndex(lvl) ? checkpointNode(lvl, li, unlocked2) : "") + node(lesson, OFFSETS[i % OFFSETS.length])).join("")}
       <li class="node-wrap" style="--x:${examOffset}px">
         <a class="node exam ${examDone ? "done" : examOpen ? "open" : "locked"}"
            ${examOpen ? `href="#examen-${lvl.id}"` : `aria-disabled="true"`}
            aria-label="Examen de fin de palier ${lvlLabel2(lvl)}${examDone ? ", valid\xE9" : examOpen ? "" : ", verrouill\xE9"}">
           <span class="node-icon">${examDone ? "\u{1F3C6}" : examOpen ? "\u{1F393}" : "\u{1F512}"}</span>
         </a>
-        <span class="node-label"><b>Examen ${lvlLabel2(lvl)}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "80 % requis"}</small>
+        <span class="node-label"><b>Examen ${lvlLabel2(lvl)}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "Sans faute (100 %) requis"}</small>
           ${unlocked2 ? `<a class="blanc-link" href="#blanc-${lvl.id}">\u{1F4DD} Examen blanc${state.blanc?.[lvl.id] ? ` \xB7 ${state.blanc[lvl.id].best}/${state.blanc[lvl.id].total}` : ""}</a>` : ""}</span>
       </li>
     </ol>
   </section>`;
+}
+function checkpointNode(lvl, li, unlocked2) {
+  const done = isCheckpointPassed(lvl), open = isCheckpointUnlocked(li), rec = state.checkpoints?.[lvl.id];
+  return `<li class="node-wrap cp-wrap">
+    <a class="node checkpoint ${done ? "done" : open ? "open" : "locked"}" ${open ? `href="#mipalier-${lvl.id}"` : `aria-disabled="true"`}
+       aria-label="Test de mi-palier ${lvlLabel2(lvl)}${done ? ", valid\xE9" : open ? "" : ", verrouill\xE9"}">
+      <span class="node-icon">${done ? "\u2705" : open ? "\u{1F6E1}\uFE0F" : "\u{1F512}"}</span></a>
+    <span class="node-label"><b>Test de mi-palier</b><small>${done ? rec ? `Valid\xE9 \xB7 ${rec.best}/${rec.total}` : "Valid\xE9" : `${CHECKPOINT_N} questions \xB7 90 % requis`}</small></span>
+  </li>`;
 }
 function node(lesson, x) {
   const done = isLessonDone(lesson.id);
@@ -7940,6 +7973,26 @@ function lessonQuestions(lesson) {
   const kept = base.slice(0, base.length - gen.length);
   return shuffle([...kept, ...gen]);
 }
+function renderMiPalier(app2, levelId) {
+  const level = getLevel3(levelId), li = LEVELS3.indexOf(level);
+  if (!level || !isCheckpointUnlocked(li)) return false;
+  const half = level.lessons.slice(0, checkpointIndex(level));
+  const per = shuffle(half).map((l) => shuffle(l.quiz.map((q, i) => ({ ref: `${l.id}:${i}`, q }))));
+  const picked = [];
+  for (let k = 0; picked.length < CHECKPOINT_N && per.some((a) => a.length); k++) {
+    const a = per[k % per.length];
+    if (a.length) picked.push(a.pop());
+  }
+  start(app2, {
+    kind: "checkpoint",
+    id: levelId,
+    label: `Mi-palier ${lvlLabel2(level)}`,
+    title: `Test de mi-palier ${lvlLabel2(level)}`,
+    questions: shuffle(picked),
+    back: "#parcours"
+  });
+  return true;
+}
 function renderExamen(app2, levelId) {
   const level = getLevel3(levelId);
   const li = LEVELS3.indexOf(level);
@@ -8068,13 +8121,14 @@ function showResults(app2, cfg, s) {
     msg = s.mastered ? `${s.mastered} notion(s) ma\xEEtris\xE9e(s) et retir\xE9e(s) du cahier d'erreurs.` : "Une erreur dispara\xEEt du cahier apr\xE8s 2 bonnes r\xE9ponses d'affil\xE9e.";
     primary = Object.keys(state.errors).length ? `<a class="btn primary big" href="#revision" data-reload>Nouvelle r\xE9vision</a>` : `<a class="btn primary big" href="#parcours">Retour au parcours</a>`;
   } else if (s.passed) {
-    headline = cfg.kind === "exam" ? `Palier ${lvlLabel2(cfg.id)} valid\xE9 ! \u{1F393}` : L.resultHeads[s.stars - 1] || L.resultHeads[0];
-    msg = cfg.kind === "exam" ? LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1] ? `Le palier ${lvlLabel2(LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1])} est maintenant d\xE9bloqu\xE9.` : L.finished : s.newWords ? `${s.newWords} nouveaux mots ajout\xE9s \xE0 votre carnet.` : "Le\xE7on valid\xE9e.";
-    primary = next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">${next.kind === "lesson" ? "Le\xE7on suivante" : `Examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<a class="btn primary big" href="#tableau">Voir mon tableau de bord</a>`;
+    headline = cfg.kind === "exam" ? `Palier ${lvlLabel2(cfg.id)} valid\xE9 ! \u{1F393}` : cfg.kind === "checkpoint" ? "Mi-palier franchi ! \u{1F6E1}\uFE0F" : L.resultHeads[s.stars - 1] || L.resultHeads[0];
+    msg = cfg.kind === "checkpoint" ? "La deuxi\xE8me moiti\xE9 du palier est d\xE9bloqu\xE9e." : cfg.kind === "exam" ? LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1] ? `Le palier ${lvlLabel2(LEVELS3[LEVELS3.findIndex((l) => l.id === cfg.id) + 1])} est maintenant d\xE9bloqu\xE9.` : L.finished : s.newWords ? `${s.newWords} nouveaux mots ajout\xE9s \xE0 votre carnet.` : "Le\xE7on valid\xE9e.";
+    primary = next ? `<a class="btn primary big" href="#${stepHref(next)}">${next.kind === "lesson" ? "Le\xE7on suivante" : next.kind === "checkpoint" ? `Test de mi-palier ${lvlLabel2(next.level)}` : `Examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<a class="btn primary big" href="#tableau">Voir mon tableau de bord</a>`;
   } else {
     headline = L.almost;
-    msg = `Il faut ${Math.round(s.passMark * 100)} % pour valider. Relisez la le\xE7on, vos erreurs sont dans le cahier.`;
-    primary = `<a class="btn primary big" href="#${cfg.kind === "exam" ? "examen-" + cfg.id : "quiz-" + cfg.id}" data-reload>R\xE9essayer</a>`;
+    const need = Math.ceil(s.passMark * s.total);
+    msg = cfg.kind === "exam" ? `L'examen se valide sans aucune faute (${s.total}/${s.total}). Il vous en manquait ${s.total - s.score}. Vos erreurs sont dans le cahier : r\xE9visez-les, puis r\xE9essayez.` : cfg.kind === "checkpoint" ? `Il faut ${need}/${s.total} pour franchir le mi-palier. R\xE9visez les le\xE7ons concern\xE9es (vos erreurs sont dans le cahier), puis r\xE9essayez : les questions changent.` : `Il faut ${Math.round(s.passMark * 100)} % pour valider. Relisez la le\xE7on, vos erreurs sont dans le cahier.`;
+    primary = `<a class="btn primary big" href="#${cfg.kind === "exam" ? "examen-" + cfg.id : cfg.kind === "checkpoint" ? "mipalier-" + cfg.id : "quiz-" + cfg.id}" data-reload>R\xE9essayer</a>`;
   }
   app2.innerHTML = `
   <section class="results ${s.passed ? "ok" : "ko"}">
@@ -8121,8 +8175,8 @@ function renderDashboard(app2) {
         <p class="eyebrow">Progression globale ${lvlLabel2(LEVELS3[0])} \u2192 ${lvlLabel2(LEVELS3[LEVELS3.length - 1])}</p>
         <h2>${g.done} / ${g.total} \xE9tapes</h2>
         <p class="muted">Niveau actuel : <b>${lvlLabel2(currentLevel())} \xB7 ${currentLevel().name}</b></p>
-        ${next ? `<a class="btn primary" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
-          ${next.kind === "lesson" ? "Reprendre : " + pyText(next.lesson.levelId, next.lesson.title) : "Passer l'examen " + lvlLabel2(next.level)} \u2192</a>` : ""}
+        ${next ? `<a class="btn primary" href="#${stepHref(next)}">
+          ${next.kind === "lesson" ? "Reprendre : " + pyText(next.lesson.levelId, next.lesson.title) : next.kind === "checkpoint" ? "Test de mi-palier " + lvlLabel2(next.level) : "Passer l'examen " + lvlLabel2(next.level)} \u2192</a>` : ""}
       </div>
     </section>
 
@@ -8440,7 +8494,7 @@ function mergeStates(a, b) {
   const older = newer === a ? b : a;
   const out = structuredClone(newer);
   out.profile = newer.profile || older.profile;
-  for (const key of ["lessons", "exams"]) {
+  for (const key of ["lessons", "exams", "checkpoints"]) {
     out[key] = { ...older[key], ...newer[key] };
     for (const id of Object.keys(older[key] || {})) {
       const x = older[key][id], y = newer[key]?.[id];
@@ -12205,7 +12259,8 @@ var ROUTES = [
   [/^lecon-(.+)$/, (a, m) => renderLecon(a, m[1]), "parcours"],
   [/^quiz-(.+)$/, (a, m) => renderQuiz(a, m[1]), "parcours"],
   [/^examen-(.+)$/, (a, m) => renderExamen(a, m[1]), "parcours"],
-  [/^blanc-(.+)$/, (a, m) => renderBlanc(a, m[1]), "parcours"]
+  [/^blanc-(.+)$/, (a, m) => renderBlanc(a, m[1]), "parcours"],
+  [/^mipalier-(.+)$/, (a, m) => renderMiPalier(a, m[1]), "parcours"]
 ];
 function route() {
   app._cleanup?.();
