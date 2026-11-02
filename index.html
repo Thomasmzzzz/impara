@@ -971,6 +971,46 @@ button.pf-stat:not([disabled]):hover b { color: var(--verde-d); }
 .modal { max-width: calc(100vw - 32px); }
 .modal-body { min-width: 0; }
 
+/* 16. FICHE D'UN AMI (style profil) + DISCUSSION ---------------------- */
+.fp-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.fp-btn { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; border-radius: 18px; border: 0; font-size: 1.4rem; color: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, .18); }
+.fp-btn b { font-size: 1.05rem; font-weight: 800; letter-spacing: .02em; }
+.fp-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0, 0, 0, .18); }
+.fp-btn.msg { background: #3b82c4; }
+.fp-btn.duel { background: var(--rosso); }
+.fp-btn .err-badge { position: absolute; top: -6px; right: -6px; min-width: 22px; height: 22px; font-size: .78rem; border: 2px solid var(--card); }
+.fp-friendrow { margin-bottom: 24px; }
+.pf-add.is-friend { width: 100%; color: var(--verde-d); }
+.fp-recap { margin-bottom: 16px; }
+.fp-lang { display: flex; align-items: center; gap: 4px; margin: 0 0 8px; }
+.fp-lang small { color: var(--muted); }
+.fp .pf-grid { margin-bottom: 0; }
+.wk-chart { margin-bottom: 24px; }
+.wk-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.ch-grid { stroke: var(--line); stroke-width: 1; }
+.ch-ax { fill: var(--muted); font-size: 10px; font-weight: 700; font-family: var(--font); }
+.ch-fr { fill: none; stroke: #3b82c4; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.ch-me { fill: none; stroke: #9aa5b3; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.dot-fr { fill: #5aa7ea; stroke: var(--card); stroke-width: 2; }
+.dot-me { fill: #9aa5b3; stroke: var(--card); stroke-width: 2; }
+.wk-legend { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+.wk-legend li { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+.wk-legend li span { margin-left: auto; color: var(--muted); font-weight: 700; }
+.wk-legend i { width: 14px; height: 14px; border-radius: 50%; }
+.lg-fr { background: #5aa7ea; } .lg-me { background: #9aa5b3; }
+.chat-page { max-width: 720px; margin: 0 auto; display: grid; gap: 10px; }
+.chat-head { display: flex; align-items: center; gap: 10px; }
+.pf-icon.plain { background: var(--paper-2); color: var(--ink); width: 40px; height: 40px; font-size: 1.1rem; }
+.chat-who { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); flex: 1; min-width: 0; }
+.chat-who span { display: flex; flex-direction: column; min-width: 0; }
+.chat-who small { color: var(--muted); }
+.chat-page .s-chat { position: static; height: calc(100vh - 230px); min-height: 360px; }
+.day-sep { align-self: center; font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: capitalize; margin: 8px 0 2px; }
+.quick-replies { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0; scrollbar-width: none; }
+.quick-replies .chip-btn { white-space: nowrap; }
+@media (max-width: 720px) { .chat-page .s-chat { height: calc(100vh - 240px - var(--tabbar-h)); } }
+.chat-page, .fr-page { grid-template-columns: minmax(0, 1fr); }
+
 </style>
 </head>
 <body>
@@ -4660,6 +4700,8 @@ function defaultState() {
     // XP gagnés cette semaine (classement entre amis)
     srs: {},
     // { [mot]: { box, due, reps, last } } répétition espacée des flashcards
+    dayLog: {},
+    // { [jour]: xp } 30 derniers jours (graphique entre amis)
     history: [],
     // [{ date, label, score, total, kind }]
     owner: null,
@@ -4697,6 +4739,7 @@ function hydrate(obj) {
     daily: { ...base.daily, ...obj.daily || {} },
     weekly: { ...base.weekly, ...obj.weekly || {} },
     srs: { ...obj.srs || {} },
+    dayLog: { ...obj.dayLog || {} },
     version: SCHEMA_VERSION
   };
 }
@@ -4906,12 +4949,31 @@ function nextWeekReset(now = /* @__PURE__ */ new Date()) {
   d.setUTCDate(d.getUTCDate() + ((8 - (d.getUTCDay() || 7)) % 7 || 7));
   return d;
 }
+function historyDayXp(s, day) {
+  return (s.history || []).filter((h) => h.date && dayKey(new Date(h.date)) === day).reduce((n, h) => n + (h.kind === "practice" ? h.score * 5 : h.score * XP_PER_CORRECT + (h.passed && h.kind !== "review" ? 20 : 0)), 0);
+}
+function last7Days() {
+  const out = {};
+  for (let i = 6; i >= 0; i--) {
+    const d = dayKey(new Date(Date.now() - i * 864e5));
+    out[d] = state.dayLog?.[d] ?? historyDayXp(state, d);
+  }
+  return out;
+}
 var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : historyWeekXp(state);
 function addXp(s, xp) {
   const today = dayKey(), week = weekKey();
   s.xp += xp;
   s.daily = s.daily.date === today ? { date: today, xp: s.daily.xp + xp } : { date: today, xp };
   s.weekly = s.weekly?.week === week ? { week, xp: s.weekly.xp + xp } : { week, xp: historyWeekXp(s) + xp };
+  const log = { ...s.dayLog || {} };
+  if (!(today in log)) log[today] = historyDayXp(s, today);
+  log[today] += xp;
+  const limit = dayKey(new Date(Date.now() - 30 * 864e5));
+  Object.keys(log).forEach((d) => {
+    if (d < limit) delete log[d];
+  });
+  s.dayLog = log;
   if (s.streak.last !== today) {
     s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
   }
@@ -6053,6 +6115,8 @@ function mergeStates(a, b) {
   out.xp = Math.max(a.xp || 0, b.xp || 0);
   out.srs = { ...older.srs || {}, ...newer.srs || {} };
   for (const [k, c] of Object.entries(older.srs || {})) if ((c.last || 0) > (out.srs[k]?.last || 0)) out.srs[k] = c;
+  out.dayLog = { ...a.dayLog || {} };
+  for (const [d, x] of Object.entries(b.dayLog || {})) out.dayLog[d] = Math.max(out.dayLog[d] || 0, x);
   const ws = [a.weekly, b.weekly].filter((w) => w?.week).sort((p, q) => q.week.localeCompare(p.week) || q.xp - p.xp);
   out.weekly = ws[0] || out.weekly || { week: null, xp: 0 };
   const ds = [a.daily, b.daily].filter(Boolean).sort((p, q) => (q.date || "").localeCompare(p.date || "") || q.xp - p.xp);
@@ -6442,7 +6506,8 @@ function mySummary() {
     lessons: Object.values(state.lessons).filter((l) => l.passed).length,
     words: Object.keys(state.vocab).length,
     week: weekKey(),
-    weekXp: weeklyXp()
+    weekXp: weeklyXp(),
+    days: last7Days()
   };
 }
 var lastSent = "";
@@ -7890,7 +7955,6 @@ function renderUsername(app2) {
 function renderAmi(app2, username) {
   if (gate(app2, "Amis")) return;
   const S2 = social();
-  const hash = location.hash;
   if (!S2.ready) {
     loadThen(app2, () => renderAmi(app2, username));
     return;
@@ -7904,55 +7968,163 @@ function renderAmi(app2, username) {
     app2.innerHTML = `<section class="card account-card"><p>@${esc(username)} ne fait pas (ou plus) partie de vos amis.</p><a class="btn ghost" href="#amis">\u2190 Mes amis</a></section>`;
     return;
   }
-  app2.innerHTML = `<div class="s-page">
-  <a class="back-link" href="#amis">\u2190 Mes amis</a>
-  <header class="s-friend-head card">
-    ${av(f, "xl")}
-    <div class="s-friend-id"><h1>${who(f)}</h1>${handle(f)}${(() => {
-    const r = record(f.id);
-    return r.total ? `<p class="h2h left">\u2694\uFE0F Vos duels : <b>${r.win}</b>V \xB7 <b>${r.lose}</b>D${r.draw ? ` \xB7 <b>${r.draw}</b>N` : ""}</p>` : "";
-  })()}<p class="muted small">Amis depuis le ${new Date(f.since).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p></div>
-    <div class="s-friend-actions"><button class="btn primary" data-challenge>\u2694\uFE0F Lancer un d\xE9fi</button>
-      <button class="link-btn danger-txt" data-unfriend>Retirer des amis</button></div>
-  </header>
-  <div class="s-grid">
-    <div class="s-col">
-      <section class="card"><h2 class="h3">\u{1F4C8} Progression</h2><div data-zone="compare"></div></section>
-      <section class="card"><h2 class="h3">\u2694\uFE0F D\xE9fis entre vous</h2><div data-zone="challenges"></div></section>
-    </div>
+  const color = f.color || "#cfe6ff";
+  const ink = (() => {
+    const n = parseInt(color.slice(1), 16);
+    return ((n >> 16) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 1e3 > 150 ? "#1d2733" : "#ffffff";
+  })();
+  app2.innerHTML = `<div class="pf fp">
+    <section class="pf-banner" style="--banner:${esc(color)};--banner-ink:${ink}">
+      <a class="pf-icon" href="#amis" aria-label="Fermer">\u2715</a>
+      <h1 class="pf-title">${who(f)}</h1>
+      <span></span>
+      <span class="pf-avatar">${esc(f.avatar || "\u{1F464}")}</span>
+    </section>
+    <section class="pf-body">
+      <p class="pf-handle">@${esc(f.username)} \xB7 ami depuis ${new Date(f.since).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</p>
+      <div data-zone="head"></div>
+      <div class="fp-actions">
+        <button class="fp-btn msg" data-chat>\u{1F4AC}<b>Message</b><em class="err-badge" data-unread hidden></em></button>
+        <button class="fp-btn duel" data-challenge>\u2694\uFE0F<b>D\xE9fi</b></button>
+      </div>
+      <div class="fp-friendrow"><button class="btn ghost pf-add is-friend" data-friend-menu>\u{1F464}\u2713 AMIS</button></div>
+
+      <h2 class="pf-h2">Bilan hebdomadaire</h2>
+      <div data-zone="chart"></div>
+
+      <h2 class="pf-h2">R\xE9cap</h2>
+      <div data-zone="recap"></div>
+
+      <h2 class="pf-h2">D\xE9fis entre vous</h2>
+      <div data-zone="challenges"></div>
+    </section>
+  </div>`;
+  const page = app2.firstElementChild;
+  const z = (n) => page.querySelector(`[data-zone="${n}"]`);
+  const paint = () => {
+    if (!page.isConnected) return off?.();
+    const theirs = statsOf(f.id);
+    const mine = { ...statsOf(S2.me.id), [code]: mySummary() };
+    const langs = Object.keys(LANGS).filter((c) => theirs[c]);
+    const rec = record(f.id);
+    z("head").innerHTML = `<div class="pf-stats">
+        <div class="pf-stat"><div class="pf-flags">${langs.length ? langs.map((c) => `<span class="pf-flag" title="${esc(LANGS[c].label)}">${flagSVG(c)}</span>`).join("") : `<span class="muted small">\u2014</span>`}</div><span>Cours</span></div>
+        <div class="pf-stat"><b>${rec.win}\u2013${rec.lose}${rec.draw ? `\u2013${rec.draw}` : ""}</b><span>Duels (V\u2013D${rec.draw ? "\u2013N" : ""})</span></div>
+        <div class="pf-stat"><b>${Object.values(theirs).reduce((n2, x) => n2 + (x.week === weekKey() ? x.weekXp || 0 : 0), 0)}</b><span>XP cette semaine</span></div>
+      </div>`;
+    z("chart").innerHTML = weekChart(f, theirs, mine);
+    z("recap").innerHTML = langs.length ? langs.map((c) => {
+      const t = theirs[c];
+      return `<div class="fp-recap"><p class="fp-lang"><span class="flag mini">${flagSVG(c)}</span>${esc(LANGS[c].label)} \xB7 <b>${esc(t.level)}</b> <small>${esc(t.levelName || "")}</small></p>
+        <div class="pf-grid">
+          <div class="pf-card"><span>\u{1F525}</span><b>${t.streak} j</b><small>S\xE9rie</small></div>
+          <div class="pf-card"><span>\u26A1</span><b>${t.xp}</b><small>XP au total</small></div>
+          <div class="pf-card"><span>\u{1F4C8}</span><b>${t.pct} %</b><small>du parcours</small></div>
+          <div class="pf-card"><span>\u{1F4D2}</span><b>${t.words}</b><small>Mots appris</small></div>
+          <div class="pf-card"><span>\u2705</span><b>${t.lessons ?? "\u2013"}</b><small>Le\xE7ons</small></div>
+          <div class="pf-card"><span>\u{1F3C5}</span><b>${esc(t.level)}</b><small>Niveau</small></div>
+        </div></div>`;
+    }).join("") : `<p class="muted small">${who(f)} n'a pas encore commenc\xE9 de parcours.</p>`;
+    const chs = challengesWith(f.id);
+    z("challenges").innerHTML = chs.length ? `<ul class="s-ch-list">${chs.slice(0, 15).map((c) => challengeCard(c, { showFriend: false })).join("")}</ul>` : `<p class="muted small">Aucun d\xE9fi pour l'instant. Lancez le premier !</p>`;
+    const n = S2.unread[f.id] || 0, b = page.querySelector("[data-unread]");
+    b.textContent = n;
+    b.hidden = !n;
+  };
+  paint();
+  page.querySelector("[data-chat]").onclick = () => location.hash = `chat-${f.username}`;
+  page.querySelector("[data-challenge]").onclick = () => askChallenge(f);
+  page.querySelector("[data-friend-menu]").onclick = async () => {
+    const v = await modal({
+      title: `${who(f)} et vous \xEAtes amis`,
+      body: `<p class="muted">Amis depuis le ${new Date(f.since).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.</p>`,
+      actions: [{ label: "Fermer", value: "", kind: "ghost" }, { label: "Retirer des amis", value: "rm", kind: "danger" }]
+    });
+    if (v !== "rm") return;
+    const ok = await modal({
+      title: `Retirer ${who(f)} ?`,
+      body: "<p>Vous ne verrez plus sa progression et ne pourrez plus vous \xE9crire. Vous pourrez le r\xE9inviter plus tard.</p>",
+      actions: [{ label: "Annuler", value: "" }, { label: "Retirer", value: "yes", kind: "danger" }]
+    });
+    if (ok !== "yes") return;
+    try {
+      await removeFriendship(f.friendshipId);
+      toast("Ami retir\xE9");
+      location.hash = "amis";
+    } catch (e) {
+      toast(socialError(e), "warn");
+    }
+  };
+  bindChallengeActions(page);
+  const off = onSocial((what) => {
+    if (what === "message" || what === "unread") {
+      if (page.isConnected) paint();
+      return;
+    }
+    if (!friendByUsername(username)) {
+      location.hash = "amis";
+      return;
+    }
+    paint();
+  });
+  app2._cleanup = off;
+}
+function weekChart(f, theirs, mine) {
+  const days = Object.keys(last7Days());
+  const sum = (stats, d) => Object.values(stats).reduce((n, s) => n + (s?.days?.[d] || 0), 0);
+  const a = days.map((d) => sum(theirs, d)), b = days.map((d) => sum(mine, d));
+  const totA = a.reduce((x2, y2) => x2 + y2, 0), totB = b.reduce((x2, y2) => x2 + y2, 0);
+  const hasData = Object.values(theirs).some((s) => s?.days);
+  const max = Math.max(50, ...a, ...b), top = Math.ceil(max / 50) * 50;
+  const W = 320, H = 170, L2 = 34, R = 10, T = 10, B = 26, iw = W - L2 - R, ih = H - T - B;
+  const x = (i) => L2 + iw * i / 6, y = (v) => T + ih - ih * v / top;
+  const line = (arr) => arr.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const grid = [0, 0.5, 1].map((k) => `<line x1="${L2}" x2="${W - R}" y1="${y(top * k)}" y2="${y(top * k)}" class="ch-grid"/><text x="${L2 - 6}" y="${y(top * k) + 4}" class="ch-ax" text-anchor="end">${Math.round(top * k)}</text>`).join("");
+  const labels = days.map((d, i) => `<text x="${x(i)}" y="${H - 6}" class="ch-ax" text-anchor="middle">${"DLMMJVS"[(/* @__PURE__ */ new Date(d + "T12:00")).getDay()]}</text>`).join("");
+  const dots = (arr, cls) => arr.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="4.5" class="${cls}"><title>${v} XP</title></circle>`).join("");
+  return `<div class="wk-chart">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="XP des 7 derniers jours">${grid}${labels}
+      <path d="${line(b)}" class="ch-me"/>${dots(b, "dot-me")}
+      <path d="${line(a)}" class="ch-fr"/>${dots(a, "dot-fr")}</svg>
+    <ul class="wk-legend"><li><i class="lg-fr"></i><b>${who(f)}</b><span>${hasData ? `${totA} XP` : "bient\xF4t disponible"}</span></li><li><i class="lg-me"></i><b>Moi</b><span>${totB} XP</span></li></ul>
+    ${hasData ? "" : `<p class="muted small">Le graphique de ${who(f)} se remplira d\xE8s sa prochaine activit\xE9 sur la nouvelle version.</p>`}
+  </div>`;
+}
+function renderChat(app2, username) {
+  if (gate(app2, "Messages")) return;
+  const S2 = social();
+  const hash = location.hash;
+  if (!S2.ready) {
+    loadThen(app2, () => renderChat(app2, username));
+    return;
+  }
+  const f = friendByUsername(username);
+  if (!f) {
+    location.hash = "amis";
+    return;
+  }
+  app2.innerHTML = `<div class="s-page chat-page">
+    <header class="chat-head"><a class="pf-icon plain" href="#ami-${esc(f.username)}" aria-label="Retour">\u2190</a>
+      <a class="chat-who" href="#ami-${esc(f.username)}">${av(f, "sm")}<span><b>${who(f)}</b><small>@${esc(f.username)}</small></span></a>
+      <button class="btn ghost small" data-challenge>\u2694\uFE0F D\xE9fi</button></header>
     <section class="card s-chat">
-      <h2 class="h3">\u{1F4AC} Messages</h2>
       <div class="s-msgs" aria-live="polite"><p class="muted small">Chargement\u2026</p></div>
+      <div class="quick-replies">${["\u{1F44B} Salut !", "\u{1F525} Bien jou\xE9 !", "\u2694\uFE0F Un d\xE9fi ?", "\u{1F4DA} Tu as r\xE9vis\xE9 aujourd'hui ?"].map((t) => `<button class="chip-btn" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>
       <form class="s-send" autocomplete="off">
         <textarea name="m" rows="1" maxlength="1000" placeholder="\xC9crire \xE0 ${who(f)}\u2026" aria-label="Message"></textarea>
         <button class="btn primary" type="submit" aria-label="Envoyer">\u27A4</button>
       </form>
-    </section>
-  </div></div>`;
+    </section></div>`;
   const page = app2.firstElementChild;
-  const z = (n) => app2.querySelector(`[data-zone="${n}"]`);
-  const paint = () => {
-    if (!page.isConnected) return off?.();
-    const theirs = statsOf(f.id);
-    let mine = statsOf(S2.me.id);
-    mine = { ...mine, [code]: mySummary() };
-    const langs = Object.keys(LANGS).filter((c) => theirs[c] || mine[c]?.level);
-    z("compare").innerHTML = langs.length ? langs.map((c) => {
-      const t = theirs[c], m = mine[c]?.level ? mine[c] : null;
-      const col = (s, label) => s ? `<div class="s-cmp-col"><p class="s-cmp-who">${label}</p>
-          <p class="s-cmp-lvl">${esc(s.level)} <small>${esc(s.levelName || "")}</small></p>
-          <div class="s-bar"><span style="width:${s.pct}%"></span></div>
-          <p class="small muted">${s.pct} % du parcours \xB7 \u26A1 ${s.xp} XP \xB7 \u{1F525} ${s.streak} j \xB7 \u{1F4D2} ${s.words} mots</p></div>` : `<div class="s-cmp-col"><p class="s-cmp-who">${label}</p><p class="muted small">Pas encore commenc\xE9</p></div>`;
-      return `<div class="s-cmp"><p class="s-cmp-lang"><span class="flag mini">${flagSVG(c)}</span>${esc(LANGS[c].label)}</p>
-        <div class="s-cmp-cols">${col(t, who(f))}${col(m, "Vous")}</div></div>`;
-    }).join("") : `<p class="muted">${who(f)} n'a pas encore commenc\xE9 de parcours.</p>`;
-    const chs = challengesWith(f.id);
-    z("challenges").innerHTML = chs.length ? `<ul class="s-ch-list">${chs.slice(0, 15).map((c) => challengeCard(c, { showFriend: false })).join("")}</ul>` : `<p class="muted small">Aucun d\xE9fi pour l'instant. Lancez le premier !</p>`;
-  };
-  paint();
-  const box = app2.querySelector(".s-msgs");
+  const box = page.querySelector(".s-msgs");
   const shown = /* @__PURE__ */ new Set();
-  const bubble = (m) => `<div class="s-msg ${m.sender === S2.me.id ? "me" : "them"}" data-id="${m.id}"><p>${esc(m.body)}</p><time>${when(m.created_at)}</time></div>`;
+  let lastDay = "";
+  const bubble = (m) => {
+    const d = new Date(m.created_at).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    const sep = d !== lastDay ? `<p class="day-sep">${d}</p>` : "";
+    lastDay = d;
+    return `${sep}<div class="s-msg ${m.sender === S2.me.id ? "me" : "them"}" data-id="${m.id}"><p>${esc(m.body)}</p><time>${new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</time></div>`;
+  };
   const add = (list, { initial = false } = {}) => {
     const fresh = list.filter((m) => !shown.has(m.id));
     if (initial) box.innerHTML = "";
@@ -7969,7 +8141,7 @@ function renderAmi(app2, username) {
       markRead(f.id);
     }
   }).catch((e) => box.innerHTML = `<p class="form-msg error">${esc(socialError(e))}</p>`);
-  const form = app2.querySelector(".s-send"), ta = form.m;
+  const form = page.querySelector(".s-send"), ta = form.m;
   const grow = () => {
     ta.style.height = "auto";
     ta.style.height = Math.min(ta.scrollHeight, 140) + "px";
@@ -7981,20 +8153,27 @@ function renderAmi(app2, username) {
       form.requestSubmit();
     }
   };
+  const send = async (text) => {
+    try {
+      const m = await sendMessage(f.id, text);
+      if (m) add([m]);
+      return true;
+    } catch (err) {
+      toast(err.message, "warn");
+      return false;
+    }
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
     const text = ta.value.trim();
     if (!text) return;
     ta.value = "";
     grow();
-    try {
-      const m = await sendMessage(f.id, text);
-      if (m) add([m]);
-    } catch (err) {
-      ta.value = text;
-      toast(err.message, "warn");
-    }
+    if (!await send(text)) ta.value = text;
   };
+  page.querySelectorAll("[data-q]").forEach((b) => b.onclick = () => send(b.dataset.q));
+  page.querySelector("[data-challenge]").onclick = () => askChallenge(f);
+  setTimeout(() => ta.focus(), 100);
   const poll2 = setInterval(() => {
     if (document.visibilityState === "visible") loadMessages(f.id, 30).then((l) => {
       if (stillHere(hash)) {
@@ -8004,37 +8183,11 @@ function renderAmi(app2, username) {
     }).catch(() => {
     });
   }, 12e3);
-  app2.querySelector("[data-challenge]").onclick = () => askChallenge(f);
-  app2.querySelector("[data-unfriend]").onclick = async () => {
-    const v = await modal({
-      title: `Retirer ${who(f)} ?`,
-      body: "<p>Vous ne verrez plus sa progression et ne pourrez plus vous \xE9crire. Vous pourrez le r\xE9inviter plus tard.</p>",
-      actions: [{ label: "Annuler", value: "" }, { label: "Retirer", value: "yes", kind: "danger" }]
-    });
-    if (v !== "yes") return;
-    try {
-      await removeFriendship(f.friendshipId);
-      toast("Ami retir\xE9");
-      location.hash = "amis";
-    } catch (e) {
-      toast(socialError(e), "warn");
-    }
-  };
-  bindChallengeActions(page);
   const off = onSocial((what, m) => {
-    if (what === "message") {
-      if (m.sender === f.id) {
-        add([m]);
-        markRead(f.id);
-      }
-      return;
+    if (what === "message" && m.sender === f.id && page.isConnected) {
+      add([m]);
+      markRead(f.id);
     }
-    if (what === "unread") return;
-    if (!friendByUsername(username)) {
-      location.hash = "amis";
-      return;
-    }
-    paint();
   });
   app2._cleanup = () => {
     off();
@@ -8534,6 +8687,7 @@ var ROUTES = [
   [/^trace(?:-(.+))?$/, (a, m) => renderTrace(a, m[1]), "entrainement"],
   [/^amis$/, (a) => renderAmis(a), "amis"],
   [/^ami-(.+)$/, (a, m) => renderAmi(a, m[1]), "amis"],
+  [/^chat-(.+)$/, (a, m) => renderChat(a, m[1]), "amis"],
   [/^defi-(.+)$/, (a, m) => renderDefi(a, m[1]), "amis"],
   [/^revision$/, (a) => renderRevision(a), "entrainement"],
   [/^personnaliser$/, (a) => renderPersonnaliser(a), "profil"],
@@ -8686,7 +8840,7 @@ initLangSwitch();
 onCloud((i) => {
   renderCloud(i);
   if (location.hash === "#compte" && !document.querySelector(".auth-form")) renderCompte(app);
-  if (/^#(amis|ami-|defi-|ajout-|profil)/.test(location.hash) && i.user && !document.body.classList.contains("focus-mode") && !document.querySelector(".s-page, .auth-form, .s-defi-intro, .s-defi-res, .pf")) route();
+  if (/^#(amis|ami-|chat-|defi-|ajout-|profil)/.test(location.hash) && i.user && !document.body.classList.contains("focus-mode") && !document.querySelector(".s-page, .auth-form, .s-defi-intro, .s-defi-res, .pf, .fp")) route();
   else if (location.hash === "#profil" && !document.querySelector(".modal") && !document.body.classList.contains("focus-mode")) route();
 });
 window.addEventListener("impara:remote-update", () => {
