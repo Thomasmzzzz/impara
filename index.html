@@ -1484,6 +1484,7 @@ html.dark .level-scene .sc-place { background: rgba(17, 21, 27, .7); color: #e9e
 .skel-chat { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
 .skel.sb { height: 38px; width: 46%; border-radius: 18px; }
 .skel.sb.r { align-self: flex-end; } .skel.sb.w { width: 64%; }
+.nodes > .node-wrap.has-pop { z-index: 30; }
 
 </style>
 </head>
@@ -7688,13 +7689,17 @@ function popData(o) {
   return Object.entries(o).filter(([, v]) => v != null && v !== "").map(([k, v]) => `data-pop-${k}="${esc(v)}"`).join(" ");
 }
 function closePop() {
-  document.querySelectorAll(".node-pop").forEach((x) => x.remove());
+  document.querySelectorAll(".node-pop").forEach((x) => {
+    x.closest(".node-wrap")?.classList.remove("has-pop");
+    x.remove();
+  });
   document.querySelectorAll(".node.popped").forEach((x) => x.classList.remove("popped"));
 }
 function openPop(nodeEl) {
   const d = nodeEl.dataset, wrap = nodeEl.closest(".node-wrap");
   closePop();
   nodeEl.classList.add("popped");
+  wrap.classList.add("has-pop");
   const title = d.popLv ? pyText(d.popLv, d.popTitle) : esc(d.popTitle);
   wrap.insertAdjacentHTML("beforeend", `<div class="node-pop ${nodeEl.classList.contains("perfect") ? "perfect" : nodeEl.classList.contains("done") ? "done" : ""}" role="dialog">
     <b class="np-title">${title}</b>
