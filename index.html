@@ -1248,6 +1248,64 @@ html.dark .pf-avatar { background: rgba(255, 255, 255, .18); box-shadow: 0 0 0 6
 @media (min-width: 520px) { .fr-tabs button { font-size: .92rem; padding: 10px 6px; } }
 .fr-tabs button { flex: 1 1 auto; } .fr-tabs { gap: 2px; padding: 4px; }
 
+/* =====================================================================
+   21. MESSAGERIE PLEIN ÉCRAN
+   ===================================================================== */
+body.chat-mode .topbar, body.chat-mode .tabbar { display: none; }
+body.chat-mode { overflow: hidden; }
+.chat-full { position: fixed; left: 0; right: 0; top: 0; height: 100vh; height: 100dvh; z-index: 30; display: flex; flex-direction: column; background: var(--paper); max-width: 760px; margin: 0 auto; }
+.cf-head { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 10px 8px; background: var(--card); border-bottom: 1px solid var(--line); }
+.cf-back { font-size: 2.2rem; line-height: 1; padding: 0 8px 4px; color: var(--ink); text-decoration: none; }
+.cf-who { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
+.cf-who span { display: flex; flex-direction: column; min-width: 0; }
+.cf-who b { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cf-who small { color: var(--muted); font-size: .78rem; display: flex; align-items: center; gap: 4px; }
+.cf-defi { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--paper); font-size: 1.2rem; flex: none; }
+.cf-msgs { flex: 1; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 12px 12px 8px; display: flex; flex-direction: column; }
+.cf-msgs > :first-child { margin-top: auto; }
+.cf-empty { margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cf-empty p { margin: 0; }
+.cf-day { text-align: center; margin: 14px 0 8px; }
+.cf-day span { font-size: .72rem; font-weight: 800; color: var(--muted); background: var(--paper-2); padding: 3px 10px; border-radius: 99px; text-transform: capitalize; }
+.cf-msg { display: flex; margin-top: 2px; }
+.cf-msg.first { margin-top: 8px; }
+.cf-msg.me { justify-content: flex-end; }
+.cf-msg p { margin: 0; max-width: 78%; padding: 8px 12px 6px; border-radius: 18px; font-size: 1rem; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cf-msg.them p { background: var(--card); border: 1px solid var(--line); color: var(--ink); }
+.cf-msg.me p { background: var(--verde); color: #fff; }
+body.lang-zh .cf-msg.me p { background: var(--rosso); }
+.cf-msg.me:not(.last) p { border-bottom-right-radius: 6px; }
+.cf-msg.me:not(.first) p { border-top-right-radius: 6px; }
+.cf-msg.them:not(.last) p { border-bottom-left-radius: 6px; }
+.cf-msg.them:not(.first) p { border-top-left-radius: 6px; }
+.cf-msg time { float: right; margin: 6px 0 -2px 10px; font-size: .68rem; opacity: .7; }
+.cf-msg:not(.last) time { display: none; }
+.cf-msg.big p { background: none !important; border: 0 !important; font-size: 2.6rem; padding: 0 4px; }
+.cf-msg.big time { color: var(--muted); font-size: .68rem; }
+.cf-msg.pending p { opacity: .6; }
+.cf-receipt { margin: 3px 4px 0 auto; font-size: .7rem; color: var(--muted); font-weight: 700; }
+.cf-new { position: absolute; left: 50%; transform: translateX(-50%); bottom: 130px; border: 0; border-radius: 99px; padding: 7px 14px; background: var(--ink); color: var(--paper); font-weight: 800; font-size: .82rem; box-shadow: var(--shadow); }
+.cf-foot { flex: none; background: var(--card); border-top: 1px solid var(--line); padding: 6px 10px calc(8px + env(safe-area-inset-bottom)); }
+.cf-quick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 8px; }
+.cf-quick::-webkit-scrollbar { display: none; }
+.cf-quick .chip-btn { flex: none; white-space: nowrap; }
+.cf-send { display: flex; align-items: flex-end; gap: 8px; }
+.cf-send textarea { flex: 1; min-width: 0; resize: none; border: 1.5px solid var(--line); border-radius: 22px; padding: 10px 14px; font: inherit; font-size: 16px; line-height: 1.3; background: var(--paper); color: var(--ink); max-height: 120px; }
+.cf-send textarea:focus { outline: none; border-color: var(--verde); }
+.cf-go { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: var(--verde); color: #fff; font-size: 1.15rem; transition: transform .1s, opacity .15s; }
+body.lang-zh .cf-go { background: var(--rosso); }
+.cf-go:disabled { opacity: .35; }
+.cf-go:not(:disabled):active { transform: scale(.9); }
+
+/* Examen blanc */
+.blanc-link { display: inline-block; margin-top: 6px; font-size: .78rem; font-weight: 800; color: var(--blu); text-decoration: none; border: 1.5px solid var(--line); background: var(--card); border-radius: 99px; padding: 3px 10px; }
+.blanc-link:hover { border-color: var(--blu); }
+.blanc-intro { max-width: 620px; margin: 0 auto; text-align: center; }
+.blanc-review { text-align: left; margin: 16px auto; max-width: 520px; }
+.blanc-review ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.blanc-review li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; }
+.blanc-review li small { color: var(--rosso); font-weight: 800; }
+
 </style>
 </head>
 <body>
@@ -7240,7 +7298,8 @@ function renderParcours(app2) {
         ${next ? `<a class="btn primary big" href="#${next.kind === "lesson" ? "lecon-" + next.lesson.id : "examen-" + next.level.id}">
                ${next.kind === "lesson" ? `Continuer : ${pyText(next.lesson.levelId, next.lesson.title)}` : `Passer l'examen ${lvlLabel2(next.level)}`} \u2192</a>` : `<p class="badge-done">\u{1F3C6} Parcours termin\xE9 \u2014 ${L.done}</p>`}
         <div class="hero-links">${srsTodo() ? `<a class="btn ghost small" href="#reviser">\u{1F4C5} ${srsTodo()} mot${srsTodo() > 1 ? "s" : ""} \xE0 r\xE9viser</a>` : ""}
-          <a class="btn ghost small" href="#entrainement">\u{1F3AF} Entra\xEEnement</a></div>
+          <a class="btn ghost small" href="#entrainement">\u{1F3AF} Entra\xEEnement</a>
+          <a class="btn ghost small" href="#blanc-${currentLevel().id}">\u{1F4DD} Examen blanc ${lvlLabel2(currentLevel())}</a></div>
       </div>
       <div class="hero-meter" aria-label="Progression globale ${g.pct} %">
         <div class="meter-track"><span style="width:${g.pct}%"></span></div>
@@ -7280,7 +7339,8 @@ function levelBlock(lvl, li) {
            aria-label="Examen de fin de palier ${lvlLabel2(lvl)}${examDone ? ", valid\xE9" : examOpen ? "" : ", verrouill\xE9"}">
           <span class="node-icon">${examDone ? "\u{1F3C6}" : examOpen ? "\u{1F393}" : "\u{1F512}"}</span>
         </a>
-        <span class="node-label"><b>Examen ${lvlLabel2(lvl)}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "80 % requis"}</small></span>
+        <span class="node-label"><b>Examen ${lvlLabel2(lvl)}</b><small>${examDone ? `Valid\xE9 \xB7 ${state.exams[lvl.id].best}/${state.exams[lvl.id].total}` : "80 % requis"}</small>
+          ${unlocked2 ? `<a class="blanc-link" href="#blanc-${lvl.id}">\u{1F4DD} Examen blanc${state.blanc?.[lvl.id] ? ` \xB7 ${state.blanc[lvl.id].best}/${state.blanc[lvl.id].total}` : ""}</a>` : ""}</span>
       </li>
     </ol>
   </section>`;
@@ -7894,6 +7954,86 @@ function renderExamen(app2, levelId) {
   });
   return true;
 }
+function renderBlanc(app2, levelId) {
+  const level = getLevel3(levelId), li = LEVELS3.indexOf(level);
+  if (!level || !isLevelUnlocked(li)) return false;
+  const n = level.exam.length;
+  const done = level.lessons.filter((l) => isLessonDone(l.id)).length;
+  const rec = state.blanc?.[levelId];
+  app2.innerHTML = `
+  <a class="back-link" href="#parcours">\u2190 Parcours</a>
+  <section class="card blanc-intro">
+    <p class="eyebrow">Entra\xEEnement \xE0 l'examen</p>
+    <h1>\u{1F4DD} Examen blanc ${esc(lvlLabel2(level))}</h1>
+    <p class="lead">${n} questions tir\xE9es de <b>toutes les le\xE7ons</b> du palier, comme le jour de l'examen.</p>
+    <ul class="defi-rules">
+      <li>\u{1F3AF} Il faut <b>${Math.round(PASS_EXAM * 100)} %</b> pour r\xE9ussir le vrai examen</li>
+      <li>\u{1F4DA} Vous avez termin\xE9 <b>${done}/${level.lessons.length}</b> le\xE7ons : les autres appara\xEEtront aussi</li>
+      <li>\u{1F9EA} Rien n'est valid\xE9 ni ajout\xE9 au cahier d'erreurs : c'est un essai</li>
+      <li>\u{1F4CB} \xC0 la fin : les le\xE7ons \xE0 revoir en priorit\xE9</li>
+    </ul>
+    ${rec ? `<p class="muted small">Meilleur examen blanc : <b>${rec.best}/${rec.total}</b> \xB7 dernier : ${rec.last}/${rec.total}</p>` : ""}
+    <button class="btn primary big" data-go>Commencer l'examen blanc</button>
+  </section>`;
+  app2.querySelector("[data-go]").onclick = () => startBlanc(app2, level);
+  return true;
+}
+function startBlanc(app2, level) {
+  const n = level.exam.length;
+  const per = shuffle(level.lessons).map((l) => shuffle(l.quiz.map((q, i) => ({ ref: `${l.id}:${i}`, q, lesson: l }))));
+  const picked = [];
+  for (let k = 0; picked.length < n && per.some((a) => a.length); k++) {
+    const a = per[k % per.length];
+    if (a.length) picked.push(a.pop());
+  }
+  const questions = shuffle(picked);
+  document.body.classList.add("focus-mode");
+  runQuiz(app2, {
+    title: `Examen blanc ${lvlLabel2(level)}`,
+    questions: questions.map(({ ref, q }) => ({ ref, q })),
+    onQuit: () => {
+      document.body.classList.remove("focus-mode");
+      location.hash = "parcours";
+    },
+    onFinish: (results) => {
+      document.body.classList.remove("focus-mode");
+      const score = results.filter((r2) => r2.correct).length, total = results.length;
+      const r = recordPractice({ label: `Examen blanc ${lvlLabel2(level)}`, score, total, xpPer: 2, key: `blanc:${level.id}` });
+      commit((s) => {
+        const prev = s.blanc?.[level.id];
+        s.blanc = { ...s.blanc || {}, [level.id]: { best: Math.max(prev?.best || 0, score), last: score, total, date: Date.now() } };
+      });
+      const wrong = {};
+      results.forEach((res, i) => {
+        if (!res.correct) {
+          const l = questions[i].lesson;
+          wrong[l.id] = (wrong[l.id] || 0) + 1;
+        }
+      });
+      const toReview = level.lessons.filter((l) => wrong[l.id]).sort((a, b) => wrong[b.id] - wrong[a.id]);
+      const pct = Math.round(score / total * 100), need = Math.ceil(PASS_EXAM * total), ok = score >= need;
+      const realOpen = isExamUnlocked(LEVELS3.indexOf(level));
+      app2.innerHTML = `
+      <section class="results ${ok ? "ok" : "ko"}">
+        ${ring(pct, 150, 12)}
+        <h1>${ok ? "Vous auriez r\xE9ussi l'examen ! \u{1F393}" : "Pas encore tout \xE0 fait"}</h1>
+        <p class="lead">${score} / ${total} bonnes r\xE9ponses \xB7 ${need} n\xE9cessaires</p>
+        <p class="muted">${ok ? realOpen ? "Vous \xEAtes pr\xEAt\xB7e : lancez-vous pour de vrai !" : "Terminez les le\xE7ons du palier pour d\xE9bloquer le vrai examen." : `Il vous manque ${need - score} bonne${need - score > 1 ? "s" : ""} r\xE9ponse${need - score > 1 ? "s" : ""}. Voici quoi revoir en priorit\xE9.`}</p>
+        <div class="result-chips">${r.capped ? `<span class="chip muted-chip">\u23F3 XP d\xE9j\xE0 gagn\xE9s aujourd'hui</span>` : `<span class="chip">\u26A1 +${r.xpGained} XP</span>`}</div>
+        ${toReview.length ? `<div class="card blanc-review"><h2 class="h3">\u{1F4CB} \xC0 revoir</h2><ul>${toReview.map((l) => {
+        const open = isLessonUnlocked(l);
+        return `<li><span>${l.emoji} ${esc(l.title)}</span><small>${wrong[l.id]} erreur${wrong[l.id] > 1 ? "s" : ""}</small>
+            ${open ? `<a class="btn ghost small" href="#lecon-${l.id}">Revoir</a>` : `<span class="muted small">\u{1F512} pas encore faite</span>`}</li>`;
+      }).join("")}</ul></div>` : ""}
+        <div class="result-actions">
+          ${ok && realOpen ? `<a class="btn primary big" href="#examen-${level.id}">Passer le vrai examen \u2192</a>` : `<a class="btn primary big" href="#blanc-${level.id}" data-reload>Refaire un examen blanc</a>`}
+          <a class="btn ghost" href="#parcours">Retour au parcours</a>
+        </div>
+      </section>`;
+      if (ok) celebrate();
+    }
+  });
+}
 function renderRevision(app2) {
   const errs = Object.values(state.errors).sort((a, b) => b.count - a.count || a.lastWrong - b.lastWrong).slice(0, 10).map((e) => ({ ref: e.ref, q: getQuestion3(e.ref) })).filter((x) => x.q);
   if (!errs.length) {
@@ -8342,6 +8482,7 @@ function mergeStates(a, b) {
   out.stories = { ...older.stories || {}, ...newer.stories || {} };
   out.feedSent = { ...older.feedSent || {}, ...newer.feedSent || {} };
   out.feedInit = !!(a.feedInit || b.feedInit);
+  out.blanc = { ...older.blanc || {}, ...newer.blanc || {} };
   out.practiceXp = { ...a.practiceXp || {} };
   for (const [k, t] of Object.entries(b.practiceXp || {})) out.practiceXp[k] = Math.max(out.practiceXp[k] || 0, t);
   out.updatedAt = Math.max(a.updatedAt || 0, b.updatedAt || 0);
@@ -10483,63 +10624,120 @@ function renderChat(app2, username) {
     location.hash = "amis";
     return;
   }
-  app2.innerHTML = `<div class="s-page chat-page">
-    <header class="chat-head"><a class="pf-icon plain" href="#ami-${esc(f.username)}" aria-label="Retour">\u2190</a>
-      <a class="chat-who" href="#ami-${esc(f.username)}">${av(f, "sm")}<span><b>${who(f)}</b><small>@${esc(f.username)}</small></span></a>
-      <button class="btn ghost small" data-challenge>\u2694\uFE0F D\xE9fi</button></header>
-    <section class="card s-chat">
-      <div class="s-msgs" aria-live="polite"><p class="muted small">Chargement\u2026</p></div>
-      <div class="quick-replies">${["\u{1F44B} Salut !", "\u{1F525} Bien jou\xE9 !", "\u2694\uFE0F Un d\xE9fi ?", "\u{1F4DA} Tu as r\xE9vis\xE9 aujourd'hui ?"].map((t) => `<button class="chip-btn" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <form class="s-send" autocomplete="off">
-        <textarea name="m" rows="1" maxlength="1000" placeholder="\xC9crire \xE0 ${who(f)}\u2026" aria-label="Message"></textarea>
-        <button class="btn primary" type="submit" aria-label="Envoyer">\u27A4</button>
+  const st = Object.entries(statsOf(f.id)).sort((a, b) => (b[1]?.xp || 0) - (a[1]?.xp || 0))[0];
+  const status = st ? `${st[1].streak ? `\u{1F525} ${st[1].streak} j \xB7 ` : ""}<span class="flag mini">${flagSVG(st[0])}</span> ${esc(st[1].level || "")}` : `@${esc(f.username)}`;
+  document.body.classList.add("chat-mode");
+  app2.innerHTML = `<div class="chat-full">
+    <header class="cf-head">
+      <a class="cf-back" href="#ami-${esc(f.username)}" aria-label="Retour">\u2039</a>
+      <a class="cf-who" href="#ami-${esc(f.username)}">${av(f, "sm")}<span><b>${who(f)}</b><small>${status}</small></span></a>
+      <button class="cf-defi" data-challenge aria-label="Lancer un d\xE9fi">\u2694\uFE0F</button>
+    </header>
+    <div class="cf-msgs" aria-live="polite"><p class="muted small cf-info">Chargement\u2026</p></div>
+    <button class="cf-new" hidden>\u2193 Nouveau message</button>
+    <footer class="cf-foot">
+      <div class="cf-quick">${["\u{1F44B} Salut !", "\u{1F525} Bien jou\xE9 !", "\u2694\uFE0F Un d\xE9fi ?", "\u{1F4DA} Tu as r\xE9vis\xE9 ?", "\u{1F602}", "\u{1F44D}"].map((t) => `<button type="button" class="chip-btn" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <form class="cf-send" autocomplete="off">
+        <textarea name="m" rows="1" maxlength="1000" placeholder="Message \xE0 ${who(f)}\u2026" aria-label="Message"></textarea>
+        <button class="cf-go" type="submit" aria-label="Envoyer" disabled>\u27A4</button>
       </form>
-    </section></div>`;
+    </footer>
+  </div>`;
   const page = app2.firstElementChild;
-  const box = page.querySelector(".s-msgs");
-  const shown = /* @__PURE__ */ new Set();
-  let lastDay = "";
-  const bubble = (m) => {
-    const d = new Date(m.created_at).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-    const sep = d !== lastDay ? `<p class="day-sep">${d}</p>` : "";
-    lastDay = d;
-    return `${sep}<div class="s-msg ${m.sender === S2.me.id ? "me" : "them"}" data-id="${m.id}"><p>${esc(m.body)}</p><time>${new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</time></div>`;
+  const box = page.querySelector(".cf-msgs"), newBtn = page.querySelector(".cf-new");
+  const msgs = /* @__PURE__ */ new Map();
+  const me = S2.me.id;
+  const dayLabel = (d) => {
+    const k = (x) => x.toDateString(), t = /* @__PURE__ */ new Date(), y = new Date(Date.now() - 864e5);
+    if (k(d) === k(t)) return "Aujourd'hui";
+    if (k(d) === k(y)) return "Hier";
+    return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
   };
-  const add = (list2, { initial = false } = {}) => {
-    const fresh = list2.filter((m) => !shown.has(m.id));
-    if (initial) box.innerHTML = "";
-    fresh.forEach((m) => shown.add(m.id));
-    if (!fresh.length && initial) box.innerHTML = `<p class="muted small s-empty">Aucun message. Dites bonjour \xE0 ${who(f)} \u{1F44B}</p>`;
-    if (!fresh.length) return;
-    box.querySelector(".s-empty")?.remove();
-    box.insertAdjacentHTML("beforeend", fresh.map(bubble).join(""));
-    box.scrollTop = box.scrollHeight;
-  };
-  loadMessages(f.id).then((list2) => {
-    if (stillHere(hash)) {
-      add(list2, { initial: true });
-      markRead(f.id);
+  const onlyEmoji = (t) => /^(\p{Extended_Pictographic}|\p{Emoji_Component}|\s){1,8}$/u.test(t) && !/[0-9#*]/.test(t);
+  const nearBottom = () => box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+  function paint(stick = true) {
+    const list2 = [...msgs.values()].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    if (!list2.length) {
+      box.innerHTML = `<div class="cf-empty">${av(f, "xl")}<p><b>${who(f)}</b></p><p class="muted small">Aucun message pour l'instant. Dites bonjour \u{1F44B}</p></div>`;
+      return;
     }
+    const lastMine = [...list2].reverse().find((m) => m.sender === me);
+    let html = "", lastDay = "";
+    list2.forEach((m, i) => {
+      const d = new Date(m.created_at), day = dayLabel(d);
+      if (day !== lastDay) {
+        html += `<p class="cf-day"><span>${day}</span></p>`;
+        lastDay = day;
+      }
+      const prev = list2[i - 1], next = list2[i + 1];
+      const close = (a, b) => a && b && a.sender === b.sender && Math.abs(new Date(a.created_at) - new Date(b.created_at)) < 5 * 6e4 && dayLabel(new Date(a.created_at)) === dayLabel(new Date(b.created_at));
+      const first = !close(prev, m), last = !close(m, next);
+      const mine = m.sender === me, big = onlyEmoji(m.body);
+      html += `<div class="cf-msg ${mine ? "me" : "them"} ${first ? "first" : ""} ${last ? "last" : ""} ${big ? "big" : ""} ${m.pending ? "pending" : ""}">
+        <p>${esc(m.body)}<time>${d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</time></p></div>`;
+      if (m === lastMine) html += `<p class="cf-receipt">${m.pending ? "Envoi\u2026" : m.failed ? "\u26A0\uFE0F Non envoy\xE9" : m.read_at ? "Vu \u2713\u2713" : "Envoy\xE9 \u2713"}</p>`;
+    });
+    const wasNear = nearBottom();
+    box.innerHTML = html;
+    if (stick || wasNear) {
+      box.scrollTop = box.scrollHeight;
+      newBtn.hidden = true;
+    } else newBtn.hidden = false;
+  }
+  function merge(list2, { fromOther = false } = {}) {
+    let changed = false;
+    list2.forEach((m) => {
+      const old = msgs.get(m.id);
+      if (!old || old.read_at !== m.read_at) {
+        msgs.set(m.id, { ...old, ...m });
+        changed = true;
+      }
+    });
+    if (changed) paint(!fromOther);
+  }
+  newBtn.onclick = () => {
+    box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+    newBtn.hidden = true;
+  };
+  box.addEventListener("scroll", () => {
+    if (nearBottom()) newBtn.hidden = true;
+  });
+  loadMessages(f.id).then((list2) => {
+    if (!stillHere(hash)) return;
+    box.innerHTML = "";
+    list2.forEach((m) => msgs.set(m.id, m));
+    paint(true);
+    markRead(f.id);
   }).catch((e) => box.innerHTML = `<p class="form-msg error">${esc(socialError(e))}</p>`);
-  const form = page.querySelector(".s-send"), ta = form.m;
+  const form = page.querySelector(".cf-send"), ta = form.m, go = form.querySelector(".cf-go");
   const grow = () => {
     ta.style.height = "auto";
-    ta.style.height = Math.min(ta.scrollHeight, 140) + "px";
+    ta.style.height = Math.min(ta.scrollHeight, 120) + "px";
+    go.disabled = !ta.value.trim();
   };
   ta.oninput = grow;
   ta.onkeydown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       form.requestSubmit();
     }
   };
+  let tmp = 0;
   const send = async (text) => {
+    const id = `tmp-${++tmp}`;
+    msgs.set(id, { id, sender: me, body: text, created_at: (/* @__PURE__ */ new Date()).toISOString(), pending: true });
+    paint(true);
     try {
       const m = await sendMessage(f.id, text);
-      if (m) add([m]);
+      msgs.delete(id);
+      if (m) msgs.set(m.id, m);
+      paint(true);
       return true;
     } catch (err) {
+      msgs.set(id, { ...msgs.get(id), pending: false, failed: true });
+      paint(true);
       toast(err.message, "warn");
+      msgs.delete(id);
       return false;
     }
   };
@@ -10549,29 +10747,45 @@ function renderChat(app2, username) {
     if (!text) return;
     ta.value = "";
     grow();
-    if (!await send(text)) ta.value = text;
+    ta.focus();
+    if (!await send(text)) {
+      ta.value = text;
+      grow();
+    }
   };
   page.querySelectorAll("[data-q]").forEach((b) => b.onclick = () => send(b.dataset.q));
   page.querySelector("[data-challenge]").onclick = () => askChallenge(f);
-  setTimeout(() => ta.focus(), 100);
+  const vv = window.visualViewport;
+  const fit = () => {
+    if (!vv) return;
+    page.style.height = `${vv.height}px`;
+    page.style.top = `${vv.offsetTop}px`;
+    if (document.activeElement === ta) box.scrollTop = box.scrollHeight;
+  };
+  vv?.addEventListener("resize", fit);
+  vv?.addEventListener("scroll", fit);
+  fit();
   const poll2 = setInterval(() => {
     if (document.visibilityState === "visible") loadMessages(f.id, 30).then((l) => {
       if (stillHere(hash)) {
-        add(l);
+        merge(l, { fromOther: true });
         markRead(f.id);
       }
     }).catch(() => {
     });
-  }, 12e3);
+  }, 8e3);
   const off = onSocial((what, m) => {
     if (what === "message" && m.sender === f.id && page.isConnected) {
-      add([m]);
+      merge([m], { fromOther: true });
       markRead(f.id);
     }
   });
   app2._cleanup = () => {
     off();
     clearInterval(poll2);
+    vv?.removeEventListener("resize", fit);
+    vv?.removeEventListener("scroll", fit);
+    document.body.classList.remove("chat-mode");
   };
 }
 function notEnoughWords(title = "Pas encore assez de mots", size = 5) {
@@ -11990,13 +12204,14 @@ var ROUTES = [
   [/^profil-ajout$/, (a) => renderProfil(a, { add: true }), "profil"],
   [/^lecon-(.+)$/, (a, m) => renderLecon(a, m[1]), "parcours"],
   [/^quiz-(.+)$/, (a, m) => renderQuiz(a, m[1]), "parcours"],
-  [/^examen-(.+)$/, (a, m) => renderExamen(a, m[1]), "parcours"]
+  [/^examen-(.+)$/, (a, m) => renderExamen(a, m[1]), "parcours"],
+  [/^blanc-(.+)$/, (a, m) => renderBlanc(a, m[1]), "parcours"]
 ];
 function route() {
   app._cleanup?.();
   app._cleanup = null;
   if (!location.hash.startsWith("#defi-")) leaveLive();
-  document.body.classList.remove("focus-mode");
+  document.body.classList.remove("focus-mode", "chat-mode");
   const raw = decodeURIComponent(location.hash.slice(1));
   if (!state.profile && raw === "compte") {
     document.body.classList.add("onboarding");
@@ -12136,7 +12351,7 @@ initLangSwitch();
 onCloud((i) => {
   renderCloud(i);
   if (location.hash === "#compte" && !document.querySelector(".auth-form")) renderCompte(app);
-  if (/^#(amis|ami-|chat-|defi-|ajout-|profil)/.test(location.hash) && i.user && !document.body.classList.contains("focus-mode") && !document.querySelector(".s-page, .auth-form, .s-defi-intro, .s-defi-res, .pf, .fp")) route();
+  if (/^#(amis|ami-|chat-|defi-|ajout-|profil)/.test(location.hash) && i.user && !document.body.classList.contains("focus-mode") && !document.body.classList.contains("chat-mode") && !document.querySelector(".s-page, .auth-form, .s-defi-intro, .s-defi-res, .pf, .fp")) route();
   else if (location.hash === "#profil" && !document.querySelector(".modal") && !document.body.classList.contains("focus-mode")) route();
 });
 window.addEventListener("impara:remote-update", () => {
