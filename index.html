@@ -1346,6 +1346,9 @@ html.dark .np-cta { background: #f3f4f6; color: #11151b; }
   .tabbar { height: calc(var(--tabbar-h) + var(--tabbar-lift) + env(safe-area-inset-bottom)); padding-bottom: calc(var(--tabbar-lift) + env(safe-area-inset-bottom)); }
   #app { padding-bottom: calc(32px + var(--tabbar-h) + var(--tabbar-lift)); }
 }
+.card-dir button { font-size: .85rem; }
+.flashcard .big-py.small-py { font-size: clamp(1.2rem, 5vw, 1.6rem); color: var(--rosso); font-style: normal; }
+.flashcard .face.back .big-py.small-py { color: inherit; opacity: .92; }
 
 </style>
 </head>
@@ -8329,7 +8332,7 @@ var statInner = (icon, val, label) => `<span class="stat-icon">${icon}</span><b>
 var stat = (icon, val, label) => `<div class="stat">${statInner(icon, val, label)}</div>`;
 
 // js/views/carnet.js
-var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false, cardType: readType("cardType", "hanzi"), study: readType("study", "srs"), deckKey: null, done: 0 };
+var ui = { query: "", level: "all", mode: "list", deck: [], pos: 0, flipped: false, cardType: readType("cardType", "hanzi"), study: readType("study", "srs"), dir: readType("cardDir", "target"), deckKey: null, done: 0 };
 var CARD_TYPES = [["hanzi", "\u6C49\u5B57 \u2192 pinyin + sens"], ["pinyin", "Pinyin \u2192 sens"]];
 function readType(k, def) {
   try {
@@ -8409,8 +8412,12 @@ function renderCarnet(app2) {
     const studySwitch = `<div class="seg" role="group" aria-label="Mode de r\xE9vision">
         <button class="${srs ? "on" : ""}" data-study="srs">\u{1F4C5} R\xE9vision du jour${st.todo ? ` <span class="count-pill">${st.todo}</span>` : ""}</button>
         <button class="${!srs ? "on" : ""}" data-study="free">\u{1F500} Libre</button></div>`;
-    const typeSwitch = hasPinyin ? `<div class="seg card-type" role="group" aria-label="Type de flashcard">
-        ${CARD_TYPES.map(([t, label]) => `<button class="${ui.cardType === t ? "on" : ""}" data-type="${t}">${label}</button>`).join("")}</div>` : "";
+    const lang = L.label;
+    const dirSwitch = `<div class="seg card-dir" role="group" aria-label="Sens des cartes">
+        <button class="${ui.dir !== "fr" ? "on" : ""}" data-dir="target">${esc(lang)} \u2192 Fran\xE7ais</button>
+        <button class="${ui.dir === "fr" ? "on" : ""}" data-dir="fr">Fran\xE7ais \u2192 ${esc(lang)}</button></div>`;
+    const typeSwitch = dirSwitch + (hasPinyin && ui.dir !== "fr" ? `<div class="seg card-type" role="group" aria-label="Type de flashcard">
+        ${CARD_TYPES.map(([t, label]) => `<button class="${ui.cardType === t ? "on" : ""}" data-type="${t}">${label}</button>`).join("")}</div>` : "");
     const statsLine = `<p class="srs-stats small muted">\u{1F195} ${st.fresh} nouveau${st.fresh > 1 ? "x" : ""} \xB7 \u{1F501} ${st.due} \xE0 revoir \xB7 \u2705 ${st.known} bien connu${st.known > 1 ? "s" : ""}</p>`;
     if (!w) {
       body.innerHTML = `<div class="flash-wrap">${studySwitch}${typeSwitch}
@@ -8422,7 +8429,9 @@ function renderCarnet(app2) {
       bindCardControls(pool);
       return;
     }
-    const faces = pinyinMode ? `<span class="face front"><small>Pinyin</small><b class="big-py">${esc(w.py)}</b><em>Touchez pour voir la traduction</em></span>
+    const toFr = ui.dir !== "fr";
+    const faces = !toFr ? `<span class="face front"><small>Fran\xE7ais</small><b>${esc(String(w.fr).split(" \u2014 ")[0])}</b><em>Comment dit-on en ${esc(L.label.toLowerCase())} ?</em></span>
+         <span class="face back"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b>${w.py ? `<em class="big-py small-py">${esc(w.py)}</em>` : `<em>${esc(w.fr)}</em>`}</span>` : pinyinMode ? `<span class="face front"><small>Pinyin</small><b class="big-py">${esc(w.py)}</b><em>Touchez pour voir la traduction</em></span>
          <span class="face back"><small>${esc(w.py)}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>` : `<span class="face front"><small>${esc(L.cardFront)}</small><b class="${L.wordClass ? L.wordClass + " big-zh" : ""}">${esc(w.zh)}</b><em>${esc(L.cardHint)}</em></span>
          <span class="face back"><small>${esc(w.py || "Fran\xE7ais")}</small><b>${esc(w.fr)}</b><em class="${L.wordClass}">${esc(w.zh)}</em></span>`;
     const pv = preview(w);
@@ -8481,6 +8490,16 @@ function renderCarnet(app2) {
       ui.study = b.dataset.study;
       saveType(ui.cardType, ui.study);
       ui.deckKey = null;
+      draw();
+    });
+    body.querySelectorAll("[data-dir]").forEach((b) => b.onclick = () => {
+      if (ui.dir === b.dataset.dir) return;
+      ui.dir = b.dataset.dir;
+      try {
+        localStorage.setItem("impara.cardDir", ui.dir);
+      } catch {
+      }
+      ui.flipped = false;
       draw();
     });
     body.querySelectorAll("[data-type]").forEach((b) => b.onclick = () => {
