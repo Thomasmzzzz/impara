@@ -1171,6 +1171,51 @@ body.lang-zh .mic { background: var(--rosso); box-shadow: 0 6px 0 #8f2a23; }
 html.modal-open, html.modal-open body { overflow: hidden; }
 @media (max-width: 480px) { .modal { padding: 20px 18px; } }
 
+/* =====================================================================
+   19. FIL D'ACTIVITÉ ET DUEL EN DIRECT
+   ===================================================================== */
+.fr-tabs { overflow-x: auto; scrollbar-width: none; }
+.feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.feed-item { display: flex; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+.feed-item:last-child { border-bottom: 0; }
+.feed-av { position: relative; flex: none; text-decoration: none; }
+.feed-ico { position: absolute; right: -6px; bottom: -4px; font-size: 1.05rem; background: var(--card); border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; box-shadow: 0 1px 4px rgba(0, 0, 0, .15); }
+.feed-body { min-width: 0; flex: 1; }
+.feed-body p { margin: 0; line-height: 1.35; }
+.rx-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.rx { border: 1.5px solid var(--line); background: var(--paper); border-radius: 99px; padding: 3px 10px; font-size: 1rem; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: transform .1s; }
+.rx i { font-style: normal; font-size: .78rem; font-weight: 800; color: var(--ink-2); }
+.rx.on { border-color: var(--blu); background: #e6eef7; }
+.rx:not(:disabled):active { transform: scale(1.15); }
+.rx:disabled { cursor: default; opacity: 1; }
+.feed-by { font-size: .78rem; color: var(--muted); margin: 6px 0 0 !important; }
+html.dark .rx { background: var(--paper-2); } html.dark .rx.on { background: #1c3550; }
+
+.live-opt { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 4px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; cursor: pointer; }
+.live-opt input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--verde); flex: none; }
+.live-txt { display: flex; flex-direction: column; gap: 2px; }
+.live-txt small { color: var(--muted); font-size: .78rem; }
+.live-opt:has(input:checked) { border-color: var(--verde); background: var(--verde-l); }
+
+.seat { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.seat-st { font-size: .75rem; font-weight: 800; padding: 2px 10px; border-radius: 99px; background: var(--paper-2); color: var(--muted); }
+.seat-st.on { color: var(--blu); }
+.seat-st.ok { background: var(--verde-l); color: var(--verde); }
+.live-lobby [data-ready] { margin-top: 6px; }
+.live-bars { display: grid; gap: 6px; margin-top: 8px; width: 100%; flex-basis: 100%; }
+.lb { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: .8rem; }
+.lb-who { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-bar { height: 10px; background: var(--paper-2); border-radius: 99px; overflow: hidden; }
+.lb-bar span { display: block; height: 100%; border-radius: 99px; transition: width .4s; background: var(--verde); }
+.lb.op .lb-bar span { background: var(--blu); }
+.lb-sc { font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+.duel-hud { flex-wrap: wrap; }
+.live-watch { margin: 12px 0; padding: 12px; border-radius: 12px; background: var(--paper); text-align: left; }
+html.dark .live-watch { background: var(--paper-2); }
+.live-h { margin: 0 0 4px; font-weight: 800; }
+.fr-tabs { display: flex !important; flex-wrap: nowrap !important; gap: 4px; }
+.fr-tabs button { flex: 1 0 auto; white-space: nowrap; padding: 8px 8px; font-size: .84rem; }
+
 </style>
 </head>
 <body>
@@ -8247,6 +8292,9 @@ function mergeStates(a, b) {
     seen.add(k);
     return true;
   }).slice(0, 20);
+  out.stories = { ...older.stories || {}, ...newer.stories || {} };
+  out.feedSent = { ...older.feedSent || {}, ...newer.feedSent || {} };
+  out.feedInit = !!(a.feedInit || b.feedInit);
   out.updatedAt = Math.max(a.updatedAt || 0, b.updatedAt || 0);
   return out;
 }
@@ -8590,8 +8638,8 @@ async function markRead(friendId) {
   await rpc("mark_messages_read", { p_friend: friendId }).catch(() => {
   });
 }
-async function createChallenge(friendId, n = 10, mode2 = "speed") {
-  const id = await rpc("create_challenge", { p_opponent: friendId, p_n: n, p_mode: mode2 }).catch((e) => {
+async function createChallenge(friendId, n = 10, mode2 = "speed", live = false) {
+  const id = await rpc("create_challenge", { p_opponent: friendId, p_n: n, p_mode: mode2, p_live: !!live }).catch((e) => {
     throw new Error(socialError(e));
   });
   await refresh();
@@ -8689,6 +8737,7 @@ async function start2() {
   await refresh().catch(() => {
   });
   pushStats(true);
+  checkMilestones();
   const sb2 = await getClient();
   if (sb2.channel) {
     channel = sb2.channel(`social-${me}`).on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `recipient=eq.${me}` }, (p) => {
@@ -8696,7 +8745,7 @@ async function start2() {
       S.unread[m.sender] = (S.unread[m.sender] || 0) + 1;
       emit2("message", m);
       if (!S.profiles[m.sender]) refresh();
-    }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "user_stats" }, (p) => {
+    }).on("postgres_changes", { event: "*", schema: "public", table: "challenges" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => refresh()).on("postgres_changes", { event: "*", schema: "public", table: "activities" }, () => reloadFeed()).on("postgres_changes", { event: "*", schema: "public", table: "activity_reactions" }, () => reloadFeed()).on("postgres_changes", { event: "*", schema: "public", table: "user_stats" }, (p) => {
       const r = p.new;
       if (r?.user_id && r.user_id !== uid()) {
         (S.stats[r.user_id] ||= {})[r.lang] = { ...r.summary, updated_at: r.updated_at };
@@ -8717,7 +8766,7 @@ function stop() {
   clearInterval(poll);
   poll = null;
   startedFor = null;
-  Object.assign(S, { ready: false, me: null, profiles: {}, friendships: [], stats: {}, challenges: [], unread: {} });
+  Object.assign(S, { ready: false, me: null, profiles: {}, friendships: [], stats: {}, challenges: [], unread: {}, feed: null });
   emit2("all");
 }
 function initSocial() {
@@ -8729,7 +8778,10 @@ function initSocial() {
   if (uid()) start2();
   subscribe(() => {
     clearTimeout(statsTimer);
-    statsTimer = setTimeout(() => pushStats(), 4e3);
+    statsTimer = setTimeout(() => {
+      pushStats();
+      checkMilestones();
+    }, 4e3);
   });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && uid()) refresh().catch(() => {
@@ -8773,6 +8825,144 @@ async function weeklyHistory(limit = 12) {
 function record(friendId = null) {
   const list2 = allChallenges().filter((c) => c.stage === "done" && (!friendId || c.friend?.id === friendId));
   return { win: list2.filter((c) => c.outcome === "win").length, lose: list2.filter((c) => c.outcome === "lose").length, draw: list2.filter((c) => c.outcome === "draw").length, total: list2.length };
+}
+var REACTIONS = ["\u{1F44F}", "\u{1F525}", "\u{1F4AA}", "\u{1F62E}", "\u2764\uFE0F"];
+var STREAKS = [3, 7, 14, 30, 50, 100, 200, 365];
+var WORDS = [25, 50, 100, 200, 300, 500, 1e3];
+var XPS = [500, 1e3, 2500, 5e3, 1e4, 25e3];
+var langName = (l) => (LANGS[l]?.label || "").toLowerCase();
+function activityText(a) {
+  const d = a.data || {}, lang = langName(a.lang);
+  switch (a.kind) {
+    case "exam":
+      return { icon: "\u{1F393}", text: `a termin\xE9 le niveau <b>${d.level}</b> en ${lang}` };
+    case "streak":
+      return { icon: "\u{1F525}", text: `a une s\xE9rie de <b>${d.n} jours</b> d'affil\xE9e` };
+    case "words":
+      return { icon: "\u{1F4D2}", text: `a appris <b>${d.n} mots</b> en ${lang}` };
+    case "xp":
+      return { icon: "\u26A1", text: `a d\xE9pass\xE9 <b>${d.n} XP</b> en ${lang}` };
+    case "start":
+      return { icon: "\u{1F331}", text: `a commenc\xE9 \xE0 apprendre le ${lang}` };
+    case "defi_win":
+      return { icon: "\u2694\uFE0F", text: `a gagn\xE9 un d\xE9fi${d.vs ? ` contre <b>@${d.vs}</b>` : ""} (${d.score}${d.mode === "speed" ? " pts" : ""})` };
+    default:
+      return { icon: "\u2728", text: "a franchi une nouvelle \xE9tape" };
+  }
+}
+async function post(kind, data = {}, lang = code) {
+  const sb2 = await getClient();
+  const { error } = await sb2.from("activities").insert({ user_id: uid(), kind, lang, data });
+  if (error) throw error;
+}
+function milestones() {
+  const out = [];
+  LEVELS3.forEach((l) => {
+    if (isExamPassed(l.id)) out.push([`exam-${l.id}`, "exam", { level: lvlLabel2(l) }]);
+  });
+  const streak = streakCount();
+  STREAKS.forEach((n) => {
+    if (streak >= n) out.push([`streak-${n}`, "streak", { n }]);
+  });
+  const words = Object.keys(state.vocab).length;
+  WORDS.forEach((n) => {
+    if (words >= n) out.push([`words-${n}`, "words", { n }]);
+  });
+  XPS.forEach((n) => {
+    if (state.xp >= n) out.push([`xp-${n}`, "xp", { n }]);
+  });
+  if (Object.values(state.lessons).some((l) => l.passed)) out.push(["start", "start", {}]);
+  allChallenges().filter((c) => c.stage === "done" && c.outcome === "win" && Date.now() - new Date(c.updated_at || c.created_at) < 7 * 864e5).forEach((c) => out.push([`win-${c.id}`, "defi_win", { vs: c.friend?.username || "", score: c.mode === "speed" ? c.mine.points : `${c.mine.score}/${c.mine.total}`, mode: c.mode || null }]));
+  return out;
+}
+var checking = false;
+async function checkMilestones() {
+  if (checking || !isAvailable() || !S.me || !state.profile) return;
+  checking = true;
+  try {
+    const sent = state.feedSent || {}, now = Date.now(), list2 = milestones();
+    if (!state.feedInit) {
+      const init = {};
+      list2.forEach(([k]) => init[k] = now);
+      commit((st) => {
+        st.feedSent = { ...init, ...st.feedSent || {} };
+        st.feedInit = true;
+      });
+      return;
+    }
+    const fresh = list2.filter(([k]) => !sent[k] || k.startsWith("streak-") && now - sent[k] > 60 * 864e5);
+    if (!fresh.length) return;
+    const best = fresh.filter(([k]) => !k.startsWith("streak-")).concat(fresh.filter(([k]) => k.startsWith("streak-")).slice(-1));
+    for (const [, kind, data] of best.slice(0, 5)) await post(kind, data).catch(() => {
+    });
+    commit((st) => {
+      const m = { ...st.feedSent || {} };
+      fresh.forEach(([k]) => m[k] = now);
+      st.feedSent = m;
+    });
+    reloadFeed();
+  } finally {
+    checking = false;
+  }
+}
+async function loadFeed(limit = 50) {
+  const sb2 = await getClient();
+  const ids = [uid(), ...friends().map((f) => f.id)];
+  const acts = check(await sb2.from("activities").select("*").in("user_id", ids).order("created_at", { ascending: false }).limit(limit));
+  const reacts = acts.length ? check(await sb2.from("activity_reactions").select("*").in("activity_id", acts.map((a) => a.id))) : [];
+  S.feed = acts.map((a) => ({ ...a, who: a.user_id === uid() ? S.me : S.profiles[a.user_id], mine: a.user_id === uid(), reactions: reacts.filter((r) => r.activity_id === a.id) }));
+  emit2("feed");
+  return S.feed;
+}
+var feedTimer = null;
+function reloadFeed() {
+  if (!S.feed) return;
+  clearTimeout(feedTimer);
+  feedTimer = setTimeout(() => loadFeed().catch(() => {
+  }), 400);
+}
+var feed = () => S.feed;
+async function react(activityId, emoji) {
+  const sb2 = await getClient();
+  const a = S.feed?.find((x) => x.id === activityId);
+  const mine = a?.reactions.find((r) => r.user_id === uid());
+  if (mine && mine.emoji === emoji) check(await sb2.from("activity_reactions").delete().eq("id", mine.id));
+  else if (mine) check(await sb2.from("activity_reactions").update({ emoji }).eq("id", mine.id));
+  else check(await sb2.from("activity_reactions").insert({ activity_id: activityId, user_id: uid(), emoji }));
+  await loadFeed();
+}
+async function joinDuel(id, { onPresence, onStart, onProgress }) {
+  const sb2 = await getClient();
+  const me = uid();
+  const ch = sb2.channel(`duel-${id}`, { config: { broadcast: { self: false }, presence: { key: me } } });
+  let meta = { ready: false, t: Date.now() };
+  const others = () => {
+    const st = ch.presenceState?.() || {};
+    return Object.entries(st).filter(([k]) => k !== me).map(([k, v]) => ({ id: k, ...v[v.length - 1] || {} }));
+  };
+  ch.on("presence", { event: "sync" }, () => onPresence?.(others())).on("broadcast", { event: "start" }, ({ payload }) => onStart?.(payload)).on("broadcast", { event: "progress" }, ({ payload }) => onProgress?.(payload));
+  await new Promise((ok) => ch.subscribe((status) => {
+    if (status === "SUBSCRIBED") {
+      ch.track(meta);
+      ok();
+    }
+  }));
+  return {
+    others,
+    ready: (r = true) => {
+      meta = { ...meta, ready: r };
+      return ch.track(meta);
+    },
+    start: (payload) => ch.send({ type: "broadcast", event: "start", payload }),
+    progress: (payload) => ch.send({ type: "broadcast", event: "progress", payload }),
+    leave: () => {
+      try {
+        ch.untrack?.();
+        sb2.removeChannel?.(ch);
+      } catch {
+      }
+    }
+  };
 }
 
 // js/views/profil.js
@@ -9636,14 +9826,14 @@ function challengeCard(c, { showFriend = true } = {}) {
   let status = "", actions = "", cls = "", score = "";
   switch (c.stage) {
     case "to_accept":
-      status = `<b>${who(f)}</b> vous d\xE9fie !`;
+      status = c.live ? `\u26A1 <b>${who(f)}</b> vous d\xE9fie en direct !` : `<b>${who(f)}</b> vous d\xE9fie !`;
       cls = "todo";
       actions = `<button class="btn primary small" data-ch-accept="${c.id}">Accepter</button><button class="btn ghost small" data-ch-decline="${c.id}">Refuser</button>`;
       break;
     case "waiting_accept":
       status = `D\xE9fi envoy\xE9 \xE0 <b>${who(f)}</b>`;
       cls = "wait";
-      actions = `<button class="btn ghost small" data-ch-cancel="${c.id}">Annuler</button>`;
+      actions = `${c.live ? `<a class="btn primary small" href="#defi-${c.id}">\u26A1 Salle</a>` : ""}<button class="btn ghost small" data-ch-cancel="${c.id}">Annuler</button>`;
       break;
     case "to_play":
       status = c.theirs ? `<b>${who(f)}</b> a fait ${c.theirs.score}/${c.theirs.total} : \xE0 vous !` : `\xC0 vous de jouer contre <b>${who(f)}</b>`;
@@ -9675,7 +9865,7 @@ function challengeCard(c, { showFriend = true } = {}) {
   return `<li class="s-challenge ${cls}">
     ${link ? `<a class="ch-link" ${link} aria-label="Voir le d\xE9fi"></a>` : ""}
     ${showFriend ? av(f, "sm") : `<span class="s-ch-icon">\u2694\uFE0F</span>`}
-    <div class="s-ch-body"><p>${status}</p><small class="muted">${c.n} questions \xB7 ${modeLabel(c.mode)} \xB7 ${when(c.created_at)}${c.mine?.lang ? " \xB7 " + langs(c.mine) : ""}</small></div>
+    <div class="s-ch-body"><p>${status}</p><small class="muted">${c.n} questions \xB7 ${modeLabel(c.mode)}${c.live ? " \xB7 \u26A1 En direct" : ""} \xB7 ${when(c.created_at)}${c.mine?.lang ? " \xB7 " + langs(c.mine) : ""}</small></div>
     ${score}
     ${actions ? `<div class="s-ch-actions">${actions}</div>` : ""}
   </li>`;
@@ -9763,7 +9953,8 @@ async function askChallenge(friend = null) {
       <p class="small muted">Il faut avoir appris au moins autant de mots que de questions, vous <b>et</b> votre adversaire.</p>
       <p class="set-label">Mode</p>
       <div class="mode-pick" data-modes>${Object.entries(MODES).map(([k, [l, d]]) => `<button type="button" data-mode="${k}" class="${pendingPick.mode === k ? "on" : ""}"><b>${l}</b><small>${d}</small></button>`).join("")}</div>
-      <ul class="defi-rules"><li>\u{1F3B2} Questions vari\xE9es sur <b>vos mots appris</b>, chacun dans sa langue</li><li>\u23F3 Votre ami doit accepter, puis chacun joue quand il veut</li></ul>`,
+      <label class="live-opt"><input type="checkbox" data-live ${pendingPick.live ? "checked" : ""}><span class="live-txt"><b>\u26A1 En direct</b><small>Vous jouez en m\xEAme temps et voyez la progression de l'autre en temps r\xE9el</small></span></label>
+      <ul class="defi-rules"><li>\u{1F3B2} Questions vari\xE9es sur <b>vos mots appris</b>, chacun dans sa langue</li><li>\u23F3 Votre ami doit accepter${""}, puis chacun joue quand il veut (ou ensemble en direct)</li></ul>`,
     actions: [{ label: "Annuler", value: "" }, { label: "\u2694\uFE0F Lancer le d\xE9fi", value: "go", kind: "primary" }],
     onOpen: paintSizes
   });
@@ -9779,8 +9970,9 @@ async function askChallenge(friend = null) {
     return askChallenge(friend);
   }
   try {
-    await createChallenge(target.id, n, pendingPick.mode);
-    toast(`D\xE9fi envoy\xE9 \xE0 ${target.pseudo || target.username} \u2694\uFE0F`, "ok");
+    const id = await createChallenge(target.id, n, pendingPick.mode, pendingPick.live);
+    toast(`${pendingPick.live ? "Duel en direct" : "D\xE9fi"} envoy\xE9 \xE0 ${target.pseudo || target.username} \u2694\uFE0F`, "ok");
+    if (pendingPick.live && id) location.hash = `defi-${id}`;
   } catch (e) {
     toast(e.message, "warn");
   }
@@ -9801,7 +9993,10 @@ document.addEventListener("click", (e) => {
     pendingPick.mode = pm.dataset.mode;
   }
 });
-var pendingPick = { friend: null, fixed: null, n: null, mode: "speed" };
+var pendingPick = { friend: null, fixed: null, n: null, mode: "speed", live: false };
+document.addEventListener("change", (e) => {
+  if (e.target.matches?.("[data-live]")) pendingPick.live = e.target.checked;
+});
 var tab = "classement";
 var MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
 var weekLabel = (start3) => {
@@ -9832,6 +10027,7 @@ function renderAmis(app2, opts = {}) {
   <div data-zone="requests"></div>
   <nav class="fr-tabs" role="tablist">
     <button role="tab" data-tab-btn="classement">\u{1F3C6} Classement</button>
+    <button role="tab" data-tab-btn="fil">\u{1F4F0} Fil</button>
     <button role="tab" data-tab-btn="defis">\u2694\uFE0F D\xE9fis <em class="err-badge" data-b="defis" hidden></em></button>
     <button role="tab" data-tab-btn="amis">\u{1F465} Amis <em class="err-badge" data-b="amis" hidden></em></button>
   </nav>
@@ -9860,7 +10056,7 @@ function renderAmis(app2, opts = {}) {
       b.classList.toggle("on", b.dataset.tabBtn === tab);
       b.setAttribute("aria-selected", b.dataset.tabBtn === tab);
     });
-    z("panel").innerHTML = tab === "classement" ? panelBoard(fr) : tab === "defis" ? panelDefis(all, fr) : panelAmis(fr);
+    z("panel").innerHTML = tab === "classement" ? panelBoard(fr) : tab === "fil" ? panelFeed() : tab === "defis" ? panelDefis(all, fr) : panelAmis(fr);
     if (tab === "classement") paintHistory();
   };
   function panelBoard(fr) {
@@ -9911,6 +10107,34 @@ function renderAmis(app2, opts = {}) {
         <span class="hist-win">\u{1F451} ${av(w.ranking[0].profile, "sm")}<b>${w.ranking[0].isMe ? "Vous" : who(w.ranking[0].profile)}</b><small>${w.ranking[0].xp} XP</small></span></summary>
         <ol class="s-board">${w.ranking.map((r, i) => `<li class="${r.isMe ? "me" : ""}"><span class="s-rank">${MEDALS[i] || i + 1}</span>${av(r.profile, "sm")}
           <span class="s-board-name">${r.isMe ? "Vous" : who(r.profile)}</span><b>${r.xp} XP</b></li>`).join("")}</ol></details></li>`).join("")}</ul>`;
+  }
+  function panelFeed() {
+    const list2 = feed();
+    if (!list2) {
+      loadFeed().catch(() => {
+      });
+      return `<section class="card"><p class="muted small">Chargement du fil\u2026</p></section>`;
+    }
+    if (!list2.length) return `<section class="card fr-empty"><span>\u{1F4F0}</span><p>Rien pour l'instant. Niveaux termin\xE9s, s\xE9ries, mots appris, d\xE9fis gagn\xE9s : les grandes \xE9tapes de vos amis et les v\xF4tres appara\xEEtront ici.</p></section>`;
+    return `<section class="card feed-card"><ul class="feed">${list2.map(feedItem).join("")}</ul>
+      <p class="muted small">R\xE9agissez aux \xE9tapes de vos amis : ils re\xE7oivent une notification.</p></section>`;
+  }
+  function feedItem(a) {
+    const { icon, text } = activityText(a);
+    const mineRx = a.reactions.find((r) => r.user_id === S2.me.id)?.emoji;
+    const nameOf = (r) => r.user_id === S2.me.id ? "vous" : who(S2.profiles[r.user_id]);
+    const rx = REACTIONS.map((e) => {
+      const rs = a.reactions.filter((r) => r.emoji === e);
+      if (a.mine && !rs.length) return "";
+      return `<button class="rx ${mineRx === e ? "on" : ""}" data-rx="${a.id}" data-e="${e}" ${a.mine ? "disabled" : ""} title="${esc(rs.map(nameOf).join(", "))}">${e}${rs.length ? `<i>${rs.length}</i>` : ""}</button>`;
+    }).join("");
+    const by = a.reactions.length ? `<p class="feed-by">${a.reactions.slice(0, 4).map((r) => `${r.emoji} ${esc(nameOf(r))}`).join(" \xB7 ")}${a.reactions.length > 4 ? ` \xB7 +${a.reactions.length - 4}` : ""}</p>` : "";
+    const link = a.mine ? "#profil" : a.who ? `#ami-${esc(a.who.username)}` : "#amis";
+    return `<li class="feed-item ${a.mine ? "mine" : ""}">
+      <a class="feed-av" href="${link}">${av(a.who)}<span class="feed-ico">${icon}</span></a>
+      <div class="feed-body"><p><b>${a.mine ? "Vous" : who(a.who)}</b> ${a.mine ? "avez " + text.slice(2) : text}</p>
+        <small class="muted">${when(a.created_at)}${a.lang ? ` \xB7 <span class="flag mini">${flagSVG(a.lang)}</span>` : ""}</small>
+        ${rx ? `<div class="rx-row">${rx}</div>` : ""}${by}</div></li>`;
   }
   function panelDefis(all, fr) {
     const r = record(), rate = r.total ? Math.round(r.win / r.total * 100) : 0;
@@ -9982,6 +10206,17 @@ function renderAmis(app2, opts = {}) {
     }
     if (e.target.closest("[data-new]")) {
       askChallenge();
+      return;
+    }
+    const rx = e.target.closest("[data-rx]");
+    if (rx) {
+      rx.disabled = true;
+      try {
+        await react(+rx.dataset.rx, rx.dataset.e);
+      } catch (err) {
+        toast(socialError(err), "warn");
+        rx.disabled = false;
+      }
       return;
     }
     const a = e.target.closest("[data-accept]"), r = e.target.closest("[data-remove]");
@@ -10302,7 +10537,7 @@ function notEnoughWords(title = "Pas encore assez de mots", size = 5) {
     if (v === "go") location.hash = "parcours";
   });
 }
-function renderDefi(app2, id) {
+function renderDefi(app2, id, opts = {}) {
   if (gate(app2, "D\xE9fi")) return;
   const hash = location.hash;
   loading2(app2);
@@ -10312,7 +10547,9 @@ function renderDefi(app2, id) {
       app2.innerHTML = `<section class="card account-card"><p>Ce d\xE9fi est introuvable.</p><a class="btn ghost" href="#amis">\u2190 Amis</a></section>`;
       return;
     }
-    if (c.stage !== "to_play") return showDefi(app2, c);
+    if (LIVE && LIVE.id !== c.id) leaveLive();
+    const liveOk = c.live && !c.theirs && !opts.solo && (c.stage === "to_play" || c.stage === "waiting_accept");
+    if (c.stage !== "to_play" && !liveOk) return showDefi(app2, c);
     if (!canChallenge(c.n)) {
       app2.innerHTML = `<a class="back-link" href="#amis">\u2190 Amis</a>
       <section class="card s-defi-intro"><p class="eyebrow">D\xE9fi</p><h1>\u{1F4D2} Encore quelques mots \xE0 apprendre</h1>
@@ -10321,6 +10558,7 @@ function renderDefi(app2, id) {
         <a class="btn primary big" href="#parcours">Continuer mon parcours</a></section>`;
       return;
     }
+    if (liveOk) return renderLobby(app2, c);
     const qs = buildChallengeQuestions(c.n);
     const rec = record(c.friend?.id);
     app2.innerHTML = `
@@ -10366,9 +10604,13 @@ function countdownThen(app2, go) {
       go();
     }
   }, 650);
-  app2._cleanup = () => clearInterval(t);
+  const prev = app2._cleanup;
+  app2._cleanup = () => {
+    clearInterval(t);
+    prev?.();
+  };
 }
-function play(app2, c, questions) {
+function play(app2, c, questions, live = null) {
   document.body.classList.add("focus-mode");
   const t0 = performance.now();
   const recap = [];
@@ -10379,6 +10621,7 @@ function play(app2, c, questions) {
     onAnswer: ({ q, correct, expected: expected2, given }) => {
       correct ? good++ : bad++;
       recap.push({ q: plainQ(q), expected: String(expected2 ?? ""), given: String(given ?? ""), correct });
+      live?.duel.progress({ good, bad, total: questions.length, ms: Math.round(performance.now() - t0) });
       paintHud();
     },
     onQuit: () => {
@@ -10392,6 +10635,8 @@ function play(app2, c, questions) {
       document.body.classList.remove("focus-mode");
       const ms = performance.now() - t0;
       const score = results.filter((r) => r.correct).length;
+      live?.duel.progress({ good: score, bad: results.length - score, total: results.length, ms: Math.round(ms), finished: true });
+      if (live) live.meDone = true;
       try {
         localStorage.setItem(`impara.defi.${c.id}`, JSON.stringify(recap));
       } catch {
@@ -10422,9 +10667,11 @@ function play(app2, c, questions) {
     const pts = c.mode === "speed" ? Math.max(0, good * SPEED_PER_GOOD - Math.round(el) * SPEED_PER_SEC) : null;
     if (c.theirs && c.mode === "speed") race = pts > c.theirs.points ? `<span class="ahead">\u{1F525} ${pts} pts</span>` : `<span>${pts} / ${c.theirs.points} pts</span>`;
     else if (c.mode === "speed") race = `<span>${pts} pts</span>`;
-    hud.innerHTML = `${c.mode === "precision" ? "" : `<span class="hud-t">\u23F1\uFE0F ${t}</span>`}<span class="hud-ok">\u2713 ${good}</span><span class="hud-ko">\u2717 ${bad}</span>${race}`;
+    if (live) race = "";
+    hud.innerHTML = `${c.mode === "precision" ? "" : `<span class="hud-t">\u23F1\uFE0F ${t}</span>`}<span class="hud-ok">\u2713 ${good}</span><span class="hud-ko">\u2717 ${bad}</span>${race}` + (live ? liveBars(c, { good, bad, total, el }, live.opp, el) : "");
   }
   paintHud();
+  if (live) live.onUpdate = paintHud;
   const timer = setInterval(paintHud, 500);
   const prev = app2._cleanup;
   app2._cleanup = () => {
@@ -10462,6 +10709,7 @@ function showDefi(app2, c, justPlayed = false) {
     })() : c.mode === "precision" ? c.outcome === "draw" ? "M\xEAme nombre de bonnes r\xE9ponses : match nul !" : c.outcome === "win" ? "Plus de bonnes r\xE9ponses : bien jou\xE9 !" : "La revanche vous attend !" : c.outcome === "win" ? c.mine.score === c.theirs.score ? "M\xEAme score, mais vous avez \xE9t\xE9 plus rapide \u26A1" : "Bien jou\xE9 ! Pr\xEAt \xE0 remettre \xE7a ?" : c.outcome === "lose" ? c.mine.score === c.theirs.score ? `M\xEAme score, ${who(f)} a \xE9t\xE9 plus rapide.` : "La revanche vous attend !" : "M\xEAme score, m\xEAme temps : impressionnant."
   }[c.stage] || "";
   const rec = record(f?.id);
+  const watching = LIVE && LIVE.id === c.id && c.stage === "waiting_play";
   const reactions = c.stage === "done" ? c.outcome === "win" ? ["\u{1F44F} GG !", "\u{1F60E} Trop facile", "\u{1F525} Revanche ?"] : c.outcome === "lose" ? ["\u{1F44F} Bien jou\xE9 !", "\u{1F525} Revanche !", "\u{1F605} La prochaine fois\u2026"] : ["\u{1F91D} \xC9galit\xE9 parfaite !", "\u{1F525} On d\xE9partage ?"] : [];
   app2.innerHTML = `<div class="s-page">
   <a class="back-link" href="#amis">\u2190 Amis</a>
@@ -10469,6 +10717,7 @@ function showDefi(app2, c, justPlayed = false) {
     <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions \xB7 ${modeLabel(c.mode)} \xB7 ${when(c.created_at)}</p>
     <h1>${head}</h1>${sub ? `<p class="muted">${sub}</p>` : ""}
     <div class="s-res">${col(c.mine, "Vous", me, c.outcome === "win")}<span class="s-vs-x">VS</span>${col(c.theirs, who(f), f, c.outcome === "lose")}</div>
+    ${watching ? `<div class="live-watch" data-watch></div>` : ""}
     ${rec.total ? `<p class="h2h">Bilan contre ${who(f)} : <b>${rec.win}</b>V \xB7 <b>${rec.lose}</b>D${rec.draw ? ` \xB7 <b>${rec.draw}</b>N` : ""}</p>` : ""}
     ${reactions.length && f ? `<div class="reactions"><p class="muted small">Envoyer un message \xE0 ${who(f)} :</p>${reactions.map((r) => `<button class="chip-btn" data-react="${esc(r)}">${esc(r)}</button>`).join("")}</div>` : ""}
     <div class="result-actions">
@@ -10503,15 +10752,167 @@ function showDefi(app2, c, justPlayed = false) {
     }
   });
   bindChallengeActions(app2.firstElementChild);
+  if (watching) {
+    const paintWatch = () => {
+      const z = app2.querySelector("[data-watch]");
+      if (!z) return;
+      const o = LIVE?.opp || {};
+      z.innerHTML = !o.present && !o.finished ? `<p class="muted small">\u{1F4F4} ${who(f)} s'est d\xE9connect\xE9 : son score arrivera quand il aura fini.</p>` : `<p class="live-h">\u26A1 ${who(f)} joue en ce moment</p>${liveBars(c, null, o, (performance.now() - (LIVE?.t0 || performance.now())) / 1e3)}`;
+    };
+    LIVE.onUpdate = paintWatch;
+    paintWatch();
+    const w = setInterval(paintWatch, 1e3);
+    const prevC = app2._cleanup;
+    app2._cleanup = () => {
+      clearInterval(w);
+      prevC?.();
+    };
+  }
+  if (c.stage === "done" && LIVE?.id === c.id) leaveLive();
   const off = onSocial((what) => {
     if (what !== "all") return;
     const fresh = allChallenges().find((x) => x.id === c.id);
     if (fresh && fresh.stage !== c.stage) {
       off();
-      showDefi(app2, fresh, fresh.stage === "done" && justPlayed);
+      app2._cleanup?.();
+      app2._cleanup = null;
+      showDefi(app2, fresh, fresh.stage === "done" && (justPlayed || !!LIVE));
     }
   });
-  app2._cleanup = off;
+  const prevS = app2._cleanup;
+  app2._cleanup = () => {
+    off();
+    prevS?.();
+  };
+}
+var LIVE = null;
+function leaveLive() {
+  if (LIVE) {
+    LIVE.duel?.leave();
+    LIVE = null;
+  }
+}
+function liveBars(c, me, opp, el) {
+  const pts = (good, ms) => Math.max(0, good * SPEED_PER_GOOD - Math.round(ms / 1e3) * SPEED_PER_SEC);
+  const bar = (label, p, cls) => {
+    if (!p) return "";
+    const n = (p.good || 0) + (p.bad || 0), total = p.total || c.n;
+    const extra = c.mode === "speed" ? ` \xB7 ${pts(p.good || 0, p.finished ? p.ms : el * 1e3)} pts` : "";
+    return `<div class="lb ${cls}"><span class="lb-who">${label}</span><div class="lb-bar"><span style="width:${Math.round(n / total * 100)}%"></span></div>
+      <span class="lb-sc">${p.finished ? "\u{1F3C1} " : ""}\u2713${p.good || 0} \u2717${p.bad || 0}${extra}</span></div>`;
+  };
+  const f = c.friend;
+  const oppState = opp && (opp.present || opp.finished) ? opp : null;
+  return `<div class="live-bars">${me ? bar("Vous", me, "me") : ""}${oppState ? bar(who(f), { ...opp, total: opp.total || c.n }, "op") : `<p class="muted small">\u{1F4F4} ${who(f)} n'est plus connect\xE9</p>`}</div>`;
+}
+async function renderLobby(app2, c) {
+  const f = c.friend, me = social().me;
+  app2.innerHTML = `<a class="back-link" href="#amis">\u2190 Amis</a>
+  <section class="card s-defi-intro defi-arena live-lobby">
+    <p class="eyebrow">\u26A1 Duel en direct \xB7 ${c.n} questions \xB7 ${modeLabel(c.mode)}</p>
+    <div class="s-vs"><div class="seat">${av(me, "xl")}<span class="seat-st" data-st="me"></span></div><span class="s-vs-x">VS</span><div class="seat">${av(f, "xl")}<span class="seat-st" data-st="op"></span></div></div>
+    <h1 data-l="title">Connexion\u2026</h1><p class="muted" data-l="sub"></p>
+    <button class="btn primary big" data-ready disabled>Je suis pr\xEAt !</button>
+    <ul class="defi-rules">
+      <li>\u26A1 Vous jouez en m\xEAme temps, chacun sur ses propres mots</li>
+      <li>\u{1F440} Vous voyez la progression de ${who(f)} pendant la partie</li>
+      <li>${c.mode === "precision" ? "\u{1F3AF} Seules les bonnes r\xE9ponses comptent" : `\u23F1\uFE0F ${SPEED_PER_GOOD} pts par bonne r\xE9ponse, \u2212${SPEED_PER_SEC} pts par seconde`}</li>
+    </ul>
+    <button class="btn ghost small" data-solo ${c.stage === "waiting_accept" ? "hidden" : ""}>Jouer sans attendre (${who(f)} jouera plus tard)</button>
+  </section>`;
+  const $2 = (q) => app2.querySelector(q);
+  let started = false, meReady = false;
+  const opp = { present: false, ready: false };
+  function paint() {
+    if (started || !$2(".live-lobby")) return;
+    const waitingAccept = c.stage === "waiting_accept";
+    $2('[data-st="me"]').textContent = meReady ? "\u2713 Pr\xEAt" : "En ligne";
+    $2('[data-st="op"]').textContent = waitingAccept ? "Invit\xE9\u2026" : opp.ready ? "\u2713 Pr\xEAt" : opp.present ? "En ligne" : "Absent";
+    $2('[data-st="op"]').className = `seat-st ${opp.ready ? "ok" : opp.present ? "on" : ""}`;
+    $2('[data-st="me"]').className = `seat-st ${meReady ? "ok" : "on"}`;
+    const [t, sub] = waitingAccept ? [`En attente de ${who(f)}\u2026`, `Il a re\xE7u une notification. D\xE8s qu'il accepte, il vous rejoint ici.`] : !opp.present ? [`En attente de ${who(f)}\u2026`, "Restez sur cette page : le duel commence quand vous \xEAtes pr\xEAts tous les deux."] : !meReady ? [`${who(f)} est l\xE0 ! \u{1F44B}`, opp.ready ? `${who(f)} est pr\xEAt : \xE0 vous !` : "Cliquez sur \xAB Je suis pr\xEAt \xBB pour lancer le duel."] : [`En attente que ${who(f)} soit pr\xEAt\u2026`, ""];
+    $2('[data-l="title"]').textContent = t;
+    $2('[data-l="sub"]').textContent = sub;
+    const b = $2("[data-ready]");
+    b.disabled = waitingAccept || meReady;
+    b.textContent = meReady ? "Pr\xEAt \u2713" : "Je suis pr\xEAt !";
+    $2("[data-solo]").hidden = waitingAccept;
+  }
+  function go() {
+    if (started) return;
+    started = true;
+    LIVE.t0 = performance.now() + 1950;
+    const qs = buildChallengeQuestions(c.n);
+    countdownThen(app2, () => {
+      LIVE.t0 = performance.now();
+      play(app2, c, qs, LIVE);
+    });
+  }
+  leaveLive();
+  LIVE = { id: c.id, opp, duel: null, onUpdate: null, t0: 0, meDone: false };
+  const mine = LIVE;
+  try {
+    mine.duel = await joinDuel(c.id, {
+      onPresence: (others) => {
+        const o = others[0];
+        const was = opp.present;
+        opp.present = !!o;
+        opp.ready = !!o?.ready;
+        if (was && !o && started && !opp.finished) toast(`${who(f)} s'est d\xE9connect\xE9`, "warn");
+        paint();
+        mine.onUpdate?.();
+        if (!started && c.iAmChallenger && meReady && opp.ready) {
+          mine.duel.start({ n: c.n });
+          go();
+        }
+      },
+      onStart: () => go(),
+      onProgress: (p) => {
+        Object.assign(opp, p, { present: true });
+        mine.onUpdate?.();
+      }
+    });
+  } catch {
+    $2('[data-l="title"]').textContent = "Connexion au duel impossible";
+    $2('[data-l="sub"]').textContent = "Vous pouvez jouer sans attendre : votre score sera compar\xE9 \xE0 celui de votre ami.";
+    $2("[data-solo]").hidden = false;
+  }
+  if (LIVE !== mine) {
+    mine.duel?.leave();
+    return;
+  }
+  paint();
+  $2("[data-ready]").onclick = async () => {
+    meReady = true;
+    paint();
+    await mine.duel?.ready(true);
+    if (!started && c.iAmChallenger && opp.ready) {
+      mine.duel.start({ n: c.n });
+      go();
+    }
+  };
+  $2("[data-solo]").onclick = () => {
+    leaveLive();
+    renderDefi(app2, c.id, { solo: true });
+  };
+  const off = onSocial((what) => {
+    if (what !== "all" || started) return;
+    const fresh = allChallenges().find((x) => x.id === c.id);
+    if (!fresh) return;
+    if (fresh.theirs || ["declined", "cancelled"].includes(fresh.stage)) {
+      off();
+      leaveLive();
+      renderDefi(app2, c.id, { solo: true });
+      return;
+    }
+    if (fresh.stage !== c.stage) {
+      c = fresh;
+      paint();
+    }
+  });
+  app2._cleanup = () => {
+    off();
+  };
 }
 
 // js/data/stories.js
@@ -11523,6 +11924,7 @@ var ROUTES = [
   [/^prononciation$/, (a) => renderPrononciation(a), "entrainement"],
   [/^trace(?:-(.+))?$/, (a, m) => renderTrace(a, m[1]), "entrainement"],
   [/^amis$/, (a) => renderAmis(a), "amis"],
+  [/^amis-fil$/, (a) => renderAmis(a, { tab: "fil" }), "amis"],
   [/^ami-(.+)$/, (a, m) => renderAmi(a, m[1]), "amis"],
   [/^chat-(.+)$/, (a, m) => renderChat(a, m[1]), "amis"],
   [/^defi-(.+)$/, (a, m) => renderDefi(a, m[1]), "amis"],
@@ -11537,6 +11939,7 @@ var ROUTES = [
 function route() {
   app._cleanup?.();
   app._cleanup = null;
+  if (!location.hash.startsWith("#defi-")) leaveLive();
   document.body.classList.remove("focus-mode");
   const raw = decodeURIComponent(location.hash.slice(1));
   if (!state.profile && raw === "compte") {
