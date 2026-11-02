@@ -4887,9 +4887,9 @@ function recordQuiz({ kind, id, label, results }) {
     }
     if (kind === "lesson" && passed) {
       const lesson = ALL_LESSONS3.find((l) => l.id === id);
-      lesson?.vocab.map(tri).forEach(([zh, py, fr]) => {
-        if (!s.vocab[zh]) {
-          s.vocab[zh] = { zh, py, fr, levelId: lesson.levelId, lessonId: id, added: Date.now() };
+      lesson?.vocab.map(tri).forEach(([zh2, py, fr]) => {
+        if (!s.vocab[zh2]) {
+          s.vocab[zh2] = { zh: zh2, py, fr, levelId: lesson.levelId, lessonId: id, added: Date.now() };
           newWords++;
         }
       });
@@ -4999,7 +4999,11 @@ function annotate(s, escape, lookahead = "") {
   for (const m of s.matchAll(HAN_RUN)) {
     const run = m[0], end = m.index + run.length;
     out += escape(s.slice(last, m.index));
-    const syl = zh_pinyin_default[run]?.split(" ");
+    let syl = zh_pinyin_default[run]?.split(" ");
+    if (!syl || syl.length !== run.length) {
+      const each = [...run].map((c) => zh_pinyin_default[c]);
+      syl = each.every(Boolean) ? each : null;
+    }
     out += syl && syl.length === run.length && !followedByPinyin(s.slice(end) + lookahead, syl) ? [...run].map((c, i) => `<ruby>${esc(c)}<rt>${esc(syl[i])}</rt></ruby>`).join("") : escape(run);
     last = end;
   }
@@ -5279,16 +5283,16 @@ var TYPES = {
       let picked = null;
       area.innerHTML = `<div class="options">${order.map((i, k) => `<button class="option" data-i="${i}"><kbd>${k + 1}</kbd><span>${tx(q, q.options[i])}</span></button>`).join("")}</div>`;
       const btns = [...area.querySelectorAll(".option")];
-      const pick = (b) => {
+      const pick2 = (b) => {
         btns.forEach((x) => x.classList.remove("selected"));
         b.classList.add("selected");
         picked = +b.dataset.i;
         onReady(true);
       };
-      btns.forEach((b) => b.onclick = () => pick(b));
+      btns.forEach((b) => b.onclick = () => pick2(b));
       area._keys = (e) => {
         const n = +e.key;
-        if (n >= 1 && n <= btns.length && !area._locked) pick(btns[n - 1]);
+        if (n >= 1 && n <= btns.length && !area._locked) pick2(btns[n - 1]);
       };
       return {
         check() {
@@ -6955,21 +6959,21 @@ function renderReglages(app2) {
     offCloud();
     offPwa();
   };
-  const pick = (name, apply) => app2.querySelectorAll(`[data-${name}]`).forEach((b) => b.onclick = () => {
+  const pick2 = (name, apply) => app2.querySelectorAll(`[data-${name}]`).forEach((b) => b.onclick = () => {
     app2.querySelectorAll(`[data-${name}]`).forEach((x) => x.classList.toggle("on", x === b));
     apply(b.dataset[name]);
     saved();
   });
-  pick("goal", (v) => commit((s) => {
+  pick2("goal", (v) => commit((s) => {
     s.profile = { ...s.profile, dailyGoal: +v };
   }));
-  pick("voice", (v) => {
+  pick2("voice", (v) => {
     commit((s) => {
       s.settings.voiceSpeed = +v;
     });
     speak(L.hello, { force: true });
   });
-  pick("pyq", (v) => commit((s) => {
+  pick2("pyq", (v) => commit((s) => {
     s.settings.pinyinQuiz = v;
   }));
   $2("[data-tts]").onchange = (e) => {
@@ -7107,6 +7111,145 @@ async function paintApp(app2) {
   });
 }
 
+// js/core/challenge-gen.js
+var MIN_WORDS = 12;
+function learnedWords() {
+  return Object.values(state.vocab).filter((w) => w.zh && w.fr).map((w) => ({ ...w, py: w.py || "" }));
+}
+var canChallenge = () => learnedWords().length >= MIN_WORDS;
+var missingWords = () => Math.max(0, MIN_WORDS - learnedWords().length);
+var zh = () => code === "zh";
+var pick = (arr, n) => shuffle(arr).slice(0, n);
+var strip = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+var cleanFr = (fr) => String(fr).split(" \u2014 ")[0];
+function distractors(w, pool, n, key) {
+  const seen = /* @__PURE__ */ new Set([key(w)]);
+  const out = [];
+  for (const x of shuffle(pool)) {
+    const k = key(x);
+    if (!seen.has(k)) {
+      seen.add(k);
+      out.push(x);
+    }
+    if (out.length === n) break;
+  }
+  return out;
+}
+var mcq3 = (q, right, wrongs, extra = {}) => {
+  const options = shuffle([right, ...wrongs]);
+  return { type: "mcq", q, options, answer: options.indexOf(right), ...extra };
+};
+var TONES = { a: "\u0101\xE1\u01CE\xE0", e: "\u0113\xE9\u011B\xE8", i: "\u012B\xED\u01D0\xEC", o: "\u014D\xF3\u01D2\xF2", u: "\u016B\xFA\u01D4\xF9", "\xFC": "\u01D6\u01D8\u01DA\u01DC" };
+function toneVariants(py) {
+  const chars = [...py];
+  const marked = chars.map((c, i) => [c, i]).filter(([c]) => Object.values(TONES).some((t) => t.includes(c)));
+  const out = /* @__PURE__ */ new Set();
+  for (const [c, i] of shuffle(marked)) {
+    const base = Object.keys(TONES).find((v) => TONES[v].includes(c));
+    for (const t of TONES[base]) if (t !== c) {
+      const v = [...chars];
+      v[i] = t;
+      out.add(v.join(""));
+    }
+    if (out.size >= 6) break;
+  }
+  return [...out];
+}
+function exampleFor(w) {
+  const done = ALL_LESSONS3.filter((l) => state.lessons[l.id]?.passed);
+  const all = done.flatMap((l) => (l.sections || []).flatMap((s) => s.examples || [])).map(tri);
+  const it = !zh();
+  const has = ([s]) => (it ? new RegExp(`(^|[^\\p{L}])${w.zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^\\p{L}]|$)`, "iu").test(s) : s.includes(w.zh)) && s !== w.zh;
+  const context = ([s]) => s.replace(it ? new RegExp(w.zh, "i") : w.zh, "").replace(/[\s\p{P}]/gu, "").length >= 2;
+  const ex = shuffle(all.filter((e) => has(e) && context(e)))[0];
+  if (!ex) return null;
+  const [sentence, , fr] = ex;
+  const idx = it ? sentence.toLowerCase().indexOf(w.zh.toLowerCase()) : sentence.indexOf(w.zh);
+  return { text: sentence.slice(0, idx) + "___" + sentence.slice(idx + w.zh.length), fr: cleanFr(fr) };
+}
+var word = (w) => w.zh;
+var answersFor = (w) => [w.zh, ...w.py ? [w.py, strip(w.py), w.py.replace(/\s+/g, "")] : []];
+function makers(w, pool, withPy) {
+  const fr = cleanFr(w.fr);
+  const other2 = (n, key) => distractors(w, pool, n, key);
+  const lang = L.label.toLowerCase();
+  const list = [
+    // 1. Sens du mot
+    () => mcq3(zh() ? `Que signifie ${w.zh} ?` : `Que signifie \xAB ${w.zh} \xBB ?`, fr, other2(3, (x) => cleanFr(x.fr)).map((x) => cleanFr(x.fr))),
+    // 2. Le mot à partir du sens
+    () => mcq3(`Comment dit-on \xAB ${fr} \xBB en ${lang} ?`, w.zh, other2(3, word).map(word)),
+    // 3. Écoute : quel mot ?
+    () => {
+      const o = shuffle([w, ...other2(3, word)]);
+      return { type: "listen", say: w.zh, q: "Quel mot entendez-vous ?", options: o.map(word), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
+    },
+    // 4. Écoute : quel sens ?
+    () => {
+      const o = shuffle([w, ...other2(3, (x) => cleanFr(x.fr))]);
+      return { type: "listen", say: w.zh, q: "Que veut dire le mot entendu ?", options: o.map((x) => cleanFr(x.fr)), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
+    },
+    // 5. Vrai ou faux
+    () => {
+      const truth = Math.random() < 0.5, x = truth ? w : other2(1, (y) => cleanFr(y.fr))[0] || w;
+      return {
+        type: "mcq",
+        q: zh() ? `${w.zh} veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?` : `\xAB ${w.zh} \xBB veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?`,
+        options: ["\u2713 Vrai", "\u2717 Faux"],
+        answer: truth || x === w ? 0 : 1,
+        explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}`
+      };
+    },
+    // 6. Associer 4 mots et leur sens
+    () => {
+      const g = [w, ...other2(3, (x) => cleanFr(x.fr))];
+      return { type: "match", q: "Associez chaque mot \xE0 son sens", pairs: g.map((x) => [x.py ? `${x.zh}|${x.py}` : x.zh, cleanFr(x.fr)]) };
+    },
+    // 7. Écrire le mot
+    () => ({ type: "translate", q: zh() ? `\xC9crivez \xAB ${fr} \xBB en pinyin (ou en caract\xE8res)` : `\xC9crivez \xAB ${fr} \xBB en ${lang}`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""}` })
+  ];
+  const ex = exampleFor(w);
+  if (ex) list.push(() => ({ type: "fill", q: `${ex.text} (${ex.fr})`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}` }));
+  if (zh() && w.py && !withPy) {
+    list.push(() => {
+      const wrong = [.../* @__PURE__ */ new Set([...toneVariants(w.py), ...other2(4, (x) => x.py).map((x) => x.py)])].filter((p) => p && p !== w.py);
+      return mcq3(`Quel est le pinyin de ${w.zh} ?`, w.py, pick(wrong, 3), { explain: `${w.zh} ${w.py} = ${fr}` });
+    });
+    list.push(() => mcq3(`Quels caract\xE8res se lisent \xAB ${w.py} \xBB ?`, w.zh, other2(3, word).map(word), { explain: `${w.zh} ${w.py} = ${fr}` }));
+  }
+  if (zh() && w.py && withPy) {
+    list.push(() => {
+      const wrong = [...new Set(toneVariants(w.py))].filter((p) => p !== w.py);
+      if (wrong.length < 3) return null;
+      const o = shuffle([w.py, ...pick(wrong, 3)]);
+      return { type: "listen", say: w.zh, q: "Quels tons entendez-vous ?", options: o, answer: o.indexOf(w.py), reveal: `${w.zh} ${w.py} \u2014 ${fr}` };
+    });
+  }
+  return list;
+}
+function buildChallengeQuestions(n = 10) {
+  const pool = learnedWords();
+  if (pool.length < MIN_WORDS) return [];
+  const words = [];
+  while (words.length < n) words.push(...shuffle(pool));
+  const used = [];
+  return words.slice(0, n).map((w, i) => {
+    const withPy = levelWantsPinyin(w.levelId);
+    const fns = shuffle(makers(w, pool, withPy));
+    let q = null, kind = -1;
+    for (const [k, f] of fns.entries()) {
+      const cand = f();
+      if (!cand) continue;
+      const sig = cand.type + cand.q.slice(0, 12);
+      if (used[used.length - 1] === sig && k < fns.length - 1) continue;
+      q = cand;
+      kind = sig;
+      break;
+    }
+    used.push(kind);
+    return { ref: `defi:${i}:${w.zh}`, q: { ...q, _py: withPy } };
+  });
+}
+
 // js/views/amis.js
 var who = (p) => esc(p?.pseudo || p?.username || "Ami");
 var av = (p, cls = "") => `<span class="s-avatar ${cls}"${p?.color ? ` style="background:${esc(p.color)}"` : ""}>${esc(p?.avatar || "\u{1F464}")}</span>`;
@@ -7142,7 +7285,11 @@ function loadThen(app2, render) {
   const hash = location.hash;
   loading2(app2);
   refresh().then(() => {
-    if (stillHere(hash) && social().ready) render();
+    if (stillHere(hash) && social().ready) {
+      app2._cleanup?.();
+      app2._cleanup = null;
+      render();
+    }
   }).catch((e) => {
     if (!stillHere(hash)) return;
     app2.innerHTML = `<section class="card account-card"><p class="form-msg error">${esc(socialError(e))}</p>
@@ -7200,6 +7347,10 @@ function bindChallengeActions(root) {
     if (!b) return;
     b.disabled = true;
     try {
+      if (b.dataset.chAccept && !canChallenge()) {
+        b.disabled = false;
+        return notEnoughWords("Pas encore assez de mots pour ce d\xE9fi");
+      }
       if (b.dataset.chAccept) {
         await respondChallenge(b.dataset.chAccept, true);
         toast("D\xE9fi accept\xE9 \u2694\uFE0F", "ok");
@@ -7219,9 +7370,10 @@ function bindChallengeActions(root) {
   });
 }
 async function askChallenge(friend) {
+  if (!canChallenge()) return notEnoughWords("Pas encore assez de mots pour d\xE9fier");
   const v = await modal({
     title: `\u2694\uFE0F D\xE9fier ${who(friend)}`,
-    body: `<p>Chacun r\xE9pond \xE0 des questions de <b>sa propre langue</b>, tir\xE9es des le\xE7ons qu'il a d\xE9bloqu\xE9es.
+    body: `<p>Chacun r\xE9pond \xE0 des questions de <b>sa propre langue</b>, uniquement sur les mots <b>qu'il a d\xE9j\xE0 appris</b>, avec des formulations vari\xE9es.
       Le meilleur score gagne ; \xE0 \xE9galit\xE9, le plus rapide.</p><p class="muted small">${who(friend)} doit d'abord accepter le d\xE9fi.</p>`,
     actions: [{ label: "Annuler", value: "" }, { label: "5 questions", value: "5" }, { label: "10 questions", value: "10", kind: "primary" }, { label: "15 questions", value: "15" }]
   });
@@ -7282,6 +7434,7 @@ function renderAmis(app2, opts = {}) {
   </div></div>`;
   const page = app2.firstElementChild;
   const paint = () => {
+    if (!page.isConnected) return off?.();
     const z = (n) => app2.querySelector(`[data-zone="${n}"]`);
     const inc = incoming();
     z("requests").innerHTML = inc.length ? `<section class="card s-highlight"><h2 class="h3">\u{1F4EC} Demandes re\xE7ues</h2><ul class="s-list">
@@ -7475,6 +7628,7 @@ function renderAmi(app2, username) {
   const page = app2.firstElementChild;
   const z = (n) => app2.querySelector(`[data-zone="${n}"]`);
   const paint = () => {
+    if (!page.isConnected) return off?.();
     const theirs = statsOf(f.id);
     let mine = statsOf(S2.me.id);
     mine = { ...mine, [code]: mySummary() };
@@ -7583,13 +7737,17 @@ function renderAmi(app2, username) {
     clearInterval(poll2);
   };
 }
-function pickQuestions(n) {
-  const pool = [];
-  ALL_LESSONS3.filter((l) => isLessonUnlocked(l)).forEach((l) => l.quiz.forEach((q, i) => pool.push({ ref: `${l.id}:${i}`, q })));
-  LEVELS3.forEach((lvl) => {
-    if (isExamPassed(lvl.id)) lvl.exam.forEach((q, i) => pool.push({ ref: `exam-${lvl.id}:${i}`, q }));
+function notEnoughWords(title = "Pas encore assez de mots") {
+  const n = missingWords(), other2 = Object.values(LANGS).find((l) => l.code !== code);
+  return modal({
+    title: `\u{1F4D2} ${title}`,
+    body: `<p>Les d\xE9fis utilisent uniquement les mots que <b>vous avez appris</b> en ${esc(L.label.toLowerCase())} (ceux de vos le\xE7ons r\xE9ussies), avec des questions vari\xE9es.</p>
+      <p>Il vous faut au moins <b>${MIN_WORDS} mots</b> : encore <b>${n}</b> \xE0 apprendre. Terminez une ou deux le\xE7ons de plus !</p>
+      ${other2 ? `<p class="muted small">Vous avez plus de mots en ${esc(other2.label.toLowerCase())} ? Changez de langue en haut de la page.</p>` : ""}`,
+    actions: [{ label: "Fermer", value: "close", kind: "ghost" }, { label: "Aller au parcours", value: "go", kind: "primary" }]
+  }).then((v) => {
+    if (v === "go") location.hash = "parcours";
   });
-  return shuffle(pool).slice(0, n);
 }
 function renderDefi(app2, id) {
   if (gate(app2, "D\xE9fi")) return;
@@ -7602,14 +7760,22 @@ function renderDefi(app2, id) {
       return;
     }
     if (c.stage !== "to_play") return showDefi(app2, c);
-    const qs = pickQuestions(c.n);
+    if (!canChallenge()) {
+      app2.innerHTML = `<a class="back-link" href="#amis">\u2190 Amis</a>
+      <section class="card s-defi-intro"><p class="eyebrow">D\xE9fi</p><h1>\u{1F4D2} Encore quelques mots \xE0 apprendre</h1>
+        <p class="lead">Ce d\xE9fi utilise uniquement les mots que vous avez appris en ${esc(L.label.toLowerCase())}. Il en faut au moins ${MIN_WORDS} : encore <b>${missingWords()}</b>.</p>
+        <p class="muted">Terminez une ou deux le\xE7ons, puis revenez : le d\xE9fi vous attend. Vous apprenez une autre langue ? Changez de langue en haut de la page.</p>
+        <a class="btn primary big" href="#parcours">Continuer mon parcours</a></section>`;
+      return;
+    }
+    const qs = buildChallengeQuestions(c.n);
     app2.innerHTML = `
     <a class="back-link" href="#amis">\u2190 Amis</a>
     <section class="card s-defi-intro">
       <p class="eyebrow">D\xE9fi</p>
       <div class="s-vs">${av(social().me, "xl")}<span class="s-vs-x">VS</span>${av(c.friend, "xl")}</div>
       <h1>\u2694\uFE0F Vous contre ${who(c.friend)}</h1>
-      <p class="lead">${qs.length} questions de <b>${esc(L.label.toLowerCase())}</b> <span class="flag mini">${flagSVG(code)}</span>, tir\xE9es des le\xE7ons que vous avez d\xE9bloqu\xE9es.</p>
+      <p class="lead">${qs.length} questions de <b>${esc(L.label.toLowerCase())}</b> <span class="flag mini">${flagSVG(code)}</span>, sur les <b>${learnedWords().length} mots</b> que vous avez appris, avec des questions vari\xE9es.</p>
       <p class="muted">Le meilleur score gagne ; \xE0 \xE9galit\xE9, le plus rapide. Une seule tentative : le chrono d\xE9marre quand vous cliquez.</p>
       <p class="muted small">Vous apprenez aussi une autre langue ? Changez de langue en haut de la page avant de commencer.</p>
       ${c.theirs ? `<p class="chip">${who(c.friend)} a d\xE9j\xE0 jou\xE9 : \xE0 vous de faire mieux !</p>` : ""}
@@ -7696,8 +7862,8 @@ function wordPool(min = 8) {
   Object.values(state.vocab).forEach((w) => seen.set(w.zh, { zh: w.zh, py: w.py || "", fr: w.fr, learned: true }));
   if (seen.size < min) {
     ALL_LESSONS3.filter((l) => isLessonUnlocked(l)).forEach((l) => {
-      [...l.vocab || [], ...(l.sections || []).flatMap((s) => s.examples || [])].map(tri).forEach(([zh, py, fr]) => {
-        if (!seen.has(zh) && zh.length <= 12) seen.set(zh, { zh, py, fr: String(fr).split(" \u2014 ")[0], learned: false });
+      [...l.vocab || [], ...(l.sections || []).flatMap((s) => s.examples || [])].map(tri).forEach(([zh2, py, fr]) => {
+        if (!seen.has(zh2) && zh2.length <= 12) seen.set(zh2, { zh: zh2, py, fr: String(fr).split(" \u2014 ")[0], learned: false });
       });
     });
   }
@@ -7716,12 +7882,12 @@ function syllablePool() {
     if (t && HAN.test(ch) && !out.has(ch)) out.set(ch, { ch, syl, tone: t });
   };
   const words = wordPool(999);
-  words.forEach(({ zh, py }) => {
+  words.forEach(({ zh: zh2, py }) => {
     if (!py) return;
-    const chars = [...zh].filter((c) => HAN.test(c));
+    const chars = [...zh2].filter((c) => HAN.test(c));
     const syls = py.trim().split(/\s+/);
     if (chars.length === 1 && syls.length === 1) add(chars[0], syls[0]);
-    else if (chars.length === syls.length && chars.length === [...zh].length) chars.forEach((c, i) => add(c, syls[i]));
+    else if (chars.length === syls.length && chars.length === [...zh2].length) chars.forEach((c, i) => add(c, syls[i]));
   });
   return [...out.values()];
 }
@@ -8115,7 +8281,8 @@ initLangSwitch();
 onCloud((i) => {
   renderCloud(i);
   if (location.hash === "#compte" && !document.querySelector(".auth-form")) renderCompte(app);
-  if (location.hash === "#amis" && !document.querySelector(".s-page, .auth-form") && !document.body.classList.contains("focus-mode")) renderAmis(app);
+  if (/^#(amis|ami-|defi-|ajout-|profil)/.test(location.hash) && i.user && !document.body.classList.contains("focus-mode") && !document.querySelector(".s-page, .auth-form, .s-defi-intro, .s-defi-res, .pf")) route();
+  else if (location.hash === "#profil" && !document.querySelector(".modal") && !document.body.classList.contains("focus-mode")) route();
 });
 window.addEventListener("impara:remote-update", () => {
   if (!document.body.classList.contains("focus-mode")) route();
