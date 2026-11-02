@@ -1080,6 +1080,72 @@ html.dark img, html.dark .qr-box { color-scheme: light; }
 .theme-opt .t-dark { background: linear-gradient(135deg, #11151b 50%, #1b212a 50%); }
 .theme-opt .t-auto { background: linear-gradient(135deg, #faf7f1 50%, #11151b 50%); }
 
+/* =====================================================================
+   18. HISTOIRES ET PRONONCIATION
+   ===================================================================== */
+.c-red { background: #ffd9d6; }
+html.dark .c-red { background: #45211f; }
+.story-list { display: grid; gap: 12px; }
+.story-item { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 4px 0 var(--line); color: inherit; text-decoration: none; }
+.story-item.locked { opacity: .55; }
+.story-item:active:not(.locked) { transform: translateY(2px); box-shadow: 0 2px 0 var(--line); }
+.story-emoji { font-size: 2.2rem; width: 56px; height: 56px; display: grid; place-items: center; border-radius: 16px; background: var(--paper-2); flex: none; }
+.story-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.story-txt b { font-size: 1.1rem; font-weight: 800; }
+.story-txt small { color: var(--muted); font-weight: 600; font-size: .82rem; }
+.story-txt small.py { color: var(--rosso); }
+.story-done { margin-left: auto; flex: none; font-weight: 800; font-size: .85rem; color: var(--verde); }
+
+.story, .pron { max-width: 640px; margin: 0 auto; padding-bottom: 110px; }
+.story-top { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.story-top .progress { flex: 1; height: 14px; background: var(--paper-2); border-radius: 99px; overflow: hidden; }
+.story-bar { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--verde), #3fb37a); border-radius: 99px; transition: width .4s; }
+.story-head { text-align: center; margin-bottom: 18px; }
+.story-big { font-size: 3.2rem; display: block; }
+.story-head h1 { margin: 6px 0 2px; }
+.story-head .py { color: var(--rosso); font-weight: 700; margin: 0 0 6px; }
+.story-lines { display: flex; flex-direction: column; gap: 14px; }
+.sl { animation: slIn .3s ease; cursor: pointer; }
+@keyframes slIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.sl p { margin: 0; }
+.sl.narr { display: flex; gap: 8px; align-items: flex-start; padding: 6px 4px; font-style: italic; color: var(--ink-2); }
+.sl.narr > :first-child { flex: 1; }
+.sl.talk { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; align-items: end; }
+.sl-who { grid-column: 1 / -1; font-size: .78rem; font-weight: 800; color: var(--who); text-transform: uppercase; letter-spacing: .04em; }
+.sl-bubble { border: 2px solid var(--line); border-left: 5px solid var(--who); border-radius: 16px; padding: 10px 14px; background: var(--card); }
+.sl-t { font-size: 1.08rem; font-weight: 600; }
+.sl-t.zh { font-size: 1.3rem; }
+.sl-py { color: var(--rosso); font-size: .9rem; font-weight: 600; margin-top: 2px !important; }
+.sl-fr { color: var(--muted); font-size: .9rem; margin-top: 4px !important; border-top: 1px dashed var(--line); padding-top: 4px; }
+.sl .hidden, .pron .hidden { display: none; }
+.sl-q { animation: slIn .3s ease; }
+.sl-qt { font-weight: 700; font-size: 1.05rem; margin: 2px 0 10px; }
+.sl-q .options { display: grid; gap: 8px; }
+.sl-res { margin: 10px 0 0; font-weight: 800; }
+.sl-res.ok { color: var(--verde); } .sl-res.ko { color: var(--rosso); }
+.story-foot { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 2px solid var(--line); display: flex; gap: 10px; justify-content: center; z-index: 20; }
+.story-foot .btn { min-width: 200px; }
+
+.pron { text-align: center; }
+.pron-card { padding: 26px 18px; margin: 10px 0 22px; }
+.pron-word { font-size: 2.2rem; font-weight: 800; margin: 0; }
+.pron-word .zh { font-size: 3rem; }
+.pron-py { color: var(--rosso); font-weight: 700; font-size: 1.15rem; margin: 4px 0 0; }
+.pron-fr { margin: 6px 0 14px; }
+.btn-row.center { justify-content: center; }
+.mic { width: 96px; height: 96px; border-radius: 50%; border: none; background: var(--verde); color: #fff; font-size: 2.6rem; box-shadow: 0 6px 0 #156b43; cursor: pointer; transition: transform .1s; }
+body.lang-zh .mic { background: var(--rosso); box-shadow: 0 6px 0 #8f2a23; }
+.mic:active { transform: translateY(3px); box-shadow: 0 3px 0 #156b43; }
+.mic.on { animation: micPulse 1s infinite; }
+@keyframes micPulse { 0%, 100% { outline: 0 solid rgba(210, 72, 63, .4); } 50% { outline: 14px solid rgba(210, 72, 63, .15); } }
+.pron-hint { margin: 12px 0; }
+.pron-out { border-radius: 14px; padding: 12px 14px; margin-top: 6px; text-align: left; border: 2px solid; }
+.pron-out p { margin: 4px 0 0; }
+.pron-out.ok { border-color: var(--verde); background: var(--verde-l); }
+.pron-out.ko { border-color: var(--rosso); background: var(--rosso-l); }
+.big-emoji { font-size: 3rem; margin: 0; }
+.story-foot [hidden] { display: none !important; }
+
 </style>
 </head>
 <body>
@@ -4980,16 +5046,16 @@ var require_qrcode = __commonJS({
             throw "bad rs block @ typeNumber:" + typeNumber + "/errorCorrectionLevel:" + errorCorrectionLevel;
           }
           var length = rsBlock.length / 3;
-          var list = [];
+          var list2 = [];
           for (var i = 0; i < length; i += 1) {
             var count = rsBlock[i * 3 + 0];
             var totalCount = rsBlock[i * 3 + 1];
             var dataCount = rsBlock[i * 3 + 2];
             for (var j = 0; j < count; j += 1) {
-              list.push(qrRSBlock(totalCount, dataCount));
+              list2.push(qrRSBlock(totalCount, dataCount));
             }
           }
-          return list;
+          return list2;
         };
         return _this;
       })();
@@ -5636,7 +5702,7 @@ function defaultState() {
     version: SCHEMA_VERSION,
     profile: null,
     // { pseudo, avatar, dailyGoal, createdAt }
-    settings: { tts: true, voiceSpeed: 1, pinyinQuiz: "auto" },
+    settings: { tts: true, voiceSpeed: 1, pinyinQuiz: "auto", streakReminder: true },
     // lecture audio des exemples ; vitesse de la voix (1 = normale)
     lessons: {},
     // { [lessonId]: { best, total, passed, attempts, date } }
@@ -5655,6 +5721,8 @@ function defaultState() {
     // XP gagnés aujourd'hui
     weekly: { week: null, xp: 0 },
     // XP gagnés cette semaine (classement entre amis)
+    stories: {},
+    // { [histoireId]: { done, best, total, date } }
     srs: {},
     // { [mot]: { box, due, reps, last } } répétition espacée des flashcards
     dayLog: {},
@@ -6022,6 +6090,7 @@ function recordQuiz({ kind, id, label, results }) {
       });
     }
     results.forEach((r) => {
+      if (String(r.ref).includes(":gen:")) return;
       const e = s.errors[r.ref];
       if (!r.correct) {
         s.errors[r.ref] = { ref: r.ref, count: (e?.count || 0) + 1, streak: 0, lastAnswer: r.given ?? "", lastWrong: Date.now() };
@@ -6055,7 +6124,7 @@ var isDue = (w) => {
   const c = cardOf(w);
   return !c || c.due <= dayKey2();
 };
-var dueWords = (list) => list.filter(isDue);
+var dueWords = (list2) => list2.filter(isDue);
 var isNew = (w) => !cardOf(w);
 function grade(w, answer) {
   commit((s) => {
@@ -6082,9 +6151,9 @@ function preview(w) {
   const label = (n) => n <= 0 ? "maintenant" : n === 1 ? "demain" : `dans ${n} j`;
   return { again: label(0), hard: label(1), good: label(INTERVALS[Math.min(MAX_BOX, c.box + 1)]) };
 }
-function srsStats(list) {
+function srsStats(list2) {
   let due = 0, fresh = 0, known = 0;
-  list.forEach((w) => {
+  list2.forEach((w) => {
     const c = cardOf(w);
     if (!c) fresh++;
     else {
@@ -6177,13 +6246,13 @@ function renderParcours(app2) {
     </div>`;
 }
 function levelBlock(lvl, li) {
-  const unlocked = isLevelUnlocked(li);
+  const unlocked2 = isLevelUnlocked(li);
   const prog = levelProgress(li);
   const examOpen = isExamUnlocked(li);
   const examDone = isExamPassed(lvl.id);
   const examOffset = OFFSETS[lvl.lessons.length % OFFSETS.length];
   return `
-  <section class="level ${unlocked ? "" : "locked"}" style="--lvl:${lvl.color}" id="palier-${lvl.id}">
+  <section class="level ${unlocked2 ? "" : "locked"}" style="--lvl:${lvl.color}" id="palier-${lvl.id}">
     <header class="level-head">
       <div class="level-badge">${lvlBadge(lvl)}</div>
       <div class="level-info">
@@ -6192,10 +6261,10 @@ function levelBlock(lvl, li) {
         <p class="muted small">${pyText(lvl.id, lvl.desc)}</p>
       </div>
       <div class="level-prog">
-        ${unlocked ? `<span>${prog.pct}%</span><div class="mini-bar"><i style="width:${prog.pct}%"></i></div>` : `<span class="lock">\u{1F512}</span>`}
+        ${unlocked2 ? `<span>${prog.pct}%</span><div class="mini-bar"><i style="width:${prog.pct}%"></i></div>` : `<span class="lock">\u{1F512}</span>`}
       </div>
     </header>
-    ${unlocked ? "" : `<p class="level-locked-msg">R\xE9ussissez l'examen ${lvlLabel2(LEVELS3[li - 1])} pour d\xE9bloquer ce palier.</p>`}
+    ${unlocked2 ? "" : `<p class="level-locked-msg">R\xE9ussissez l'examen ${lvlLabel2(LEVELS3[li - 1])} pour d\xE9bloquer ce palier.</p>`}
     <ol class="nodes">
       ${lvl.lessons.map((lesson, i) => node(lesson, OFFSETS[i % OFFSETS.length])).join("")}
       <li class="node-wrap" style="--x:${examOffset}px">
@@ -6614,6 +6683,172 @@ function runQuiz(root, { title, questions, onFinish, onQuit, onAnswer }) {
   show();
 }
 
+// js/core/challenge-gen.js
+var MIN_WORDS = 12;
+function learnedWords() {
+  return Object.values(state.vocab).filter((w) => w.zh && w.fr).map((w) => ({ ...w, py: w.py || "" }));
+}
+var canChallenge = () => learnedWords().length >= MIN_WORDS;
+var missingWords = () => Math.max(0, MIN_WORDS - learnedWords().length);
+var zh = () => code === "zh";
+var pick = (arr, n) => shuffle(arr).slice(0, n);
+var strip = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+var cleanFr = (fr) => String(fr).split(" \u2014 ")[0];
+function distractors(w, pool, n, key) {
+  const seen = /* @__PURE__ */ new Set([key(w)]);
+  const out = [];
+  for (const x of shuffle(pool)) {
+    const k = key(x);
+    if (!seen.has(k)) {
+      seen.add(k);
+      out.push(x);
+    }
+    if (out.length === n) break;
+  }
+  return out;
+}
+var mcq5 = (q, right, wrongs, extra = {}) => {
+  const options = shuffle([right, ...wrongs]);
+  return { type: "mcq", q, options, answer: options.indexOf(right), ...extra };
+};
+var TONES = { a: "\u0101\xE1\u01CE\xE0", e: "\u0113\xE9\u011B\xE8", i: "\u012B\xED\u01D0\xEC", o: "\u014D\xF3\u01D2\xF2", u: "\u016B\xFA\u01D4\xF9", "\xFC": "\u01D6\u01D8\u01DA\u01DC" };
+function toneVariants(py) {
+  const chars = [...py];
+  const marked = chars.map((c, i) => [c, i]).filter(([c]) => Object.values(TONES).some((t) => t.includes(c)));
+  const out = /* @__PURE__ */ new Set();
+  for (const [c, i] of shuffle(marked)) {
+    const base = Object.keys(TONES).find((v) => TONES[v].includes(c));
+    for (const t of TONES[base]) if (t !== c) {
+      const v = [...chars];
+      v[i] = t;
+      out.add(v.join(""));
+    }
+    if (out.size >= 6) break;
+  }
+  return [...out];
+}
+function exampleFor(w, extra = []) {
+  const done = [...ALL_LESSONS3.filter((l) => state.lessons[l.id]?.passed), ...extra];
+  const all = done.flatMap((l) => (l.sections || []).flatMap((s) => s.examples || [])).map(tri);
+  const it = !zh();
+  const has = ([s]) => (it ? new RegExp(`(^|[^\\p{L}])${w.zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^\\p{L}]|$)`, "iu").test(s) : s.includes(w.zh)) && s !== w.zh;
+  const context = ([s]) => s.replace(it ? new RegExp(w.zh, "i") : w.zh, "").replace(/[\s\p{P}]/gu, "").length >= 2;
+  const ex = shuffle(all.filter((e) => has(e) && context(e)))[0];
+  if (!ex) return null;
+  const [sentence, , fr] = ex;
+  const idx = it ? sentence.toLowerCase().indexOf(w.zh.toLowerCase()) : sentence.indexOf(w.zh);
+  return { text: sentence.slice(0, idx) + "___" + sentence.slice(idx + w.zh.length), fr: cleanFr(fr) };
+}
+var word = (w) => w.zh;
+var answersFor = (w) => [w.zh, ...w.py ? [w.py, strip(w.py), w.py.replace(/\s+/g, "")] : []];
+function makers(w, pool, withPy, extra = []) {
+  const fr = cleanFr(w.fr);
+  const other2 = (n, key) => distractors(w, pool, n, key);
+  const lang = L.label.toLowerCase();
+  const list2 = [
+    // 1. Sens du mot
+    () => mcq5(zh() ? `Que signifie ${w.zh} ?` : `Que signifie \xAB ${w.zh} \xBB ?`, fr, other2(3, (x) => cleanFr(x.fr)).map((x) => cleanFr(x.fr))),
+    // 2. Le mot à partir du sens
+    () => mcq5(`Comment dit-on \xAB ${fr} \xBB en ${lang} ?`, w.zh, other2(3, word).map(word)),
+    // 3. Écoute : quel mot ?
+    () => {
+      const o = shuffle([w, ...other2(3, word)]);
+      return { type: "listen", say: w.zh, q: "Quel mot entendez-vous ?", options: o.map(word), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
+    },
+    // 4. Écoute : quel sens ?
+    () => {
+      const o = shuffle([w, ...other2(3, (x) => cleanFr(x.fr))]);
+      return { type: "listen", say: w.zh, q: "Que veut dire le mot entendu ?", options: o.map((x) => cleanFr(x.fr)), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
+    },
+    // 5. Vrai ou faux
+    () => {
+      const truth = Math.random() < 0.5, x = truth ? w : other2(1, (y) => cleanFr(y.fr))[0] || w;
+      return {
+        type: "mcq",
+        q: zh() ? `${w.zh} veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?` : `\xAB ${w.zh} \xBB veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?`,
+        options: ["\u2713 Vrai", "\u2717 Faux"],
+        answer: truth || x === w ? 0 : 1,
+        explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}`
+      };
+    },
+    // 6. Associer 4 mots et leur sens
+    () => {
+      const g = [w, ...other2(3, (x) => cleanFr(x.fr))];
+      return { type: "match", q: "Associez chaque mot \xE0 son sens", pairs: g.map((x) => [x.py ? `${x.zh}|${x.py}` : x.zh, cleanFr(x.fr)]) };
+    },
+    // 7. Écrire le mot
+    () => ({ type: "translate", q: zh() ? `\xC9crivez \xAB ${fr} \xBB en pinyin (ou en caract\xE8res)` : `\xC9crivez \xAB ${fr} \xBB en ${lang}`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""}` })
+  ];
+  const ex = exampleFor(w, extra);
+  if (ex) list2.push(() => ({ type: "fill", q: `${ex.text} (${ex.fr})`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}` }));
+  if (zh() && w.py && !withPy) {
+    list2.push(() => {
+      const wrong = [.../* @__PURE__ */ new Set([...toneVariants(w.py), ...other2(4, (x) => x.py).map((x) => x.py)])].filter((p) => p && p !== w.py);
+      return mcq5(`Quel est le pinyin de ${w.zh} ?`, w.py, pick(wrong, 3), { explain: `${w.zh} ${w.py} = ${fr}` });
+    });
+    list2.push(() => mcq5(`Quels caract\xE8res se lisent \xAB ${w.py} \xBB ?`, w.zh, other2(3, word).map(word), { explain: `${w.zh} ${w.py} = ${fr}` }));
+  }
+  if (zh() && w.py && withPy) {
+    list2.push(() => {
+      const wrong = [...new Set(toneVariants(w.py))].filter((p) => p !== w.py);
+      if (wrong.length < 3) return null;
+      const o = shuffle([w.py, ...pick(wrong, 3)]);
+      return { type: "listen", say: w.zh, q: "Quels tons entendez-vous ?", options: o, answer: o.indexOf(w.py), reveal: `${w.zh} ${w.py} \u2014 ${fr}` };
+    });
+  }
+  return list2;
+}
+function buildChallengeQuestions(n = 10) {
+  const pool = learnedWords();
+  if (pool.length < MIN_WORDS) return [];
+  const words = [];
+  while (words.length < n) words.push(...shuffle(pool));
+  const used = [];
+  return words.slice(0, n).map((w, i) => {
+    const withPy = levelWantsPinyin(w.levelId);
+    const fns = shuffle(makers(w, pool, withPy));
+    let q = null, kind = -1;
+    for (const [k, f] of fns.entries()) {
+      const cand = f();
+      if (!cand) continue;
+      const sig = cand.type + cand.q.slice(0, 12);
+      if (used[used.length - 1] === sig && k < fns.length - 1) continue;
+      q = cand;
+      kind = sig;
+      break;
+    }
+    used.push(kind);
+    return { ref: `defi:${i}:${w.zh}`, q: { ...q, _py: withPy } };
+  });
+}
+function buildLessonQuestions(lesson, n) {
+  const own = lesson.vocab.map(tri).map(([zhw, py, fr]) => ({ zh: zhw, py: py || "", fr, levelId: lesson.levelId }));
+  const seen = new Set(own.map((w) => w.zh));
+  const pool = [...own];
+  for (const w of [...learnedWords(), ...ALL_LESSONS3.filter((l) => l.levelId === lesson.levelId).flatMap((l) => l.vocab.map(tri).map(([a, b, c]) => ({ zh: a, py: b || "", fr: c })))]) {
+    if (!seen.has(w.zh)) {
+      seen.add(w.zh);
+      pool.push(w);
+    }
+  }
+  if (own.length < 2 || pool.length < 4) return [];
+  const withPy = levelWantsPinyin(lesson.levelId);
+  const out = [], used = /* @__PURE__ */ new Set();
+  for (const w of shuffle(own)) {
+    if (out.length >= n) break;
+    for (const f of shuffle(makers(w, pool, withPy, [lesson]))) {
+      const cand = f();
+      if (!cand) continue;
+      const sig = cand.type + cand.q.slice(0, 12);
+      if (used.has(sig)) continue;
+      used.add(sig);
+      out.push({ ref: `${lesson.id}:gen:${out.length}`, q: { ...cand, _py: withPy } });
+      break;
+    }
+  }
+  return out;
+}
+
 // js/views/quiz.js
 function renderQuiz(app2, id) {
   const lesson = getLesson3(id);
@@ -6623,10 +6858,18 @@ function renderQuiz(app2, id) {
     id,
     label: lesson.title,
     title: `Quiz \xB7 ${lesson.title}`,
-    questions: lesson.quiz.map((q, i) => ({ ref: `${id}:${i}`, q })),
+    questions: lessonQuestions(lesson),
     back: `#lecon-${id}`
   });
   return true;
+}
+function lessonQuestions(lesson) {
+  const base = shuffle(lesson.quiz.map((q, i) => ({ ref: `${lesson.id}:${i}`, q })));
+  if (!state.lessons[lesson.id]?.attempts) return base;
+  const swap = Math.max(2, Math.round(base.length * 0.4));
+  const gen = buildLessonQuestions(lesson, swap);
+  const kept = base.slice(0, base.length - gen.length);
+  return shuffle([...kept, ...gen]);
 }
 function renderExamen(app2, levelId) {
   const level = getLevel3(levelId);
@@ -6832,22 +7075,22 @@ function renderCarnet(app2) {
   const body = app2.querySelector(".carnet-body");
   const filtered = () => all.filter((w) => (ui.level === "all" || w.levelId === ui.level) && (!ui.query || (w.zh + " " + (w.py || "") + " " + (w.py || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "") + " " + w.fr).toLowerCase().includes(ui.query.toLowerCase())));
   function draw() {
-    const list = filtered();
+    const list2 = filtered();
     if (ui.mode === "list") {
-      body.innerHTML = list.length ? `<ul class="word-list">${list.map((w) => `
+      body.innerHTML = list2.length ? `<ul class="word-list">${list2.map((w) => `
         <li>${speakBtn(w.zh)}
           <span class="it"><span class="${L.wordClass}">${esc(w.zh)}</span>${w.py ? ` <span class="py">${esc(w.py)}</span>` : ""}</span>
           <span class="fr">${esc(w.fr)}</span>
           <span class="tag" style="--lvl:${LEVELS3.find((l) => l.id === w.levelId)?.color}" title="${esc(getLesson3(w.lessonId)?.title || "")}">${lvlLabel2(w.levelId)}</span>
         </li>`).join("")}</ul>` : `<p class="empty">Aucun r\xE9sultat.</p>`;
     } else {
-      drawCards(list);
+      drawCards(list2);
     }
   }
-  function drawCards(list) {
-    const hasPinyin = list.some((w2) => w2.py);
+  function drawCards(list2) {
+    const hasPinyin = list2.some((w2) => w2.py);
     const pinyinMode = hasPinyin && ui.cardType === "pinyin";
-    const pool = pinyinMode ? list.filter((w2) => w2.py) : list;
+    const pool = pinyinMode ? list2.filter((w2) => w2.py) : list2;
     const srs = ui.study === "srs";
     const st = srsStats(pool);
     const source = srs ? dueWords(pool) : pool;
@@ -7464,7 +7707,18 @@ function mySummary() {
     words: Object.keys(state.vocab).length,
     week: weekKey(),
     weekXp: weeklyXp(),
-    days: last7Days()
+    days: last7Days(),
+    // Rappel de série (notification du soir) : jour local de la dernière activité et fuseau horaire
+    lastDay: state.streak.last || null,
+    streakRaw: state.streak.count || 0,
+    tz: (() => {
+      try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      } catch {
+        return "UTC";
+      }
+    })(),
+    remind: state.settings.streakReminder !== false
   };
 }
 var lastSent = "";
@@ -7585,8 +7839,8 @@ async function weeklyHistory(limit = 12) {
   })).filter((w) => w.ranking.length);
 }
 function record(friendId = null) {
-  const list = allChallenges().filter((c) => c.stage === "done" && (!friendId || c.friend?.id === friendId));
-  return { win: list.filter((c) => c.outcome === "win").length, lose: list.filter((c) => c.outcome === "lose").length, draw: list.filter((c) => c.outcome === "draw").length, total: list.length };
+  const list2 = allChallenges().filter((c) => c.stage === "done" && (!friendId || c.friend?.id === friendId));
+  return { win: list2.filter((c) => c.outcome === "win").length, lose: list2.filter((c) => c.outcome === "lose").length, draw: list2.filter((c) => c.outcome === "draw").length, total: list2.length };
 }
 
 // js/views/profil.js
@@ -8362,7 +8616,9 @@ async function paintApp(app2) {
     "needs-install": `<p class="small muted">\u{1F514} Sur iPhone, installez d'abord l'application, puis activez les notifications depuis l'application.</p>`,
     "needs-login": `<p class="small muted">\u{1F514} Connectez-vous pour \xEAtre pr\xE9venu quand un ami vous \xE9crit ou vous d\xE9fie.</p>`,
     denied: `<p class="small muted">\u{1F515} Notifications bloqu\xE9es : autorisez-les dans les r\xE9glages du navigateur pour ce site.</p>`,
-    on: `<p class="small hint-ok">\u{1F514} Notifications activ\xE9es sur cet appareil.</p><button class="btn ghost small" data-push-off>D\xE9sactiver</button>`,
+    on: `<p class="small hint-ok">\u{1F514} Notifications activ\xE9es sur cet appareil.</p>
+      <label class="switch"><input type="checkbox" data-remind ${state.settings.streakReminder !== false ? "checked" : ""}><span></span> \u{1F525} Rappel de s\xE9rie \xE0 20 h si je n'ai rien fait de la journ\xE9e</label>
+      <button class="btn ghost small" data-push-off>D\xE9sactiver</button>`,
     off: `<p class="small muted">\u{1F514} Soyez pr\xE9venu quand un ami vous \xE9crit, vous ajoute ou vous lance un d\xE9fi, m\xEAme site ferm\xE9.</p>
       <button class="btn primary small" data-push-on>\u{1F514} Activer les notifications</button>`
   }[st];
@@ -8381,149 +8637,16 @@ async function paintApp(app2) {
     }
     paintApp(app2);
   });
+  zone.querySelector("[data-remind]")?.addEventListener("change", (e) => {
+    commit((s) => {
+      s.settings.streakReminder = e.target.checked;
+    });
+    saved();
+  });
   zone.querySelector("[data-push-off]")?.addEventListener("click", async () => {
     await disablePush();
     toast("Notifications d\xE9sactiv\xE9es");
     paintApp(app2);
-  });
-}
-
-// js/core/challenge-gen.js
-var MIN_WORDS = 12;
-function learnedWords() {
-  return Object.values(state.vocab).filter((w) => w.zh && w.fr).map((w) => ({ ...w, py: w.py || "" }));
-}
-var canChallenge = () => learnedWords().length >= MIN_WORDS;
-var missingWords = () => Math.max(0, MIN_WORDS - learnedWords().length);
-var zh = () => code === "zh";
-var pick = (arr, n) => shuffle(arr).slice(0, n);
-var strip = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
-var cleanFr = (fr) => String(fr).split(" \u2014 ")[0];
-function distractors(w, pool, n, key) {
-  const seen = /* @__PURE__ */ new Set([key(w)]);
-  const out = [];
-  for (const x of shuffle(pool)) {
-    const k = key(x);
-    if (!seen.has(k)) {
-      seen.add(k);
-      out.push(x);
-    }
-    if (out.length === n) break;
-  }
-  return out;
-}
-var mcq5 = (q, right, wrongs, extra = {}) => {
-  const options = shuffle([right, ...wrongs]);
-  return { type: "mcq", q, options, answer: options.indexOf(right), ...extra };
-};
-var TONES = { a: "\u0101\xE1\u01CE\xE0", e: "\u0113\xE9\u011B\xE8", i: "\u012B\xED\u01D0\xEC", o: "\u014D\xF3\u01D2\xF2", u: "\u016B\xFA\u01D4\xF9", "\xFC": "\u01D6\u01D8\u01DA\u01DC" };
-function toneVariants(py) {
-  const chars = [...py];
-  const marked = chars.map((c, i) => [c, i]).filter(([c]) => Object.values(TONES).some((t) => t.includes(c)));
-  const out = /* @__PURE__ */ new Set();
-  for (const [c, i] of shuffle(marked)) {
-    const base = Object.keys(TONES).find((v) => TONES[v].includes(c));
-    for (const t of TONES[base]) if (t !== c) {
-      const v = [...chars];
-      v[i] = t;
-      out.add(v.join(""));
-    }
-    if (out.size >= 6) break;
-  }
-  return [...out];
-}
-function exampleFor(w) {
-  const done = ALL_LESSONS3.filter((l) => state.lessons[l.id]?.passed);
-  const all = done.flatMap((l) => (l.sections || []).flatMap((s) => s.examples || [])).map(tri);
-  const it = !zh();
-  const has = ([s]) => (it ? new RegExp(`(^|[^\\p{L}])${w.zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^\\p{L}]|$)`, "iu").test(s) : s.includes(w.zh)) && s !== w.zh;
-  const context = ([s]) => s.replace(it ? new RegExp(w.zh, "i") : w.zh, "").replace(/[\s\p{P}]/gu, "").length >= 2;
-  const ex = shuffle(all.filter((e) => has(e) && context(e)))[0];
-  if (!ex) return null;
-  const [sentence, , fr] = ex;
-  const idx = it ? sentence.toLowerCase().indexOf(w.zh.toLowerCase()) : sentence.indexOf(w.zh);
-  return { text: sentence.slice(0, idx) + "___" + sentence.slice(idx + w.zh.length), fr: cleanFr(fr) };
-}
-var word = (w) => w.zh;
-var answersFor = (w) => [w.zh, ...w.py ? [w.py, strip(w.py), w.py.replace(/\s+/g, "")] : []];
-function makers(w, pool, withPy) {
-  const fr = cleanFr(w.fr);
-  const other2 = (n, key) => distractors(w, pool, n, key);
-  const lang = L.label.toLowerCase();
-  const list = [
-    // 1. Sens du mot
-    () => mcq5(zh() ? `Que signifie ${w.zh} ?` : `Que signifie \xAB ${w.zh} \xBB ?`, fr, other2(3, (x) => cleanFr(x.fr)).map((x) => cleanFr(x.fr))),
-    // 2. Le mot à partir du sens
-    () => mcq5(`Comment dit-on \xAB ${fr} \xBB en ${lang} ?`, w.zh, other2(3, word).map(word)),
-    // 3. Écoute : quel mot ?
-    () => {
-      const o = shuffle([w, ...other2(3, word)]);
-      return { type: "listen", say: w.zh, q: "Quel mot entendez-vous ?", options: o.map(word), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
-    },
-    // 4. Écoute : quel sens ?
-    () => {
-      const o = shuffle([w, ...other2(3, (x) => cleanFr(x.fr))]);
-      return { type: "listen", say: w.zh, q: "Que veut dire le mot entendu ?", options: o.map((x) => cleanFr(x.fr)), answer: o.indexOf(w), reveal: `${w.zh}${w.py ? " (" + w.py + ")" : ""} \u2014 ${fr}` };
-    },
-    // 5. Vrai ou faux
-    () => {
-      const truth = Math.random() < 0.5, x = truth ? w : other2(1, (y) => cleanFr(y.fr))[0] || w;
-      return {
-        type: "mcq",
-        q: zh() ? `${w.zh} veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?` : `\xAB ${w.zh} \xBB veut dire \xAB ${cleanFr(x.fr)} \xBB : vrai ou faux ?`,
-        options: ["\u2713 Vrai", "\u2717 Faux"],
-        answer: truth || x === w ? 0 : 1,
-        explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}`
-      };
-    },
-    // 6. Associer 4 mots et leur sens
-    () => {
-      const g = [w, ...other2(3, (x) => cleanFr(x.fr))];
-      return { type: "match", q: "Associez chaque mot \xE0 son sens", pairs: g.map((x) => [x.py ? `${x.zh}|${x.py}` : x.zh, cleanFr(x.fr)]) };
-    },
-    // 7. Écrire le mot
-    () => ({ type: "translate", q: zh() ? `\xC9crivez \xAB ${fr} \xBB en pinyin (ou en caract\xE8res)` : `\xC9crivez \xAB ${fr} \xBB en ${lang}`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""}` })
-  ];
-  const ex = exampleFor(w);
-  if (ex) list.push(() => ({ type: "fill", q: `${ex.text} (${ex.fr})`, answer: answersFor(w), explain: `${w.zh}${w.py ? " " + w.py : ""} = ${fr}` }));
-  if (zh() && w.py && !withPy) {
-    list.push(() => {
-      const wrong = [.../* @__PURE__ */ new Set([...toneVariants(w.py), ...other2(4, (x) => x.py).map((x) => x.py)])].filter((p) => p && p !== w.py);
-      return mcq5(`Quel est le pinyin de ${w.zh} ?`, w.py, pick(wrong, 3), { explain: `${w.zh} ${w.py} = ${fr}` });
-    });
-    list.push(() => mcq5(`Quels caract\xE8res se lisent \xAB ${w.py} \xBB ?`, w.zh, other2(3, word).map(word), { explain: `${w.zh} ${w.py} = ${fr}` }));
-  }
-  if (zh() && w.py && withPy) {
-    list.push(() => {
-      const wrong = [...new Set(toneVariants(w.py))].filter((p) => p !== w.py);
-      if (wrong.length < 3) return null;
-      const o = shuffle([w.py, ...pick(wrong, 3)]);
-      return { type: "listen", say: w.zh, q: "Quels tons entendez-vous ?", options: o, answer: o.indexOf(w.py), reveal: `${w.zh} ${w.py} \u2014 ${fr}` };
-    });
-  }
-  return list;
-}
-function buildChallengeQuestions(n = 10) {
-  const pool = learnedWords();
-  if (pool.length < MIN_WORDS) return [];
-  const words = [];
-  while (words.length < n) words.push(...shuffle(pool));
-  const used = [];
-  return words.slice(0, n).map((w, i) => {
-    const withPy = levelWantsPinyin(w.levelId);
-    const fns = shuffle(makers(w, pool, withPy));
-    let q = null, kind = -1;
-    for (const [k, f] of fns.entries()) {
-      const cand = f();
-      if (!cand) continue;
-      const sig = cand.type + cand.q.slice(0, 12);
-      if (used[used.length - 1] === sig && k < fns.length - 1) continue;
-      q = cand;
-      kind = sig;
-      break;
-    }
-    used.push(kind);
-    return { ref: `defi:${i}:${w.zh}`, q: { ...q, _py: withPy } };
   });
 }
 
@@ -8814,7 +8937,7 @@ function renderAmis(app2, opts = {}) {
   }
   function panelDefis(all, fr) {
     const r = record(), rate = r.total ? Math.round(r.win / r.total * 100) : 0;
-    const group = (title, list, empty) => `<section class="card"><h2 class="h3">${title}</h2>${list.length ? `<ul class="s-ch-list">${list.map((c) => challengeCard(c)).join("")}</ul>` : `<p class="muted small">${empty}</p>`}</section>`;
+    const group = (title, list2, empty) => `<section class="card"><h2 class="h3">${title}</h2>${list2.length ? `<ul class="s-ch-list">${list2.map((c) => challengeCard(c)).join("")}</ul>` : `<p class="muted small">${empty}</p>`}</section>`;
     return `<section class="card fr-record">
         <div class="rec"><b>${r.win}</b><small>\u{1F3C6} Victoires</small></div>
         <div class="rec"><b>${r.draw}</b><small>\u{1F91D} \xC9galit\xE9s</small></div>
@@ -9121,8 +9244,8 @@ function renderChat(app2, username) {
     lastDay = d;
     return `${sep}<div class="s-msg ${m.sender === S2.me.id ? "me" : "them"}" data-id="${m.id}"><p>${esc(m.body)}</p><time>${new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</time></div>`;
   };
-  const add = (list, { initial = false } = {}) => {
-    const fresh = list.filter((m) => !shown.has(m.id));
+  const add = (list2, { initial = false } = {}) => {
+    const fresh = list2.filter((m) => !shown.has(m.id));
     if (initial) box.innerHTML = "";
     fresh.forEach((m) => shown.add(m.id));
     if (!fresh.length && initial) box.innerHTML = `<p class="muted small s-empty">Aucun message. Dites bonjour \xE0 ${who(f)} \u{1F44B}</p>`;
@@ -9131,9 +9254,9 @@ function renderChat(app2, username) {
     box.insertAdjacentHTML("beforeend", fresh.map(bubble).join(""));
     box.scrollTop = box.scrollHeight;
   };
-  loadMessages(f.id).then((list) => {
+  loadMessages(f.id).then((list2) => {
     if (stillHere(hash)) {
-      add(list, { initial: true });
+      add(list2, { initial: true });
       markRead(f.id);
     }
   }).catch((e) => box.innerHTML = `<p class="form-msg error">${esc(socialError(e))}</p>`);
@@ -9407,6 +9530,338 @@ function showDefi(app2, c, justPlayed = false) {
   app2._cleanup = off;
 }
 
+// js/data/stories.js
+var STORIES = {
+  it: [
+    {
+      id: "it-amico",
+      after: "a1-presentarsi",
+      emoji: "\u2615",
+      title: "Un nuovo amico",
+      intro: "L\xE9a est fran\xE7aise. Elle \xE9tudie l'italien dans une \xE9cole de langues \xE0 Rome.",
+      lines: [
+        { who: "", t: "\xC8 luned\xEC. L\xE9a \xE8 a Roma, in una scuola di lingue.", fr: "C'est lundi. L\xE9a est \xE0 Rome, dans une \xE9cole de langues." },
+        { who: "Marco", t: "Ciao! Come ti chiami?", fr: "Salut ! Comment tu t'appelles ?" },
+        { who: "L\xE9a", t: "Ciao! Mi chiamo L\xE9a. E tu?", fr: "Salut ! Je m'appelle L\xE9a. Et toi ?" },
+        { who: "Marco", t: "Io mi chiamo Marco. Piacere!", fr: "Moi, je m'appelle Marco. Enchant\xE9 !" },
+        { who: "L\xE9a", t: "Piacere!", fr: "Enchant\xE9e !" },
+        { who: "Marco", t: "Di dove sei, L\xE9a?", fr: "D'o\xF9 es-tu, L\xE9a ?" },
+        { who: "L\xE9a", t: "Sono francese, di Lione. Abito a Roma da un mese.", fr: "Je suis fran\xE7aise, de Lyon. J'habite \xE0 Rome depuis un mois." },
+        { q: "D'o\xF9 vient L\xE9a ?", options: ["De Lyon", "De Rome", "De Naples"], answer: 0 },
+        { who: "Marco", t: "Io sono di Napoli. Parli bene l'italiano!", fr: "Moi, je suis de Naples. Tu parles bien italien !" },
+        { who: "L\xE9a", t: "Grazie! Studio l'italiano qui, a scuola.", fr: "Merci ! J'\xE9tudie l'italien ici, \xE0 l'\xE9cole." },
+        { q: "Que dit Marco \xE0 L\xE9a ?", options: ["Qu'elle parle bien italien", "Qu'il habite \xE0 Lyon", "Qu'il est fatigu\xE9"], answer: 0 },
+        { who: "Marco", t: "Vuoi un caff\xE8?", fr: "Tu veux un caf\xE9 ?" },
+        { who: "L\xE9a", t: "S\xEC, grazie! Andiamo!", fr: "Oui, merci ! Allons-y !" },
+        { q: "Et Marco, d'o\xF9 vient-il ?", options: ["De Naples", "De Rome", "De Milan"], answer: 0 }
+      ]
+    },
+    {
+      id: "it-foto",
+      after: "a1-famiglia",
+      emoji: "\u{1F4F8}",
+      title: "La foto di famiglia",
+      intro: "Au caf\xE9, Marco montre une photo de sa famille sur son t\xE9l\xE9phone.",
+      lines: [
+        { who: "", t: "Marco prende il telefono e mostra una foto.", fr: "Marco prend son t\xE9l\xE9phone et montre une photo." },
+        { who: "Marco", t: "Guarda, questa \xE8 la mia famiglia.", fr: "Regarde, voici ma famille." },
+        { who: "L\xE9a", t: "Chi \xE8 questo signore?", fr: "Qui est ce monsieur ?" },
+        { who: "Marco", t: "\xC8 mio padre. Si chiama Paolo.", fr: "C'est mon p\xE8re. Il s'appelle Paolo." },
+        { who: "L\xE9a", t: "E questa ragazza?", fr: "Et cette fille ?" },
+        { who: "Marco", t: "\xC8 mia sorella Giulia. Ha sedici anni.", fr: "C'est ma s\u0153ur Giulia. Elle a seize ans." },
+        { q: "Qui est Giulia ?", options: ["La s\u0153ur de Marco", "La m\xE8re de Marco", "La cousine de Marco"], answer: 0 },
+        { who: "L\xE9a", t: "E lei \xE8 tua madre?", fr: "Et elle, c'est ta m\xE8re ?" },
+        { who: "Marco", t: "No, \xE8 mia nonna! Ha ottant'anni, ma \xE8 sempre contenta.", fr: "Non, c'est ma grand-m\xE8re ! Elle a quatre-vingts ans, mais elle est toujours contente." },
+        { q: "Quel \xE2ge a la grand-m\xE8re ?", options: ["80 ans", "60 ans", "16 ans"], answer: 0 },
+        { who: "Marco", t: "E tu, hai fratelli?", fr: "Et toi, tu as des fr\xE8res et s\u0153urs ?" },
+        { who: "L\xE9a", t: "S\xEC, ho un fratello. Si chiama Hugo e abita a Parigi.", fr: "Oui, j'ai un fr\xE8re. Il s'appelle Hugo et il habite \xE0 Paris." },
+        { q: "O\xF9 habite le fr\xE8re de L\xE9a ?", options: ["\xC0 Paris", "\xC0 Rome", "\xC0 Lyon"], answer: 0 }
+      ]
+    },
+    {
+      id: "it-ristorante",
+      after: "a1-cibo",
+      emoji: "\u{1F35D}",
+      title: "Al ristorante",
+      intro: "Le soir, L\xE9a et Marco d\xEEnent dans une petite trattoria.",
+      lines: [
+        { who: "", t: "\xC8 sera. L\xE9a e Marco sono in un piccolo ristorante.", fr: "C'est le soir. L\xE9a et Marco sont dans un petit restaurant." },
+        { who: "Cameriere", t: "Buonasera! Cosa prendete?", fr: "Bonsoir ! Qu'est-ce que vous prenez ?" },
+        { who: "L\xE9a", t: "Vorrei la pasta al pomodoro, per favore.", fr: "Je voudrais les p\xE2tes \xE0 la tomate, s'il vous pla\xEEt." },
+        { who: "Marco", t: "Per me il pesce con la verdura.", fr: "Pour moi, le poisson avec des l\xE9gumes." },
+        { q: "Que commande L\xE9a ?", options: ["Des p\xE2tes \xE0 la tomate", "Du poisson", "De la viande"], answer: 0 },
+        { who: "Cameriere", t: "E da bere?", fr: "Et \xE0 boire ?" },
+        { who: "Marco", t: "Un bicchiere di vino rosso.", fr: "Un verre de vin rouge." },
+        { who: "L\xE9a", t: "Io prendo l'acqua. Non bevo vino.", fr: "Moi, je prends de l'eau. Je ne bois pas de vin." },
+        { q: "Que boit L\xE9a ?", options: ["De l'eau", "Du vin rouge", "De la bi\xE8re"], answer: 0 },
+        { who: "L\xE9a", t: "Mmm, la pasta \xE8 molto buona!", fr: "Mmm, les p\xE2tes sont tr\xE8s bonnes !" },
+        { who: "Marco", t: "Scusi, il conto per favore!", fr: "Excusez-moi, l'addition s'il vous pla\xEEt !" },
+        { who: "Cameriere", t: "Sono trentadue euro.", fr: "\xC7a fait trente-deux euros." },
+        { q: "Combien co\xFBte le repas ?", options: ["32 \u20AC", "22 \u20AC", "42 \u20AC"], answer: 0 }
+      ]
+    },
+    {
+      id: "it-stazione",
+      after: "a1-domande",
+      emoji: "\u{1F689}",
+      title: "Dov'\xE8 la stazione?",
+      intro: "Samedi matin, L\xE9a veut prendre le train pour Florence.",
+      lines: [
+        { who: "", t: "Sabato mattina L\xE9a vuole andare a Firenze in treno.", fr: "Samedi matin, L\xE9a veut aller \xE0 Florence en train." },
+        { who: "L\xE9a", t: "Scusi, signora, dov'\xE8 la stazione?", fr: "Excusez-moi, madame, o\xF9 est la gare ?" },
+        { who: "Signora", t: "Non \xE8 lontano. Vada dritto, poi giri a destra.", fr: "Ce n'est pas loin. Allez tout droit, puis tournez \xE0 droite." },
+        { q: "Que doit faire L\xE9a d'abord ?", options: ["Aller tout droit", "Tourner \xE0 gauche", "Prendre le bus"], answer: 0 },
+        { who: "L\xE9a", t: "Quanti minuti a piedi?", fr: "Combien de minutes \xE0 pied ?" },
+        { who: "Signora", t: "Dieci minuti, pi\xF9 o meno.", fr: "Dix minutes, \xE0 peu pr\xE8s." },
+        { who: "L\xE9a", t: "E c'\xE8 una farmacia vicino?", fr: "Et il y a une pharmacie pr\xE8s d'ici ?" },
+        { who: "Signora", t: "S\xEC, c'\xE8 una farmacia in piazza, a sinistra della stazione.", fr: "Oui, il y a une pharmacie sur la place, \xE0 gauche de la gare." },
+        { q: "O\xF9 est la pharmacie ?", options: ["Sur la place, \xE0 gauche de la gare", "\xC0 droite de l'h\xF4tel", "Loin de la gare"], answer: 0 },
+        { who: "L\xE9a", t: "Grazie mille!", fr: "Merci beaucoup !" },
+        { who: "Signora", t: "Prego! Buon viaggio!", fr: "Je vous en prie ! Bon voyage !" },
+        { q: "O\xF9 va L\xE9a ?", options: ["\xC0 Florence", "\xC0 Naples", "\xC0 Lyon"], answer: 0 }
+      ]
+    }
+  ],
+  zh: [
+    {
+      id: "zh-pengyou",
+      after: "a1-questions",
+      emoji: "\u{1F91D}",
+      title: "\u8BA4\u8BC6\u65B0\u670B\u53CB",
+      titlePy: "r\xE8nshi x\u012Bn p\xE9ngyou",
+      intro: "L\xE9a est fran\xE7aise. Elle \xE9tudie le chinois dans une \xE9cole \xE0 P\xE9kin.",
+      lines: [
+        { who: "", t: "\u4ECA\u5929\u662F\u661F\u671F\u4E00\u3002L\xE9a \u5728\u5317\u4EAC\u7684\u5B66\u6821\u3002", py: "J\u012Bnti\u0101n sh\xEC x\u012Bngq\u012By\u012B. L\xE9a z\xE0i B\u011Bij\u012Bng de xu\xE9xi\xE0o.", fr: "Aujourd'hui, c'est lundi. L\xE9a est dans une \xE9cole \xE0 P\xE9kin." },
+        { who: "\u738B\u660E", t: "\u4F60\u597D\uFF01\u4F60\u53EB\u4EC0\u4E48\u540D\u5B57\uFF1F", py: "N\u01D0 h\u01CEo! N\u01D0 ji\xE0o sh\xE9nme m\xEDngzi?", fr: "Bonjour ! Comment tu t'appelles ?" },
+        { who: "L\xE9a", t: "\u4F60\u597D\uFF01\u6211\u53EB L\xE9a\u3002\u4F60\u5462\uFF1F", py: "N\u01D0 h\u01CEo! W\u01D2 ji\xE0o L\xE9a. N\u01D0 ne?", fr: "Bonjour ! Je m'appelle L\xE9a. Et toi ?" },
+        { who: "\u738B\u660E", t: "\u6211\u53EB\u738B\u660E\u3002\u8BA4\u8BC6\u4F60\u5F88\u9AD8\u5174\uFF01", py: "W\u01D2 ji\xE0o W\xE1ng M\xEDng. R\xE8nshi n\u01D0 h\u011Bn g\u0101ox\xECng!", fr: "Je m'appelle Wang Ming. Ravi de te conna\xEEtre !" },
+        { who: "L\xE9a", t: "\u6211\u4E5F\u5F88\u9AD8\u5174\uFF01", py: "W\u01D2 y\u011B h\u011Bn g\u0101ox\xECng!", fr: "Moi aussi, je suis ravie !" },
+        { who: "\u738B\u660E", t: "\u4F60\u662F\u54EA\u56FD\u4EBA\uFF1F", py: "N\u01D0 sh\xEC n\u01CE gu\xF3 r\xE9n?", fr: "De quel pays es-tu ?" },
+        { who: "L\xE9a", t: "\u6211\u662F\u6CD5\u56FD\u4EBA\u3002\u4F60\u662F\u4E2D\u56FD\u4EBA\u5417\uFF1F", py: "W\u01D2 sh\xEC F\u01CEgu\xF3r\xE9n. N\u01D0 sh\xEC Zh\u014Dnggu\xF3r\xE9n ma?", fr: "Je suis fran\xE7aise. Tu es chinois ?" },
+        { q: "Quelle est la nationalit\xE9 de L\xE9a ?", options: ["Fran\xE7aise", "Chinoise", "Italienne"], answer: 0 },
+        { who: "\u738B\u660E", t: "\u662F\uFF0C\u6211\u662F\u5317\u4EAC\u4EBA\u3002\u4F60\u662F\u5B66\u751F\u5417\uFF1F", py: "Sh\xEC, w\u01D2 sh\xEC B\u011Bij\u012Bngr\xE9n. N\u01D0 sh\xEC xu\xE9sheng ma?", fr: "Oui, je suis de P\xE9kin. Tu es \xE9tudiante ?" },
+        { who: "L\xE9a", t: "\u662F\uFF0C\u6211\u662F\u5B66\u751F\u3002\u6211\u5B66\u4E60\u6C49\u8BED\u3002", py: "Sh\xEC, w\u01D2 sh\xEC xu\xE9sheng. W\u01D2 xu\xE9x\xED H\xE0ny\u01D4.", fr: "Oui, je suis \xE9tudiante. J'\xE9tudie le chinois." },
+        { who: "\u738B\u660E", t: "\u6211\u662F\u8FD9\u4E2A\u5B66\u6821\u7684\u8001\u5E08\uFF01", py: "W\u01D2 sh\xEC zh\xE8ge xu\xE9xi\xE0o de l\u01CEosh\u012B!", fr: "Je suis professeur dans cette \xE9cole !" },
+        { q: "Que fait Wang Ming ?", options: ["Il est professeur", "Il est \xE9tudiant", "Il est m\xE9decin"], answer: 0 }
+      ]
+    },
+    {
+      id: "zh-jia",
+      after: "a1-famille",
+      emoji: "\u{1F3E0}",
+      title: "\u6211\u7684\u5BB6",
+      titlePy: "w\u01D2 de ji\u0101",
+      intro: "L\xE9a et Wang Ming parlent de leur famille.",
+      lines: [
+        { who: "L\xE9a", t: "\u738B\u660E\uFF0C\u4F60\u5BB6\u6709\u51E0\u4E2A\u4EBA\uFF1F", py: "W\xE1ng M\xEDng, n\u01D0 ji\u0101 y\u01D2u j\u01D0 g\xE8 r\xE9n?", fr: "Wang Ming, combien de personnes y a-t-il dans ta famille ?" },
+        { who: "\u738B\u660E", t: "\u6211\u5BB6\u6709\u56DB\u4E2A\u4EBA\uFF1A\u7238\u7238\u3001\u5988\u5988\u3001\u59B9\u59B9\u548C\u6211\u3002", py: "W\u01D2 ji\u0101 y\u01D2u s\xEC g\xE8 r\xE9n: b\xE0ba, m\u0101ma, m\xE8imei h\xE9 w\u01D2.", fr: "Nous sommes quatre : papa, maman, ma petite s\u0153ur et moi." },
+        { q: "Combien sont-ils dans la famille de Wang Ming ?", options: ["Quatre", "Trois", "Cinq"], answer: 0 },
+        { who: "L\xE9a", t: "\u4F60\u6709\u72D7\u5417\uFF1F", py: "N\u01D0 y\u01D2u g\u01D2u ma?", fr: "Tu as un chien ?" },
+        { who: "\u738B\u660E", t: "\u6CA1\u6709\u72D7\u3002\u6211\u4EEC\u6709\u4E00\u53EA\u732B\u3002", py: "M\xE9iy\u01D2u g\u01D2u. W\u01D2men y\u01D2u y\xEC zh\u012B m\u0101o.", fr: "Pas de chien. Nous avons un chat." },
+        { who: "L\xE9a", t: "\u6211\u4E5F\u7231\u732B\uFF01", py: "W\u01D2 y\u011B \xE0i m\u0101o!", fr: "Moi aussi, j'adore les chats !" },
+        { q: "Quel animal a la famille de Wang Ming ?", options: ["Un chat", "Un chien", "Un cheval"], answer: 0 },
+        { who: "\u738B\u660E", t: "\u4F60\u5462\uFF1F\u4F60\u5BB6\u6709\u51E0\u4E2A\u4EBA\uFF1F", py: "N\u01D0 ne? N\u01D0 ji\u0101 y\u01D2u j\u01D0 g\xE8 r\xE9n?", fr: "Et toi ? Combien \xEAtes-vous dans ta famille ?" },
+        { who: "L\xE9a", t: "\u4E09\u4E2A\u4EBA\uFF1A\u7238\u7238\u3001\u5988\u5988\u548C\u6211\u3002\u6211\u6CA1\u6709\u54E5\u54E5\uFF0C\u4E5F\u6CA1\u6709\u59B9\u59B9\u3002", py: "S\u0101n g\xE8 r\xE9n: b\xE0ba, m\u0101ma h\xE9 w\u01D2. W\u01D2 m\xE9iy\u01D2u g\u0113ge, y\u011B m\xE9iy\u01D2u m\xE8imei.", fr: "Trois : papa, maman et moi. Je n'ai pas de grand fr\xE8re, ni de petite s\u0153ur." },
+        { q: "L\xE9a a-t-elle des fr\xE8res et s\u0153urs ?", options: ["Non", "Oui, un grand fr\xE8re", "Oui, une petite s\u0153ur"], answer: 0 }
+      ]
+    },
+    {
+      id: "zh-fandian",
+      after: "a1-manger",
+      emoji: "\u{1F35C}",
+      title: "\u5728\u996D\u5E97",
+      titlePy: "z\xE0i f\xE0ndi\xE0n",
+      intro: "\xC0 midi, L\xE9a et Wang Ming vont manger au restaurant.",
+      lines: [
+        { who: "", t: "\u4E2D\u5348\uFF0CL\xE9a \u548C\u738B\u660E\u53BB\u996D\u5E97\u5403\u996D\u3002", py: "Zh\u014Dngw\u01D4, L\xE9a h\xE9 W\xE1ng M\xEDng q\xF9 f\xE0ndi\xE0n ch\u012Bf\xE0n.", fr: "\xC0 midi, L\xE9a et Wang Ming vont manger au restaurant." },
+        { who: "\u670D\u52A1\u5458", t: "\u4F60\u4EEC\u597D\uFF01\u4F60\u4EEC\u60F3\u5403\u4EC0\u4E48\uFF1F", py: "N\u01D0men h\u01CEo! N\u01D0men xi\u01CEng ch\u012B sh\xE9nme?", fr: "Bonjour ! Qu'est-ce que vous voulez manger ?" },
+        { who: "\u738B\u660E", t: "\u6211\u60F3\u5403\u7C73\u996D\u548C\u8FD9\u4E2A\u83DC\u3002", py: "W\u01D2 xi\u01CEng ch\u012B m\u01D0f\xE0n h\xE9 zh\xE8ge c\xE0i.", fr: "Je voudrais du riz et ce plat-ci." },
+        { who: "L\xE9a", t: "\u6211\u4E5F\u8981\u7C73\u996D\u3002", py: "W\u01D2 y\u011B y\xE0o m\u01D0f\xE0n.", fr: "Moi aussi, je prends du riz." },
+        { q: "Que mangent-ils tous les deux ?", options: ["Du riz", "Des pommes", "Des nouilles"], answer: 0 },
+        { who: "\u670D\u52A1\u5458", t: "\u4F60\u4EEC\u60F3\u559D\u4EC0\u4E48\uFF1F", py: "N\u01D0men xi\u01CEng h\u0113 sh\xE9nme?", fr: "Qu'est-ce que vous voulez boire ?" },
+        { who: "L\xE9a", t: "\u6211\u559D\u8336\u3002", py: "W\u01D2 h\u0113 ch\xE1.", fr: "Je bois du th\xE9." },
+        { who: "\u738B\u660E", t: "\u6211\u559D\u6C34\uFF0C\u8C22\u8C22\u3002", py: "W\u01D2 h\u0113 shu\u01D0, xi\xE8xie.", fr: "Je bois de l'eau, merci." },
+        { q: "Que boit L\xE9a ?", options: ["Du th\xE9", "De l'eau", "Du caf\xE9"], answer: 0 },
+        { who: "\u738B\u660E", t: "\u4F60\u559C\u6B22\u4E2D\u56FD\u83DC\u5417\uFF1F", py: "N\u01D0 x\u01D0huan Zh\u014Dnggu\xF3 c\xE0i ma?", fr: "Tu aimes la cuisine chinoise ?" },
+        { who: "L\xE9a", t: "\u5F88\u559C\u6B22\uFF01\u8FD9\u4E2A\u83DC\u592A\u597D\u5403\u4E86\uFF01", py: "H\u011Bn x\u01D0huan! Zh\xE8ge c\xE0i t\xE0i h\u01CEoch\u012B le!", fr: "Beaucoup ! Ce plat est vraiment d\xE9licieux !" },
+        { who: "\u738B\u660E", t: "\u670D\u52A1\u5458\uFF0C\u591A\u5C11\u94B1\uFF1F", py: "F\xFAw\xF9yu\xE1n, du\u014Dshao qi\xE1n?", fr: "S'il vous pla\xEEt, combien \xE7a co\xFBte ?" },
+        { who: "\u670D\u52A1\u5458", t: "\u516B\u5341\u4E94\u5757\u3002", py: "B\u0101sh\xEDw\u01D4 ku\xE0i.", fr: "Quatre-vingt-cinq yuans." },
+        { q: "Combien co\xFBte le repas ?", options: ["85 yuans", "58 yuans", "15 yuans"], answer: 0 }
+      ]
+    },
+    {
+      id: "zh-mingtian",
+      after: "a1-meteo",
+      emoji: "\u2614",
+      title: "\u660E\u5929\u53BB\u54EA\u513F\uFF1F",
+      titlePy: "m\xEDngti\u0101n q\xF9 n\u01CEr?",
+      intro: "Wang Ming t\xE9l\xE9phone \xE0 L\xE9a pour organiser leur journ\xE9e de demain.",
+      lines: [
+        { who: "\u738B\u660E", t: "\u5582\uFF0CL\xE9a\uFF0C\u4F60\u597D\uFF01", py: "W\xE9i, L\xE9a, n\u01D0 h\u01CEo!", fr: "All\xF4, L\xE9a, bonjour !" },
+        { who: "L\xE9a", t: "\u4F60\u597D\uFF0C\u738B\u660E\uFF01", py: "N\u01D0 h\u01CEo, W\xE1ng M\xEDng!", fr: "Bonjour, Wang Ming !" },
+        { who: "\u738B\u660E", t: "\u660E\u5929\u4F60\u60F3\u53BB\u54EA\u513F\uFF1F", py: "M\xEDngti\u0101n n\u01D0 xi\u01CEng q\xF9 n\u01CEr?", fr: "O\xF9 veux-tu aller demain ?" },
+        { who: "L\xE9a", t: "\u6211\u60F3\u53BB\u5546\u5E97\u4E70\u8863\u670D\u3002", py: "W\u01D2 xi\u01CEng q\xF9 sh\u0101ngdi\xE0n m\u01CEi y\u012Bfu.", fr: "Je veux aller au magasin acheter des v\xEAtements." },
+        { q: "Que veut faire L\xE9a demain ?", options: ["Acheter des v\xEAtements", "Aller \xE0 l'\xE9cole", "Regarder un film"], answer: 0 },
+        { who: "\u738B\u660E", t: "\u597D\uFF01\u6211\u4EEC\u5750\u51FA\u79DF\u8F66\u53BB\u5427\u3002", py: "H\u01CEo! W\u01D2men zu\xF2 ch\u016Bz\u016Bch\u0113 q\xF9 ba.", fr: "D'accord ! Allons-y en taxi." },
+        { who: "L\xE9a", t: "\u51E0\u70B9\u53BB\uFF1F", py: "J\u01D0 di\u01CEn q\xF9?", fr: "On y va \xE0 quelle heure ?" },
+        { who: "\u738B\u660E", t: "\u4E0A\u5348\u5341\u70B9\uFF0C\u600E\u4E48\u6837\uFF1F", py: "Sh\xE0ngw\u01D4 sh\xED di\u01CEn, z\u011Bnmey\xE0ng?", fr: "Dix heures du matin, \xE7a te va ?" },
+        { q: "\xC0 quelle heure partent-ils ?", options: ["10 h du matin", "2 h de l'apr\xE8s-midi", "8 h du soir"], answer: 0 },
+        { who: "L\xE9a", t: "\u597D\u7684\u3002\u660E\u5929\u5929\u6C14\u600E\u4E48\u6837\uFF1F", py: "H\u01CEo de. M\xEDngti\u0101n ti\u0101nq\xEC z\u011Bnmey\xE0ng?", fr: "D'accord. Quel temps fera-t-il demain ?" },
+        { who: "\u738B\u660E", t: "\u660E\u5929\u4E0B\u96E8\uFF0C\u5F88\u51B7\u3002", py: "M\xEDngti\u0101n xi\xE0 y\u01D4, h\u011Bn l\u011Bng.", fr: "Demain il pleut, il fait tr\xE8s froid." },
+        { who: "L\xE9a", t: "\u6CA1\u5173\u7CFB\uFF01\u660E\u5929\u89C1\uFF01", py: "M\xE9i gu\u0101nxi! M\xEDngti\u0101n ji\xE0n!", fr: "Pas grave ! \xC0 demain !" },
+        { q: "Quel temps fera-t-il demain ?", options: ["Pluie et froid", "Soleil et chaleur", "Beau et doux"], answer: 0 }
+      ]
+    }
+  ]
+};
+
+// js/views/histoires.js
+var list = () => STORIES[code] || [];
+var unlocked = (s) => isLessonDone(s.after);
+var COLORS = ["#3b82c4", "#c2410c", "#7c3aed", "#0f766e", "#be185d"];
+var storyCount = () => ({ total: list().length, open: list().filter(unlocked).length, done: list().filter((s) => state.stories?.[s.id]?.done).length });
+function renderHistoires(app2) {
+  app2.innerHTML = `
+  <a class="back-link" href="#entrainement">\u2190 Entra\xEEnement</a>
+  <header class="page-head"><p class="eyebrow">Lire et \xE9couter</p><h1>\u{1F4D6} Histoires</h1>
+    <p class="muted">De courts dialogues avec les mots de vos le\xE7ons. Touchez une phrase pour voir sa traduction.</p></header>
+  <div class="story-list">
+    ${list().map((s) => {
+    const ok = unlocked(s), rec = state.stories?.[s.id];
+    const lesson = getLesson3(s.after);
+    return `<a class="story-item ${ok ? "" : "locked"}" ${ok ? `href="#histoire-${s.id}"` : `aria-disabled="true"`}>
+        <span class="story-emoji">${ok ? s.emoji : "\u{1F512}"}</span>
+        <span class="story-txt"><b class="${code === "zh" ? "zh" : ""}">${esc(s.title)}</b>
+          ${s.titlePy ? `<small class="py">${esc(s.titlePy)}</small>` : ""}
+          <small>${ok ? esc(s.intro) : `Se d\xE9bloque apr\xE8s la le\xE7on \xAB ${esc(lesson?.title || s.after)} \xBB`}</small></span>
+        ${rec?.done ? `<span class="story-done" title="Termin\xE9e">${rec.best}/${rec.total} \u2713</span>` : ""}
+      </a>`;
+  }).join("")}
+  </div>`;
+  return true;
+}
+function renderHistoire(app2, id) {
+  const story = list().find((s) => s.id === id);
+  if (!story || !unlocked(story)) return false;
+  const showPy = code === "zh" && levelWantsPinyin("A1");
+  const people = [...new Set(story.lines.map((l) => l.who).filter(Boolean))];
+  const color = (who2) => COLORS[people.indexOf(who2) % COLORS.length];
+  const totalQ = story.lines.filter((l) => l.q).length;
+  let step = 0, score = 0, waiting = false;
+  document.body.classList.add("focus-mode");
+  app2.innerHTML = `
+  <section class="story">
+    <div class="story-top">
+      <button class="btn ghost small" data-quit aria-label="Quitter">\u2715</button>
+      <div class="progress"><span class="story-bar"></span></div>
+    </div>
+    <header class="story-head"><span class="story-big">${story.emoji}</span>
+      <h1 class="${code === "zh" ? "zh" : ""}">${esc(story.title)}</h1>${story.titlePy ? `<p class="py">${esc(story.titlePy)}</p>` : ""}
+      <p class="muted small">${esc(story.intro)}</p></header>
+    <div class="story-lines" aria-live="polite"></div>
+    <div class="story-foot"><button class="btn primary big" data-next>Commencer</button></div>
+  </section>`;
+  const box = app2.querySelector(".story-lines"), next = app2.querySelector("[data-next]");
+  const bar = app2.querySelector(".story-bar");
+  const quit = () => {
+    document.body.classList.remove("focus-mode");
+    location.hash = "histoires";
+  };
+  app2.querySelector("[data-quit]").onclick = quit;
+  function lineHtml(l) {
+    const zh2 = code === "zh";
+    const body = `<p class="sl-t ${zh2 ? "zh" : ""}">${esc(l.t)}</p>
+      ${l.py ? `<p class="sl-py ${showPy ? "" : "hidden"}">${esc(l.py)}</p>` : ""}
+      <p class="sl-fr hidden">${esc(l.fr)}</p>`;
+    if (!l.who) return `<div class="sl narr" tabindex="0">${body}<button class="speak" data-say aria-label="R\xE9\xE9couter">\u{1F50A}</button></div>`;
+    return `<div class="sl talk" tabindex="0" style="--who:${color(l.who)}">
+      <span class="sl-who">${esc(l.who)}</span>
+      <div class="sl-bubble">${body}</div><button class="speak" data-say aria-label="R\xE9\xE9couter">\u{1F50A}</button></div>`;
+  }
+  function addLine(l) {
+    const div = document.createElement("div");
+    div.innerHTML = lineHtml(l);
+    const el = div.firstElementChild;
+    box.appendChild(el);
+    el.querySelector("[data-say]").onclick = (e) => {
+      e.stopPropagation();
+      speak(l.t, { force: true });
+    };
+    el.onclick = () => {
+      el.querySelector(".sl-fr").classList.toggle("hidden");
+      el.querySelector(".sl-py")?.classList.remove("hidden");
+    };
+    speak(l.t, { force: true });
+    el.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
+  function addQuestion(l) {
+    waiting = true;
+    next.disabled = true;
+    next.textContent = "Choisissez une r\xE9ponse";
+    const order = l.options.map((_, i) => i).sort(() => Math.random() - 0.5);
+    const div = document.createElement("div");
+    div.className = "sl-q card";
+    div.innerHTML = `<p class="eyebrow">Question</p><p class="sl-qt">${esc(l.q)}</p>
+      <div class="options">${order.map((i) => `<button class="option" data-i="${i}"><span>${esc(l.options[i])}</span></button>`).join("")}</div>`;
+    box.appendChild(div);
+    div.scrollIntoView({ behavior: "smooth", block: "end" });
+    div.querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
+      const i = +b.dataset.i, ok = i === l.answer;
+      if (ok) score++;
+      div.querySelectorAll("[data-i]").forEach((x) => {
+        x.disabled = true;
+        if (+x.dataset.i === l.answer) x.classList.add("correct");
+        else if (x === b) x.classList.add("wrong");
+      });
+      div.insertAdjacentHTML("beforeend", `<p class="sl-res ${ok ? "ok" : "ko"}">${ok ? "\u2713 Bonne r\xE9ponse !" : "\u2717 Pas tout \xE0 fait."}</p>`);
+      waiting = false;
+      next.disabled = false;
+      next.textContent = "Continuer";
+      next.focus();
+    });
+  }
+  function finish() {
+    const rec = state.stories?.[story.id];
+    const first = !rec?.done;
+    const r = recordPractice({ label: `Histoire \xB7 ${story.title}`, score, total: totalQ, xpPer: 10 });
+    let bonus = 0;
+    if (first) {
+      bonus = 20;
+      recordPractice({ label: "", score: 1, total: 0, xpPer: bonus });
+    }
+    commit((s) => {
+      s.stories = { ...s.stories || {}, [story.id]: { done: true, best: Math.max(rec?.best || 0, score), total: totalQ, date: Date.now() } };
+    });
+    document.body.classList.remove("focus-mode");
+    const pct = totalQ ? Math.round(score / totalQ * 100) : 100;
+    const nextStory = list().find((s) => unlocked(s) && !state.stories?.[s.id]?.done);
+    app2.innerHTML = `
+    <section class="results ${pct >= 60 ? "ok" : "ko"}">
+      ${ring(pct, 150, 12)}
+      <h1>${pct === 100 ? "Tout compris ! \u{1F389}" : pct >= 60 ? "Histoire termin\xE9e !" : "Histoire termin\xE9e"}</h1>
+      <p class="lead">${score} / ${totalQ} questions de compr\xE9hension</p>
+      <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained + bonus} XP</span>${bonus ? `<span class="chip">\u{1F4D6} Nouvelle histoire lue</span>` : ""}</div>
+      <div class="result-actions">
+        ${nextStory ? `<a class="btn primary big" href="#histoire-${nextStory.id}">Histoire suivante \u2192</a>` : `<a class="btn primary big" href="#histoires">Toutes les histoires</a>`}
+        <a class="btn ghost" href="#histoire-${story.id}" data-reload>Relire</a>
+      </div>
+    </section>`;
+    if (pct === 100) celebrate();
+  }
+  next.onclick = () => {
+    if (waiting) return;
+    if (step >= story.lines.length) return finish();
+    const l = story.lines[step++];
+    bar.style.width = `${Math.round(step / story.lines.length * 100)}%`;
+    if (l.q) addQuestion(l);
+    else {
+      addLine(l);
+      next.textContent = step >= story.lines.length ? "Terminer" : "Continuer";
+    }
+  };
+  return true;
+}
+
 // js/views/entrainement.js
 var isZh = () => code === "zh";
 var HAN = /[㐀-鿿]/;
@@ -9480,6 +9935,7 @@ function renderEntrainement(app2) {
   const errors = Object.keys(state.errors).length;
   const srs = srsStats(Object.values(state.vocab));
   const vocab = Object.keys(state.vocab).length;
+  const st = storyCount();
   const hero = errors ? { href: "revision", title: "Travaille tes points faibles", sub: `${Math.min(10, errors)} question${errors > 1 ? "s" : ""} rat\xE9e${errors > 1 ? "s" : ""} \xE0 corriger`, xp: Math.min(10, errors) * 10, icon: "\u{1F3AF}" } : srs.todo ? { href: "reviser", title: "R\xE9vision du jour", sub: `${srs.todo} mot${srs.todo > 1 ? "s" : ""} \xE0 revoir en flashcards`, xp: srs.todo * 2, icon: "\u{1F4C5}" } : words >= 4 ? { href: "ecoute", title: "Entra\xEEne ton oreille", sub: "10 mots \xE0 reconna\xEEtre \xE0 l'\xE9coute", xp: 50, icon: "\u{1F3A7}" } : { href: "parcours", title: "Commence ton parcours", sub: "Termine une le\xE7on pour d\xE9bloquer l'entra\xEEnement", xp: 0, icon: "\u{1F5FA}\uFE0F" };
   const row = (href, title, icon, cls, { badge = 0, sub = "", ok = true } = {}) => `
     <a class="tr-row ${ok ? "" : "disabled"}" ${ok ? `href="#${href}"` : `aria-disabled="true"`}>
@@ -9499,6 +9955,8 @@ function renderEntrainement(app2) {
 
   <h2 class="tr-h2">Exercices</h2>
   <div class="tr-list">
+    ${row("histoires", "Histoires", "\u{1F4D6}", "c-orange", { sub: st.open ? `Dialogues \xE0 lire et \xE9couter \xB7 ${st.done}/${st.total} lues` : "Se d\xE9bloquent au fil des le\xE7ons", ok: st.open > 0, badge: st.open - st.done })}
+    ${row("prononciation", "Prononciation", "\u{1F3A4}", "c-red", { sub: isZh() ? "Parlez, je v\xE9rifie les sons et les tons" : "Parlez, je v\xE9rifie ce que j'entends", ok: words >= 3 })}
     ${row("ecoute", "\xC9coute", "\u{1F3A7}", "c-blue", { sub: "Reconna\xEEtre les mots \xE0 l'oral", ok: words >= 4 })}
     ${isZh() ? row("tons", "Les tons", "\u{1F3B5}", "c-green", { sub: "1er, 2e, 3e ou 4e ton ?", ok: syl >= 4 }) : ""}
     ${isZh() ? row("trace", "Trac\xE9 des caract\xE8res", "\u270D\uFE0F", "c-purple", { sub: "L'ordre des traits, au doigt", ok: words >= 1 }) : ""}
@@ -9663,6 +10121,210 @@ function renderTrace(app2, start3) {
   return true;
 }
 
+// js/views/prononciation.js
+var SR = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+var isZh2 = () => code === "zh";
+var HAN2 = /[㐀-鿿]/g;
+var N = 10;
+var stripAcc = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+var norm = (s) => stripAcc(String(s).toLowerCase()).replace(/['’]/g, " ").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+var sim = (a, b) => a || b ? 1 - lev(a, b) / Math.max(a.length, b.length) : 1;
+var PP = null;
+var loadPinyin = () => PP ||= import("https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/+esm").then((m) => m.pinyin).catch(() => null);
+async function pyOf(text) {
+  const chars = (text.match(HAN2) || []).join("");
+  if (!chars) return [];
+  const fn = await loadPinyin();
+  if (fn) return fn(chars, { type: "array" });
+  return [...chars].map((c) => zh_pinyin_default[c] || "?");
+}
+var toneless = (s) => stripAcc(s).replace(/ü/g, "v").toLowerCase();
+async function grade2(word2, alts) {
+  if (!isZh2()) {
+    const target2 = norm(word2.zh).replace(/^(il|lo|la|l|i|gli|le|un|una|uno) /, "");
+    let best2 = { s: 0, heard: alts[0] || "" };
+    for (const a of alts) {
+      const h = norm(a);
+      const s = h.includes(target2) ? 1 : Math.max(sim(h, target2), sim(h, norm(word2.zh)));
+      if (s > best2.s) best2 = { s, heard: a };
+    }
+    if (best2.s >= 0.95) return { level: "perfect", heard: best2.heard };
+    if (best2.s >= 0.75) return { level: "good", heard: best2.heard, note: "Presque parfait : \xE9coutez le mod\xE8le et comparez." };
+    return { level: "miss", heard: best2.heard };
+  }
+  const target = (word2.zh.match(HAN2) || []).join("");
+  const want = word2.py ? word2.py.toLowerCase().replace(/['’]/g, " ").split(/\s+/).join("") : (await pyOf(target)).join("");
+  let best = { level: "miss", heard: alts[0] || "" };
+  for (const a of alts) {
+    const chars = (a.match(HAN2) || []).join("");
+    if (chars.includes(target)) return { level: "perfect", heard: a };
+    const got = (await pyOf(chars)).join("");
+    if (!got) continue;
+    if (got.includes(want)) return { level: "good", heard: a, note: `Homophone reconnu (${got}) : la prononciation et les tons sont bons.` };
+    if (toneless(got).includes(toneless(want)) && best.level === "miss") best = { level: "tone", heard: a, note: `J'ai entendu \xAB ${got} \xBB : les sons sont bons, mais attention aux tons (\xAB ${word2.py} \xBB).` };
+  }
+  return best;
+}
+function renderPrononciation(app2) {
+  if (!SR) {
+    app2.innerHTML = `<a class="back-link" href="#entrainement">\u2190 Entra\xEEnement</a>
+    <section class="card empty-state"><p class="big-emoji">\u{1F3A4}</p><h1 class="h3">Reconnaissance vocale indisponible</h1>
+      <p class="muted">Ce navigateur ne sait pas reconna\xEEtre la voix. Utilisez <b>Chrome</b> (ordinateur ou Android) ou <b>Safari</b> sur iPhone.</p></section>`;
+    return true;
+  }
+  const pool = wordPool().filter((w) => w.zh.length <= (isZh2() ? 6 : 24));
+  if (pool.length < 3) return false;
+  const words = shuffle(pool).slice(0, N);
+  let i = 0, score = 0, tries = 0, rec = null, listening = false, scored = false;
+  document.body.classList.add("focus-mode");
+  app2.innerHTML = `
+  <section class="pron">
+    <div class="story-top">
+      <button class="btn ghost small" data-quit aria-label="Quitter">\u2715</button>
+      <div class="progress"><span class="story-bar"></span></div>
+    </div>
+    <p class="eyebrow">Prononciation \xB7 lisez \xE0 voix haute</p>
+    <div class="card pron-card">
+      <p class="pron-word"></p><p class="pron-py py"></p><p class="pron-fr muted"></p>
+      <div class="btn-row center"><button class="btn ghost small" data-model>\u{1F50A} Mod\xE8le</button><button class="btn ghost small" data-slow>\u{1F422} Lentement</button></div>
+    </div>
+    <button class="mic" data-mic aria-label="Appuyez puis parlez"><span>\u{1F3A4}</span></button>
+    <p class="pron-hint muted small">Appuyez sur le micro, puis dites le mot.</p>
+    <div class="pron-res" aria-live="polite"></div>
+    <div class="story-foot"><button class="btn ghost" data-skip>Passer</button><button class="btn primary" data-next hidden>Suivant \u2192</button></div>
+  </section>`;
+  const $2 = (s) => app2.querySelector(s);
+  const quit = () => {
+    try {
+      rec?.abort();
+    } catch {
+    }
+    document.body.classList.remove("focus-mode");
+    location.hash = "entrainement";
+  };
+  $2("[data-quit]").onclick = quit;
+  function show() {
+    const w = words[i];
+    tries = 0;
+    scored = false;
+    $2(".story-bar").style.width = `${Math.round(i / words.length * 100)}%`;
+    $2(".pron-word").innerHTML = `<span class="${isZh2() ? "zh" : ""}">${esc(w.zh)}</span>`;
+    $2(".pron-py").textContent = w.py || "";
+    $2(".pron-fr").textContent = w.fr;
+    $2(".pron-res").innerHTML = "";
+    $2("[data-next]").hidden = true;
+    $2("[data-skip]").hidden = false;
+    $2(".pron-hint").textContent = "Appuyez sur le micro, puis dites le mot.";
+  }
+  function result(r) {
+    const w = words[i];
+    tries++;
+    const ok = r.level === "perfect" || r.level === "good";
+    if (ok && !scored) {
+      score++;
+      scored = true;
+    }
+    const head = { perfect: "\u2713 Parfait !", good: "\u2713 Bien !", tone: "\u2248 Presque !", miss: "\u2717 Pas encore" }[r.level];
+    $2(".pron-res").innerHTML = `<div class="pron-out ${ok ? "ok" : "ko"}"><b>${head}</b>
+      ${r.heard ? `<p class="small">J'ai entendu : \xAB <span class="${isZh2() ? "zh" : ""}">${esc(r.heard)}</span> \xBB</p>` : ""}
+      ${r.note ? `<p class="small">${esc(r.note)}</p>` : ""}
+      ${!ok && tries < 3 ? `<p class="small muted">\xC9coutez le mod\xE8le \u{1F50A} et r\xE9essayez (${3 - tries} essai${3 - tries > 1 ? "s" : ""}).</p>` : ""}</div>`;
+    if (ok || tries >= 3) {
+      $2("[data-next]").hidden = false;
+      $2("[data-skip]").hidden = true;
+      if (!ok) speak(w.zh, { force: true });
+    }
+  }
+  function listen() {
+    if (listening) {
+      try {
+        rec.stop();
+      } catch {
+      }
+      return;
+    }
+    speechSynthesis?.cancel?.();
+    rec = new SR();
+    rec.lang = L.speech;
+    rec.interimResults = false;
+    rec.maxAlternatives = 5;
+    rec.continuous = false;
+    let got = false;
+    rec.onresult = async (e) => {
+      got = true;
+      const alts = [...e.results[0]].map((a) => a.transcript.trim()).filter(Boolean);
+      result(await grade2(words[i], alts));
+    };
+    rec.onerror = (e) => {
+      got = true;
+      const msg = {
+        "not-allowed": "Micro refus\xE9 : autorisez le micro pour ce site dans les r\xE9glages du navigateur.",
+        "service-not-allowed": "La reconnaissance vocale est bloqu\xE9e ici. Sur iPhone, essayez dans Safari plut\xF4t que dans l'application install\xE9e.",
+        "no-speech": "Je n'ai rien entendu. Rapprochez-vous du micro et r\xE9essayez.",
+        network: "La reconnaissance vocale a besoin d'Internet.",
+        "audio-capture": "Aucun micro d\xE9tect\xE9."
+      }[e.error] || "La reconnaissance vocale a \xE9chou\xE9, r\xE9essayez.";
+      $2(".pron-res").innerHTML = `<p class="small muted">${esc(msg)}</p>`;
+    };
+    rec.onend = () => {
+      listening = false;
+      $2("[data-mic]").classList.remove("on");
+      $2(".pron-hint").textContent = "Appuyez sur le micro, puis dites le mot.";
+      if (!got) $2(".pron-res").innerHTML = `<p class="small muted">Je n'ai rien entendu. R\xE9essayez.</p>`;
+    };
+    try {
+      rec.start();
+      listening = true;
+      $2("[data-mic]").classList.add("on");
+      $2(".pron-hint").textContent = "J'\xE9coute\u2026 parlez maintenant";
+      $2(".pron-res").innerHTML = "";
+    } catch {
+      listening = false;
+    }
+  }
+  function finish() {
+    document.body.classList.remove("focus-mode");
+    const r = recordPractice({ label: "Prononciation", score, total: words.length });
+    const pct = Math.round(r.ratio * 100);
+    app2.innerHTML = `
+    <section class="results ${pct >= 60 ? "ok" : "ko"}">
+      ${ring(pct, 150, 12)}
+      <h1>${pct === 100 ? "Prononciation parfaite ! \u{1F389}" : pct >= 60 ? "Bien prononc\xE9 !" : "Continuez, \xE7a viendra !"}</h1>
+      <p class="lead">${score} / ${words.length} mots bien prononc\xE9s</p>
+      <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained} XP</span></div>
+      <div class="result-actions">
+        <a class="btn primary big" href="#prononciation" data-reload>Recommencer</a>
+        <a class="btn ghost" href="#entrainement">Autres exercices</a>
+      </div>
+    </section>`;
+    if (pct === 100) celebrate();
+  }
+  $2("[data-mic]").onclick = listen;
+  $2("[data-model]").onclick = () => speak(words[i].zh, { force: true });
+  $2("[data-slow]").onclick = () => speak(words[i].zh, { force: true, slow: true });
+  const advance = () => {
+    try {
+      rec?.abort();
+    } catch {
+    }
+    i++;
+    if (i >= words.length) finish();
+    else show();
+  };
+  $2("[data-next]").onclick = advance;
+  $2("[data-skip]").onclick = advance;
+  show();
+  if (isZh2()) loadPinyin();
+  return true;
+}
+
 // js/app.js
 var app = $("#app");
 var ROUTES = [
@@ -9680,6 +10342,9 @@ var ROUTES = [
   [/^entrainement$/, (a) => renderEntrainement(a), "entrainement"],
   [/^ecoute$/, (a) => renderEcoute(a), "entrainement"],
   [/^tons$/, (a) => renderTons(a), "entrainement"],
+  [/^histoires$/, (a) => renderHistoires(a), "entrainement"],
+  [/^histoire-(.+)$/, (a, m) => renderHistoire(a, m[1]), "entrainement"],
+  [/^prononciation$/, (a) => renderPrononciation(a), "entrainement"],
   [/^trace(?:-(.+))?$/, (a, m) => renderTrace(a, m[1]), "entrainement"],
   [/^amis$/, (a) => renderAmis(a), "amis"],
   [/^ami-(.+)$/, (a, m) => renderAmi(a, m[1]), "amis"],
