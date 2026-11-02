@@ -1218,6 +1218,36 @@ html.dark .live-watch { background: var(--paper-2); }
 .muted-chip { background: var(--paper-2) !important; color: var(--muted) !important; }
 .story-done small { display: block; font-size: .68rem; color: var(--muted); font-weight: 700; }
 
+/* =====================================================================
+   20. AVATARS : emoji parfaitement centré
+   La police du texte décale l'emoji vers le bas : on force la police
+   emoji et une hauteur de ligne de 1 dans toutes les pastilles.
+   ===================================================================== */
+.s-avatar, .hdr-avatar, .acc-avatar, .avatar-opt, .pf-avatar, .pick-friend .s-avatar {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+  line-height: 1; display: grid; place-items: center; text-align: center; overflow: hidden;
+  font-style: normal; font-weight: 400; padding: 0;
+}
+.s-avatar { font-size: 26px; }
+.s-avatar.sm { font-size: 21px; }
+.s-avatar.lg { font-size: 36px; }
+.s-avatar.xl { font-size: 46px; }
+.pf-friends .s-avatar { font-size: 32px; }
+.pod .s-avatar.lg { font-size: 38px; }
+.champ .s-avatar.sm, .hist-win .s-avatar.sm { font-size: 16px; }
+.hdr-me .hdr-avatar { font-size: 25px; }
+.acc-avatar { font-size: 30px; }
+/* Grand avatar du profil : un médaillon rond, centré sur le bandeau */
+.pf-avatar { top: auto; bottom: 34px; left: 50%; transform: translateX(-50%); width: 168px; height: 168px; border-radius: 50%;
+  font-size: 104px; background: rgba(255, 255, 255, .32); box-shadow: 0 0 0 6px rgba(255, 255, 255, .45), 0 14px 30px -10px rgba(0, 0, 0, .3); filter: none; }
+.small-banner .pf-avatar { width: 132px; height: 132px; font-size: 80px; bottom: 30px; }
+a.pf-avatar:hover { transform: translateX(-50%) scale(1.04); }
+@media (max-width: 560px) { .pf-avatar { width: 150px; height: 150px; font-size: 92px; } }
+html.dark .pf-avatar { background: rgba(255, 255, 255, .18); box-shadow: 0 0 0 6px rgba(255, 255, 255, .22), 0 14px 30px -10px rgba(0, 0, 0, .5); }
+.fr-tabs button { flex: 1 1 0; min-width: 0; padding: 9px 2px; font-size: .8rem; }
+@media (min-width: 520px) { .fr-tabs button { font-size: .92rem; padding: 10px 6px; } }
+.fr-tabs button { flex: 1 1 auto; } .fr-tabs { gap: 2px; padding: 4px; }
+
 </style>
 </head>
 <body>
