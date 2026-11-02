@@ -1412,6 +1412,79 @@ html.dark .trail path.dim { stroke: #3a4552; }
 .ss-go { width: 100%; border: 0; border-radius: 16px; padding: 16px; font-size: 1.05rem; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; background: #fff; color: #e8451c; box-shadow: 0 5px 0 rgba(0, 0, 0, .2); cursor: pointer; }
 .ss-go:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, .2); }
 
+/* =====================================================================
+   26. ÉCRAN DE FIN DE LEÇON ENRICHI + DIPLÔME
+   ===================================================================== */
+.res-hero { position: relative; width: 120px; height: 120px; margin: 0 auto 6px; display: grid; place-items: center; }
+.res-avatar { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; font-size: 66px; line-height: 1; background: var(--paper-2); box-shadow: 0 0 0 5px var(--card), 0 0 0 8px var(--line);
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.res-hero.happy .res-avatar { background: var(--verde-l); box-shadow: 0 0 0 5px var(--card), 0 0 0 8px var(--verde); animation: jump 1s cubic-bezier(.3, 1.6, .5, 1) .2s 2; }
+.res-hero.sad .res-avatar { animation: wobble 1.2s ease .2s; filter: saturate(.7); }
+@keyframes jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-26px) scale(.96, 1.04); } 55% { transform: translateY(0) scale(1.06, .94); } 70% { transform: translateY(-6px); } }
+@keyframes wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 50% { transform: rotate(6deg); } 75% { transform: rotate(-3deg); } }
+.res-spark { position: absolute; top: -6px; right: -4px; font-size: 1.8rem; animation: spin 2.4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.results.rich .stars span { display: inline-block; animation: starIn .45s cubic-bezier(.2, 1.8, .4, 1) both; animation-delay: var(--d); }
+@keyframes starIn { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+.res-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 18px auto 10px; max-width: 520px; width: 100%; }
+.rt { border: 2px solid var(--line); border-radius: 14px; padding: 8px 4px 10px; background: var(--card); display: flex; flex-direction: column; align-items: center; gap: 2px; animation: tileIn .45s ease both; }
+.rt:nth-child(2) { animation-delay: .08s; } .rt:nth-child(3) { animation-delay: .16s; } .rt:nth-child(4) { animation-delay: .24s; }
+@keyframes tileIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rt small { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.rt b { font-size: 1.25rem; font-weight: 900; }
+.rt span { font-size: 1.1rem; }
+.rt.t-xp { border-color: #f5c64e; } .rt.t-xp b { color: #e8a317; }
+.rt.t-acc { border-color: var(--verde); } .rt.t-acc b { color: var(--verde); } .rt.t-acc.low { border-color: var(--rosso); } .rt.t-acc.low b { color: var(--rosso); }
+.rt.t-time { border-color: #93c5fd; } .rt.t-time b { color: #3b82f6; }
+.rt.t-streak { border-color: #fdba74; } .rt.t-streak b { color: #f97316; }
+
+.diploma-screen { position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: 18px; background: rgba(17, 21, 27, .62); opacity: 0; transition: opacity .25s; overflow-y: auto; }
+.diploma-screen.in { opacity: 1; }
+.dip-card { position: relative; width: min(440px, 100%); text-align: center; padding: 34px 24px 22px; border-radius: 22px; color: #3a2a12;
+  background: radial-gradient(circle at 50% 0%, #fffaf0, #f6e7c8); border: 3px solid #d9a441; box-shadow: inset 0 0 0 8px #fffaf0, inset 0 0 0 10px #e7c47c, 0 30px 60px -20px rgba(0, 0, 0, .5);
+  transform: scale(.85) rotate(-2deg); transition: transform .45s cubic-bezier(.2, 1.6, .4, 1); }
+.diploma-screen.in .dip-card { transform: none; }
+.dip-ribbon { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; border-radius: 50%; background: #d9a441; display: grid; place-items: center; font-size: 2rem; box-shadow: 0 6px 14px rgba(0, 0, 0, .25); }
+.dip-kicker { margin: 4px 0 0; letter-spacing: .3em; text-transform: uppercase; font-weight: 800; font-size: .8rem; color: #a5741f; }
+.dip-card h2 { margin: 4px 0 2px; font-size: 2.2rem; color: #3a2a12; }
+.dip-level { margin: 0 0 14px; font-style: italic; color: #6b5330; }
+.dip-to { margin: 0; font-size: .85rem; color: #8a6d3b; }
+.dip-name { margin: 2px 0 6px; font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; border-bottom: 2px dashed #d9a441; display: inline-block; padding: 0 12px 4px; }
+.dip-meta { margin: 8px 0 10px; font-size: .85rem; color: #6b5330; }
+.dip-seal { width: 74px; height: 74px; margin: 6px auto 16px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: .8rem; color: #fff; background: radial-gradient(circle, #e0503f, #b3261e); box-shadow: 0 0 0 4px #f5c6c0, 0 6px 12px rgba(0, 0, 0, .25); transform: rotate(-12deg); }
+.dip-actions { display: grid; gap: 8px; }
+.dip-actions .btn.ghost { background: transparent; color: #6b5330; border-color: #e7c47c; }
+
+/* =====================================================================
+   27. TRANSITIONS, DÉCORS DES PALIERS, SQUELETTES DE CHARGEMENT
+   ===================================================================== */
+#app.page-in > * { animation: pageIn .26s ease-out both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #app.page-in > * { animation: none; } }
+
+.level-scene { position: relative; height: 92px; overflow: hidden; background: linear-gradient(180deg, var(--sky1), var(--sky2)); border-bottom: 1px solid var(--line); }
+.sc-hills { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 46px; }
+.sc-icon { position: absolute; right: 22px; bottom: 6px; font-size: 3.4rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .18)); }
+.sc-place { position: absolute; left: 16px; bottom: 12px; font-weight: 800; font-size: .82rem; color: #2b2f36; background: rgba(255, 255, 255, .75); padding: 3px 10px; border-radius: 99px; backdrop-filter: blur(2px); }
+.sc-cloud { position: absolute; font-size: 1.5rem; opacity: .8; animation: drift 28s linear infinite; }
+.sc-cloud.c1 { top: 10px; left: -10%; }
+.sc-cloud.c2 { top: 26px; left: -30%; font-size: 1.1rem; animation-duration: 38s; animation-delay: -12s; }
+@keyframes drift { to { transform: translateX(140vw); } }
+.level.locked .level-scene { filter: grayscale(.85); opacity: .7; }
+html.dark .level-scene { filter: brightness(.62) saturate(.9); }
+html.dark .level-scene .sc-place { background: rgba(17, 21, 27, .7); color: #e9edf2; }
+
+.skel { display: block; border-radius: 8px; background: linear-gradient(90deg, var(--paper-2) 25%, color-mix(in srgb, var(--paper-2) 55%, var(--card)) 45%, var(--paper-2) 65%); background-size: 300% 100%; animation: shimmer 1.3s ease-in-out infinite; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.skel-title { width: 140px; height: 28px; margin: 6px 0 14px; }
+.skel-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.skel-av { width: 44px; height: 44px; border-radius: 50%; flex: none; }
+.skel-lines { flex: 1; display: grid; gap: 8px; }
+.skel-l1 { height: 13px; width: 60%; } .skel-l2 { height: 11px; width: 35%; }
+.skel-chat { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
+.skel.sb { height: 38px; width: 46%; border-radius: 18px; }
+.skel.sb.r { align-self: flex-end; } .skel.sb.w { width: 64%; }
+
 </style>
 </head>
 <body>
@@ -6855,7 +6928,7 @@ function defaultState() {
     version: SCHEMA_VERSION,
     profile: null,
     // { pseudo, avatar, dailyGoal, createdAt }
-    settings: { tts: true, voiceSpeed: 1, pinyinQuiz: "auto", streakReminder: true },
+    settings: { tts: true, voiceSpeed: 1, pinyinQuiz: "auto", streakReminder: true, sfx: true, haptics: true },
     // lecture audio des exemples ; vitesse de la voix (1 = normale)
     lessons: {},
     // { [lessonId]: { best, total, passed, attempts, date } }
@@ -6988,6 +7061,67 @@ var lvlBadge = (l) => {
   return m ? `<span class="badge-pre">HSK</span>${m[1]}` : lab;
 };
 
+// js/core/fx.js
+var ctx = null;
+function audio() {
+  try {
+    ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  } catch {
+    return null;
+  }
+}
+function tone(c, freq, start3, dur, { type = "sine", vol = 0.16, to = null } = {}) {
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, start3);
+  if (to) o.frequency.exponentialRampToValueAtTime(to, start3 + dur);
+  g.gain.setValueAtTime(1e-4, start3);
+  g.gain.exponentialRampToValueAtTime(vol, start3 + 0.012);
+  g.gain.exponentialRampToValueAtTime(1e-4, start3 + dur);
+  o.connect(g).connect(c.destination);
+  o.start(start3);
+  o.stop(start3 + dur + 0.02);
+}
+var SOUNDS = {
+  good: (c, t) => {
+    tone(c, 880, t, 0.12, { type: "triangle" });
+    tone(c, 1318.5, t + 0.08, 0.22, { type: "triangle" });
+  },
+  bad: (c, t) => {
+    tone(c, 196, t, 0.22, { type: "sawtooth", vol: 0.06, to: 140 });
+    tone(c, 155, t + 0.12, 0.25, { type: "sawtooth", vol: 0.05, to: 110 });
+  },
+  combo: (c, t) => [784, 988, 1175, 1568].forEach((f, k) => tone(c, f, t + k * 0.06, 0.16, { type: "triangle", vol: 0.12 })),
+  win: (c, t) => [523.3, 659.3, 784, 1046.5].forEach((f, k) => tone(c, f, t + k * 0.11, k === 3 ? 0.5 : 0.18, { type: "triangle", vol: 0.15 })),
+  fanfare: (c, t) => {
+    [[523.3, 0], [523.3, 0.12], [523.3, 0.24], [659.3, 0.36], [784, 0.6], [659.3, 0.78], [784, 0.9], [1046.5, 1.08]].forEach(([f, d], k) => tone(c, f, t + d, k === 7 ? 0.8 : 0.16, { type: "square", vol: 0.07 }));
+    [261.6, 329.6, 392].forEach((f) => tone(c, f, t + 1.08, 0.8, { type: "triangle", vol: 0.08 }));
+  },
+  streak: (c, t) => {
+    tone(c, 300, t, 0.5, { type: "sine", vol: 0.1, to: 900 });
+    [1046.5, 1318.5].forEach((f, k) => tone(c, f, t + 0.45 + k * 0.1, 0.3, { type: "triangle", vol: 0.12 }));
+  },
+  tap: (c, t) => tone(c, 660, t, 0.05, { type: "sine", vol: 0.05 })
+};
+function sfx(name) {
+  if (state.settings?.sfx === false) return;
+  const c = audio();
+  if (!c || !SOUNDS[name]) return;
+  try {
+    SOUNDS[name](c, c.currentTime + 0.01);
+  } catch {
+  }
+}
+function haptic(pattern) {
+  if (state.settings?.haptics === false) return;
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+  }
+}
+
 // js/core/ui.js
 var $ = (sel, root = document) => root.querySelector(sel);
 var $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -7073,7 +7207,9 @@ function modal({ title, body = "", actions = [{ label: "OK", value: "ok", kind: 
     onOpen?.(root);
   });
 }
-function celebrate() {
+function celebrate({ sound = "win" } = {}) {
+  if (sound) sfx(sound);
+  haptic([30, 50, 30, 50, 80]);
   const colors = L.confetti;
   const box = document.createElement("div");
   box.className = "confetti";
@@ -7418,6 +7554,36 @@ var pyHtml = (levelId, html) => levelWantsPinyin(levelId) ? rubyHtml(html) : htm
 
 // js/views/parcours.js
 var srsTodo = () => srsStats(Object.values(state.vocab)).todo;
+var SCENES = {
+  it: {
+    A1: ["Roma", "\u{1F3DB}\uFE0F", ["#ffd9a8", "#fff1db"], "#c8794a"],
+    A2: ["Venezia", "\u{1F6F6}", ["#bfe3f2", "#eef8fb"], "#4f97b3"],
+    B1: ["Firenze", "\u26EA", ["#ffd2b5", "#fff0e4"], "#b8673c"],
+    B2: ["Milano", "\u{1F3D9}\uFE0F", ["#d6dcf5", "#f3f5fc"], "#6f79a8"],
+    C1: ["Napoli", "\u{1F30B}", ["#ffc9c0", "#ffeeea"], "#a4504a"],
+    C2: ["Sicilia", "\u{1F3DD}\uFE0F", ["#b8ecdf", "#ecfbf6"], "#3c9a83"]
+  },
+  zh: {
+    A1: ["\u5317\u4EAC P\xE9kin", "\u{1F3EF}", ["#ffd0c7", "#fff0ec"], "#b8453a"],
+    A2: ["\u4E0A\u6D77 Shanghai", "\u{1F306}", ["#d9d2f7", "#f4f1fd"], "#6c5bb3"],
+    B1: ["\u957F\u57CE La Grande Muraille", "\u26F0\uFE0F", ["#cfe8c8", "#f0f9ee"], "#5c8f4f"],
+    B2: ["\u897F\u5B89 Xi'an", "\u{1F3EE}", ["#ffd8a6", "#fff3e0"], "#b9772d"],
+    C1: ["\u6842\u6797 Guilin", "\u{1F3DE}\uFE0F", ["#bfe6e0", "#ecf8f6"], "#3f8f84"],
+    C2: ["\u9999\u6E2F Hong Kong", "\u{1F303}", ["#c9d3ec", "#eef1f9"], "#4a5b8f"]
+  }
+};
+function scene(lvl) {
+  const sc = SCENES[code]?.[lvl.id];
+  if (!sc) return "";
+  const [place, icon, [sky1, sky2], ground] = sc;
+  return `<div class="level-scene" style="--sky1:${sky1};--sky2:${sky2};--ground:${ground}" aria-hidden="true">
+    <span class="sc-cloud c1">\u2601\uFE0F</span><span class="sc-cloud c2">\u2601\uFE0F</span>
+    <svg class="sc-hills" viewBox="0 0 400 60" preserveAspectRatio="none"><path d="M0,42 C60,18 110,22 160,36 C210,50 250,20 310,26 C350,30 380,40 400,34 L400,60 L0,60 Z" fill="var(--ground)" opacity=".35"/>
+      <path d="M0,52 C70,38 120,46 190,50 C260,54 320,38 400,46 L400,60 L0,60 Z" fill="var(--ground)" opacity=".6"/></svg>
+    <span class="sc-icon">${icon}</span>
+    <span class="sc-place">\u{1F4CD} ${place}</span>
+  </div>`;
+}
 var OFFSETS = [0, 56, 84, 56, 0, -56, -84, -56];
 function renderParcours(app2) {
   bindPops();
@@ -7480,6 +7646,7 @@ function levelBlock(lvl, li) {
   const examOffset = OFFSETS[lvl.lessons.length % OFFSETS.length];
   return `
   <section class="level ${unlocked2 ? "" : "locked"}" style="--lvl:${lvl.color}" id="palier-${lvl.id}">
+    ${scene(lvl)}
     <header class="level-head">
       <div class="level-badge">${lvlBadge(lvl)}</div>
       <div class="level-info">
@@ -7664,12 +7831,6 @@ function table({ cols, rows }, lv) {
 // js/core/quiz-engine.js
 var tx = (q, s) => q._py ? ruby(s) : esc(s);
 var tile = (q, s) => String(s).includes("|") || !q._py ? pair(s) : ruby(s);
-var vibrate = (p) => {
-  try {
-    navigator.vibrate?.(p);
-  } catch {
-  }
-};
 function celebrateAnswer(root, ok, { xp = 0, combo = 0, progress = 0 } = {}) {
   const card = root.querySelector(".quiz-card"), bar = root.querySelector(".bar span"), btn = root.querySelector(".quiz-action");
   const replay = (el, cls) => {
@@ -7680,10 +7841,12 @@ function celebrateAnswer(root, ok, { xp = 0, combo = 0, progress = 0 } = {}) {
   };
   if (!ok) {
     replay(card, "shake");
-    vibrate([40, 40, 40]);
+    haptic([40, 40, 40]);
+    sfx("bad");
     return;
   }
-  vibrate(18);
+  haptic(18);
+  sfx(combo >= 3 && combo % 3 === 0 ? "combo" : "good");
   replay(card, "pop");
   if (bar) {
     bar.style.width = `${progress * 100}%`;
@@ -7738,11 +7901,11 @@ var TONED2 = {
 };
 var BASE = {};
 Object.entries(TONED2).forEach(([v, s]) => [...s].forEach((c) => BASE[c] = v));
-function applyTone(before, tone) {
+function applyTone(before, tone2) {
   const m = before.match(/[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]+$/i);
   if (!m) return before;
   let syl = [...m[0]].map((c) => BASE[c.toLowerCase()] ? c === c.toUpperCase() && c !== c.toLowerCase() ? BASE[c.toLowerCase()].toUpperCase() : BASE[c.toLowerCase()] : c).join("");
-  if (tone === 0) return before.slice(0, -m[0].length) + syl;
+  if (tone2 === 0) return before.slice(0, -m[0].length) + syl;
   const low = syl.toLowerCase();
   let idx = low.indexOf("a");
   if (idx < 0) idx = low.indexOf("e");
@@ -7754,7 +7917,7 @@ function applyTone(before, tone) {
     }
   }
   if (idx < 0) return before;
-  const ch = TONED2[low[idx]][tone - 1];
+  const ch = TONED2[low[idx]][tone2 - 1];
   const out = syl.slice(0, idx) + (syl[idx] !== low[idx] ? ch.toUpperCase() : ch) + syl.slice(idx + 1);
   return before.slice(0, -m[0].length) + out;
 }
@@ -8354,6 +8517,7 @@ function renderRevision(app2) {
 }
 function start(app2, cfg) {
   document.body.classList.add("focus-mode");
+  cfg.t0 = Date.now();
   runQuiz(app2, {
     title: cfg.title,
     questions: cfg.questions,
@@ -8365,6 +8529,7 @@ function start(app2, cfg) {
     onFinish: (results) => {
       document.body.classList.remove("focus-mode");
       const sum = recordQuiz({ kind: cfg.kind, id: cfg.id, label: cfg.label, results });
+      sum.ms = Date.now() - cfg.t0;
       showResults(app2, cfg, sum);
     }
   });
@@ -8387,15 +8552,23 @@ function showResults(app2, cfg, s) {
     msg = cfg.kind === "exam" ? `L'examen se valide sans aucune faute (${s.total}/${s.total}). Il vous en manquait ${s.total - s.score}. Vos erreurs sont dans le cahier : r\xE9visez-les, puis r\xE9essayez.` : cfg.kind === "checkpoint" ? `Il faut ${need}/${s.total} pour franchir le mi-palier. R\xE9visez les le\xE7ons concern\xE9es (vos erreurs sont dans le cahier), puis r\xE9essayez : les questions changent.` : `Il faut ${Math.round(s.passMark * 100)} % pour valider. Relisez la le\xE7on, vos erreurs sont dans le cahier.`;
     primary = `<a class="btn primary big" href="#${cfg.kind === "exam" ? "examen-" + cfg.id : cfg.kind === "checkpoint" ? "mipalier-" + cfg.id : "quiz-" + cfg.id}" data-reload>R\xE9essayer</a>`;
   }
+  const secs2 = Math.round((s.ms || 0) / 1e3), time = secs2 >= 60 ? `${Math.floor(secs2 / 60)}:${String(secs2 % 60).padStart(2, "0")}` : `${secs2} s`;
+  const streak = streakCount();
+  const tile2 = (icon, label, value, cls, count = null) => `<div class="rt ${cls}"><small>${label}</small><b ${count != null ? `data-count="${count}"` : ""}>${count != null ? 0 : value}</b><span>${icon}</span></div>`;
   app2.innerHTML = `
-  <section class="results ${s.passed ? "ok" : "ko"}">
-    ${ring(pct, 150, 12)}
-    ${cfg.kind !== "review" ? `<div class="stars" aria-label="${s.stars} \xE9toiles sur 3">${[1, 2, 3].map((n) => `<span class="${n <= s.stars ? "on" : ""}">\u2605</span>`).join("")}</div>` : ""}
+  <section class="results ${s.passed ? "ok" : "ko"} rich">
+    <div class="res-hero ${s.passed ? "happy" : "sad"}"><span class="res-avatar">${esc(state.profile?.avatar || "\u{1F642}")}</span>${s.passed ? `<span class="res-spark">\u2728</span>` : ""}</div>
+    ${cfg.kind !== "review" ? `<div class="stars" aria-label="${s.stars} \xE9toiles sur 3">${[1, 2, 3].map((n) => `<span class="${n <= s.stars ? "on" : ""}" style="--d:${n * 160}ms">\u2605</span>`).join("")}</div>` : ""}
     <h1>${headline}</h1>
-    <p class="lead">${s.score} / ${s.total} bonnes r\xE9ponses</p>
     <p class="muted">${esc(msg)}</p>
+    <div class="res-tiles">
+      ${tile2("\u26A1", "XP gagn\xE9s", s.xpGained, "t-xp", s.xpGained)}
+      ${tile2("\u{1F3AF}", "Pr\xE9cision", `${pct} %`, pct >= 80 ? "t-acc" : "t-acc low", null)}
+      ${tile2("\u23F1\uFE0F", "Temps", time, "t-time")}
+      ${tile2("\u{1F525}", "S\xE9rie", `${streak} j`, "t-streak")}
+    </div>
     <div class="result-chips">
-      <span class="chip">\u26A1 +${s.xpGained} XP</span>
+      <span class="chip">\u2705 ${s.score} / ${s.total}</span>
       ${s.newWords ? `<span class="chip">\u{1F4D2} +${s.newWords} mots</span>` : ""}
       ${s.total - s.score ? `<span class="chip warn">\u{1F501} ${s.total - s.score} \xE0 revoir</span>` : ""}
     </div>
@@ -8404,7 +8577,56 @@ function showResults(app2, cfg, s) {
       <a class="btn ghost" href="${cfg.back}">${cfg.kind === "lesson" ? "Relire la le\xE7on" : "Retour"}</a>
     </div>
   </section>`;
-  if (s.passed && (s.firstPass || s.ratio === 1)) celebrate();
+  app2.querySelectorAll("[data-count]").forEach((el) => {
+    const end = +el.dataset.count, t0 = performance.now();
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / 900);
+      el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+  if (cfg.kind === "exam" && s.passed && s.firstPass) {
+    celebrate({ sound: "fanfare" });
+    setTimeout(() => showDiploma(cfg.id, s), 900);
+  } else if (s.passed && (s.firstPass || s.ratio === 1)) celebrate();
+  else if (s.passed) sfx("win");
+}
+function showDiploma(levelId, s) {
+  const level = getLevel3(levelId), li = LEVELS3.indexOf(level), next = LEVELS3[li + 1];
+  const name = state.profile?.pseudo || "";
+  const date = (/* @__PURE__ */ new Date()).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const el = document.createElement("div");
+  el.className = "diploma-screen";
+  el.innerHTML = `
+    <div class="dip-card" role="dialog" aria-label="Dipl\xF4me ${esc(lvlLabel2(level))}">
+      <div class="dip-ribbon">\u{1F393}</div>
+      <p class="dip-kicker">Dipl\xF4me</p>
+      <h2>Palier ${esc(lvlLabel2(level))}</h2>
+      <p class="dip-level">${esc(level.name)} \xB7 ${esc(level.title)}</p>
+      <p class="dip-to">d\xE9cern\xE9 \xE0</p>
+      <p class="dip-name">${esc(name)} ${esc(state.profile?.avatar || "")}</p>
+      <p class="dip-meta">${esc(L.label)} \xB7 ${s.score}/${s.total} \xB7 ${date}</p>
+      <div class="dip-seal">${esc(L.brand)}</div>
+      <div class="dip-actions">
+        ${next ? `<a class="btn primary big" href="#parcours" data-next="${next.id}">D\xE9couvrir le palier ${esc(lvlLabel2(next))} \u2192</a>` : `<a class="btn primary big" href="#tableau">Voir mon parcours</a>`}
+        ${navigator.share ? `<button class="btn ghost" data-share>Partager</button>` : ""}
+        <button class="btn ghost" data-close>Fermer</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("in"));
+  const close = () => {
+    el.classList.remove("in");
+    setTimeout(() => el.remove(), 250);
+  };
+  el.querySelector("[data-close]").onclick = close;
+  el.querySelector("[data-next]")?.addEventListener("click", () => {
+    close();
+    setTimeout(() => document.getElementById(`palier-${next.id}`)?.scrollIntoView({ behavior: "smooth" }), 400);
+  });
+  el.querySelector("[data-share]")?.addEventListener("click", () => navigator.share({ title: `Dipl\xF4me ${lvlLabel2(level)}`, text: `\u{1F393} J'ai valid\xE9 le palier ${lvlLabel2(level)} en ${L.label.toLowerCase()} sur ${L.brand} !`, url: location.origin + location.pathname }).catch(() => {
+  }));
 }
 
 // js/views/dashboard.js
@@ -10082,6 +10304,8 @@ function renderReglages(app2) {
         <p class="set-label">Vitesse de la voix</p>
         ${seg("voice", VOICE_SPEEDS, state.settings.voiceSpeed || 1)}
         <p class="small muted">Touchez une vitesse pour l'\xE9couter. Le bouton \u{1F422} \xE0 c\xF4t\xE9 de chaque \u{1F50A} lit encore plus lentement.</p>
+        <label class="switch"><input type="checkbox" data-sfx ${state.settings.sfx !== false ? "checked" : ""}><span></span> \u{1F3B5} Effets sonores (bonne r\xE9ponse, erreur, victoire)</label>
+        <label class="switch"><input type="checkbox" data-haptics ${state.settings.haptics !== false ? "checked" : ""}><span></span> \u{1F4F3} Vibrations (Android)</label>
       </section>
 
       ${code === "zh" ? `<section class="card set-card"><h2 class="h3">\u{1F004} Pinyin dans les quiz</h2>
@@ -10146,6 +10370,20 @@ function renderReglages(app2) {
   pick2("pyq", (v) => commit((s) => {
     s.settings.pinyinQuiz = v;
   }));
+  $2("[data-sfx]").onchange = (e) => {
+    commit((s) => {
+      s.settings.sfx = e.target.checked;
+    });
+    if (e.target.checked) sfx("good");
+    saved();
+  };
+  $2("[data-haptics]").onchange = (e) => {
+    commit((s) => {
+      s.settings.haptics = e.target.checked;
+    });
+    if (e.target.checked) haptic(40);
+    saved();
+  };
   $2("[data-tts]").onchange = (e) => {
     commit((s) => {
       s.settings.tts = e.target.checked;
@@ -10319,7 +10557,8 @@ function gate(app2, title) {
   }
   return false;
 }
-var loading2 = (app2) => app2.innerHTML = `<p class="muted s-loading">Chargement\u2026</p>`;
+var skelRows = (n = 4) => Array.from({ length: n }, () => `<div class="skel-row"><span class="skel skel-av"></span><span class="skel-lines"><span class="skel skel-l1"></span><span class="skel skel-l2"></span></span></div>`).join("");
+var loading2 = (app2) => app2.innerHTML = `<div class="s-page skel-page" aria-busy="true" aria-label="Chargement"><span class="skel skel-title"></span><section class="card">${skelRows(5)}</section></div>`;
 function loadThen(app2, render) {
   const hash = location.hash;
   loading2(app2);
@@ -10594,7 +10833,7 @@ function renderAmis(app2, opts = {}) {
         <span class="s-board-name">${p.isMe ? "Vous" : who(p)}<small>${p.allXp} XP au total</small></span><b>${p.xp} XP</b></li>`).join("")}</ol>` : ""}
       <p class="muted small">XP gagn\xE9s depuis lundi (toutes langues), en direct. Nouvelle semaine : <b>${nextWeekReset().toLocaleString("fr-FR", { weekday: "long", hour: "2-digit", minute: "2-digit" })}</b> (votre heure).</p>
     </section>
-    <section class="card"><h2 class="h3">\u{1F4DC} Semaines pr\xE9c\xE9dentes</h2><div data-zone="history"><p class="muted small">Chargement\u2026</p></div></section>`;
+    <section class="card"><h2 class="h3">\u{1F4DC} Semaines pr\xE9c\xE9dentes</h2><div data-zone="history" aria-busy="true">${skelRows(3)}</div></section>`;
   }
   async function paintHistory() {
     const zone = z("history");
@@ -10630,7 +10869,7 @@ function renderAmis(app2, opts = {}) {
     if (!list2) {
       loadFeed().catch(() => {
       });
-      return `<section class="card"><p class="muted small">Chargement du fil\u2026</p></section>`;
+      return `<section class="card" aria-busy="true">${skelRows(4)}</section>`;
     }
     if (!list2.length) return `<section class="card fr-empty"><span>\u{1F4F0}</span><p>Rien pour l'instant. Niveaux termin\xE9s, s\xE9ries, mots appris, d\xE9fis gagn\xE9s : les grandes \xE9tapes de vos amis et les v\xF4tres appara\xEEtront ici.</p></section>`;
     return `<section class="card feed-card"><ul class="feed">${list2.map(feedItem).join("")}</ul>
@@ -10960,7 +11199,7 @@ function renderChat(app2, username) {
       <a class="cf-who" href="#ami-${esc(f.username)}">${av(f, "sm")}<span><b>${who(f)}</b><small>${status}</small></span></a>
       <button class="cf-defi" data-challenge aria-label="Lancer un d\xE9fi">\u2694\uFE0F</button>
     </header>
-    <div class="cf-msgs" aria-live="polite"><p class="muted small cf-info">Chargement\u2026</p></div>
+    <div class="cf-msgs" aria-live="polite"><div class="skel-chat" aria-busy="true"><span class="skel sb l"></span><span class="skel sb r"></span><span class="skel sb l w"></span><span class="skel sb r"></span></div></div>
     <button class="cf-new" hidden>\u2193 Nouveau message</button>
     <footer class="cf-foot">
       <div class="cf-quick">${["\u{1F44B} Salut !", "\u{1F525} Bien jou\xE9 !", "\u2694\uFE0F Un d\xE9fi ?", "\u{1F4DA} Tu as r\xE9vis\xE9 ?", "\u{1F602}", "\u{1F44D}"].map((t) => `<button type="button" class="chip-btn" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>
@@ -12335,10 +12574,8 @@ function maybeShowStreak() {
     </div>`;
   document.body.appendChild(el);
   requestAnimationFrame(() => el.classList.add("in"));
-  try {
-    navigator.vibrate?.([30, 60, 30]);
-  } catch {
-  }
+  haptic([30, 60, 30]);
+  sfx("streak");
   setTimeout(() => {
     const b = el.querySelector("[data-n]");
     b.textContent = n;
@@ -12623,6 +12860,9 @@ function route() {
       return;
     }
     setActiveTab(tab2);
+    app.classList.remove("page-in");
+    void app.offsetWidth;
+    app.classList.add("page-in");
     window.scrollTo({ top: 0 });
     app.focus({ preventScroll: true });
     return;
