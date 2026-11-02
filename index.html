@@ -1162,6 +1162,15 @@ body.lang-zh .mic { background: var(--rosso); box-shadow: 0 6px 0 #8f2a23; }
 .mode-pick button.on { border-color: var(--verde); background: var(--verde-l); }
 .pts-line { margin: 2px 0 0; font-weight: 800; color: var(--blu); }
 
+/* Fenêtres : le contenu défile DANS la fenêtre, jamais la page derrière */
+.modal-backdrop { overscroll-behavior: contain; touch-action: none; }
+.modal { display: flex; flex-direction: column; max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); touch-action: auto; }
+.modal > h2 { flex: none; }
+.modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; margin: 0 -6px; padding: 0 6px; }
+.modal-actions { flex: none; }
+html.modal-open, html.modal-open body { overflow: hidden; }
+@media (max-width: 480px) { .modal { padding: 20px 18px; } }
+
 </style>
 </head>
 <body>
@@ -6807,8 +6816,10 @@ function modal({ title, body = "", actions = [{ label: "OK", value: "ok", kind: 
           </div>
         </div>
       </div>`;
+    document.documentElement.classList.add("modal-open");
     const close = (v) => {
       root.innerHTML = "";
+      document.documentElement.classList.remove("modal-open");
       resolve(v);
     };
     root.querySelectorAll("[data-value]").forEach((b) => b.onclick = () => close(b.dataset.value));
