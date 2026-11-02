@@ -7034,7 +7034,8 @@ var pair = (s) => {
 var plain = (s) => String(s).replace("|", " ");
 
 // js/core/progress.js
-var PASS_LESSON = 0.6;
+var PASS_LESSON = 0.8;
+var LESSON_QUIZ_N = 10;
 var PASS_EXAM = 1;
 var PASS_CHECKPOINT = 0.9;
 var CHECKPOINT_N = 10;
@@ -7172,7 +7173,8 @@ function nextStep() {
   }
   return null;
 }
-var starsFor = (ratio) => ratio >= 1 ? 3 : ratio >= 0.8 ? 2 : ratio >= PASS_LESSON ? 1 : 0;
+var starsFor = (ratio) => ratio >= 1 ? 3 : ratio >= 0.9 ? 2 : ratio >= PASS_LESSON ? 1 : 0;
+var lessonStars = (rec) => rec?.passed ? Math.max(1, starsFor(rec.best / rec.total)) : 0;
 var dailyXp = () => state.daily.date === dayKey() ? state.daily.xp : 0;
 var streakCount = () => state.streak.last === dayKey() || state.streak.last === yesterdayKey() ? state.streak.count : 0;
 function recordQuiz({ kind, id, label, results }) {
@@ -7458,7 +7460,7 @@ function node(lesson, x) {
   const done = isLessonDone(lesson.id);
   const open = isLessonUnlocked(lesson);
   const rec = state.lessons[lesson.id];
-  const stars = rec ? starsFor(rec.best / rec.total) : 0;
+  const stars = lessonStars(rec);
   const mod2 = MODULES3[lesson.module];
   const isCurrent = open && !done;
   const perfect = done && stars === 3;
@@ -7506,7 +7508,7 @@ function renderLecon(app2, id) {
         <p class="eyebrow">${lvlLabel2(level)}${level.hsk && !level.label ? ` (${level.hsk})` : ""} \xB7 ${mod2.icon} ${mod2.label} \xB7 Le\xE7on ${lesson.index + 1}/${lessons.length}</p>
         <h1>${pyText(level.id, lesson.title)}</h1>
         <p class="lead">${pyHtml(level.id, lesson.intro)}</p>
-        ${rec ? `<p class="small muted">Meilleur score : ${rec.best}/${rec.total} ${"\u2605".repeat(starsFor(rec.best / rec.total))}</p>` : ""}
+        ${rec ? `<p class="small muted">Meilleur score : ${rec.best}/${rec.total} ${"\u2605".repeat(lessonStars(rec))}</p>` : ""}
       </div>
     </header>
 
@@ -7530,7 +7532,7 @@ function renderLecon(app2, id) {
     </section>
 
     <div class="lesson-cta">
-      <p>${lesson.quiz.length} questions \xB7 60 % pour valider</p>
+      <p>${LESSON_QUIZ_N} questions \xB7 80 % pour valider (${Math.ceil(PASS_LESSON * LESSON_QUIZ_N)}/${LESSON_QUIZ_N})</p>
       <a class="btn primary big" href="#quiz-${lesson.id}">Je suis pr\xEAt\xB7e : quiz \u2192</a>
     </div>
   </article>`;
@@ -8025,7 +8027,8 @@ function buildLessonQuestions(lesson, n) {
   if (own.length < 2 || pool.length < 4) return [];
   const withPy = levelWantsPinyin(lesson.levelId);
   const out = [], used = /* @__PURE__ */ new Set();
-  for (const w of shuffle(own)) {
+  const order = [...shuffle(own), ...shuffle(own), ...shuffle(own)];
+  for (const w of order) {
     if (out.length >= n) break;
     for (const f of shuffle(makers(w, pool, withPy, [lesson]))) {
       const cand = f();
@@ -8055,12 +8058,13 @@ function renderQuiz(app2, id) {
   return true;
 }
 function lessonQuestions(lesson) {
+  const N2 = LESSON_QUIZ_N;
   const base = shuffle(lesson.quiz.map((q, i) => ({ ref: `${lesson.id}:${i}`, q })));
-  if (!state.lessons[lesson.id]?.attempts) return base;
-  const swap = Math.max(2, Math.round(base.length * 0.4));
-  const gen = buildLessonQuestions(lesson, swap);
-  const kept = base.slice(0, base.length - gen.length);
-  return shuffle([...kept, ...gen]);
+  const keepN = Math.min(base.length, state.lessons[lesson.id]?.attempts ? Math.round(N2 * 0.6) : N2);
+  const kept = base.slice(0, keepN);
+  const gen = buildLessonQuestions(lesson, N2 - kept.length);
+  const extra = base.slice(keepN, keepN + Math.max(0, N2 - kept.length - gen.length));
+  return shuffle([...kept, ...gen, ...extra]);
 }
 function renderMiPalier(app2, levelId) {
   const level = getLevel3(levelId), li = LEVELS3.indexOf(level);
