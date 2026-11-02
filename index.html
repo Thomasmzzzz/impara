@@ -1350,6 +1350,68 @@ html.dark .np-cta { background: #f3f4f6; color: #11151b; }
 .flashcard .big-py.small-py { font-size: clamp(1.2rem, 5vw, 1.6rem); color: var(--rosso); font-style: normal; }
 .flashcard .face.back .big-py.small-py { color: inherit; opacity: .92; }
 
+/* =====================================================================
+   23. ANIMATIONS DE RÉPONSE
+   ===================================================================== */
+.quiz-card.shake { animation: shake .45s cubic-bezier(.36, .07, .19, .97); }
+@keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+.quiz-card.pop { animation: cardPop .35s ease; }
+@keyframes cardPop { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
+.bar.pulse span { animation: barPulse .6s ease; }
+@keyframes barPulse { 0% { filter: brightness(1); } 40% { filter: brightness(1.35); box-shadow: 0 0 12px rgba(63, 179, 122, .8); } 100% { filter: brightness(1); } }
+.burst-layer { position: fixed; inset: 0; pointer-events: none; z-index: 120; overflow: hidden; }
+.burst-p { position: absolute; font-size: 1.1rem; transform: translate(-50%, -50%); animation: burst .9s cubic-bezier(.15, .7, .3, 1) forwards; }
+.burst-p.dot { font-size: .55rem; color: #f5c64e; }
+.burst-p.dot:nth-child(3n) { color: var(--verde); } .burst-p.dot:nth-child(3n+1) { color: #60a5fa; }
+@keyframes burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1); } }
+.xp-float, .combo-float { position: absolute; transform: translate(-50%, 0); font-weight: 900; white-space: nowrap; animation: floatUp 1.2s ease-out forwards; }
+.xp-float { color: #f5a524; font-size: 1.4rem; text-shadow: 0 2px 0 rgba(0, 0, 0, .12); }
+.combo-float { color: #ef4444; font-size: 1.05rem; background: var(--card); padding: 4px 12px; border-radius: 99px; box-shadow: var(--shadow); animation-delay: .1s; opacity: 0; }
+@keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.8); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 100% { opacity: 0; transform: translate(-50%, -70px) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .quiz-card.shake, .quiz-card.pop, .bar.pulse span { animation: none; } }
+
+/* =====================================================================
+   24. CHEMIN DU PARCOURS
+   ===================================================================== */
+.nodes { position: relative; }
+.nodes > .node-wrap { position: relative; z-index: 1; }
+.trail { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; overflow: visible; }
+.trail path { fill: none; stroke-linecap: round; }
+.trail path.dim { stroke: var(--line); stroke-width: 7; stroke-dasharray: 1 14; }
+.trail path.lit { stroke: color-mix(in srgb, var(--oro) 70%, transparent); stroke-width: 9; animation: trailIn .8s ease both; }
+@keyframes trailIn { from { stroke-dasharray: 0 400; } to { stroke-dasharray: 400 0; } }
+.node-label { background: var(--card); padding: 3px 10px; border-radius: 12px; }
+html.dark .trail path.dim { stroke: #3a4552; }
+
+/* =====================================================================
+   25. ÉCRAN DE SÉRIE 🔥
+   ===================================================================== */
+.streak-screen { position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; padding: 24px;
+  background: radial-gradient(circle at 50% 30%, #ffb347 0%, #ff7a18 38%, #e8451c 100%); color: #fff; opacity: 0; transition: opacity .25s; }
+.streak-screen.in { opacity: 1; }
+.ss-inner { width: min(420px, 100%); text-align: center; display: flex; flex-direction: column; align-items: center; }
+.ss-flame { font-size: 7rem; line-height: 1; animation: flame 1.6s ease-in-out infinite; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .25)); }
+@keyframes flame { 0%, 100% { transform: scale(1) rotate(-3deg); } 50% { transform: scale(1.08) rotate(3deg); } }
+.streak-screen.in .ss-flame { animation: flameIn .7s cubic-bezier(.2, 1.6, .4, 1) both, flame 1.6s ease-in-out .7s infinite; }
+@keyframes flameIn { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ss-num { margin: 4px 0 0; font-size: 5rem; font-weight: 900; line-height: 1; font-family: var(--font-display); }
+.ss-num b { display: inline-block; }
+.ss-num b.bump { animation: bump .5s cubic-bezier(.2, 1.8, .4, 1); }
+@keyframes bump { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.ss-label { margin: 0 0 14px; font-weight: 800; font-size: 1.2rem; opacity: .95; }
+.ss-inner h2 { margin: 0 0 18px; font-size: 1.5rem; color: #fff; }
+.ss-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; width: 100%; background: rgba(255, 255, 255, .16); padding: 12px 10px; border-radius: 18px; }
+.ss-day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ss-day small { font-weight: 800; opacity: .85; }
+.ss-day span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; background: rgba(255, 255, 255, .22); border: 2px solid rgba(255, 255, 255, .35); }
+.ss-day.on span { background: #fff; color: #e8451c; border-color: #fff; animation: dayIn .4s cubic-bezier(.2, 1.6, .4, 1) both; animation-delay: calc(.35s + var(--k) * 70ms); }
+.ss-day.today span { box-shadow: 0 0 0 3px rgba(255, 255, 255, .55); }
+.ss-day.future span { opacity: .5; }
+@keyframes dayIn { from { transform: scale(0); } to { transform: scale(1); } }
+.ss-sub { margin: 16px 0 22px; font-weight: 600; opacity: .95; }
+.ss-go { width: 100%; border: 0; border-radius: 16px; padding: 16px; font-size: 1.05rem; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; background: #fff; color: #e8451c; box-shadow: 0 5px 0 rgba(0, 0, 0, .2); cursor: pointer; }
+.ss-go:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, .2); }
+
 </style>
 </head>
 <body>
@@ -7065,8 +7127,8 @@ function weekKey(d = /* @__PURE__ */ new Date()) {
   return `${y}-W${String(w).padStart(2, "0")}`;
 }
 function historyWeekXp(s) {
-  const week = weekKey();
-  return (s.history || []).filter((h) => h.date && weekKey(new Date(h.date)) === week).reduce((n, h) => n + (h.kind === "practice" ? h.score * 5 : h.score * XP_PER_CORRECT + (h.passed && h.kind !== "review" ? 20 : 0)), 0);
+  const week2 = weekKey();
+  return (s.history || []).filter((h) => h.date && weekKey(new Date(h.date)) === week2).reduce((n, h) => n + (h.kind === "practice" ? h.score * 5 : h.score * XP_PER_CORRECT + (h.passed && h.kind !== "review" ? 20 : 0)), 0);
 }
 function nextWeekReset(now = /* @__PURE__ */ new Date()) {
   const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -7085,11 +7147,18 @@ function last7Days() {
   return out;
 }
 var weeklyXp = () => state.weekly?.week === weekKey() ? state.weekly.xp : historyWeekXp(state);
+var pendingStreak = null;
+function takeStreakCelebration() {
+  const n = pendingStreak;
+  pendingStreak = null;
+  return n;
+}
+var hasStreakCelebration = () => pendingStreak != null;
 function addXp(s, xp) {
-  const today = dayKey(), week = weekKey();
+  const today = dayKey(), week2 = weekKey();
   s.xp += xp;
   s.daily = s.daily.date === today ? { date: today, xp: s.daily.xp + xp } : { date: today, xp };
-  s.weekly = s.weekly?.week === week ? { week, xp: s.weekly.xp + xp } : { week, xp: historyWeekXp(s) + xp };
+  s.weekly = s.weekly?.week === week2 ? { week: week2, xp: s.weekly.xp + xp } : { week: week2, xp: historyWeekXp(s) + xp };
   const log = { ...s.dayLog || {} };
   if (!(today in log)) log[today] = historyDayXp(s, today);
   log[today] += xp;
@@ -7098,8 +7167,9 @@ function addXp(s, xp) {
     if (d < limit) delete log[d];
   });
   s.dayLog = log;
-  if (s.streak.last !== today) {
+  if (s.streak.last !== today && xp > 0) {
     s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
+    pendingStreak = s.streak.count;
   }
 }
 var PRACTICE_COOLDOWN = 24 * 3600 * 1e3;
@@ -7375,6 +7445,32 @@ function renderParcours(app2) {
     <div class="path">
       ${LEVELS3.map((lvl, li) => levelBlock(lvl, li)).join("")}
     </div>`;
+  drawPaths(app2);
+  const redraw = () => drawPaths(app2);
+  addEventListener("resize", redraw);
+  document.fonts?.ready.then(redraw);
+  app2._cleanup = () => removeEventListener("resize", redraw);
+}
+function drawPaths(app2) {
+  app2.querySelectorAll("ol.nodes").forEach((ol) => {
+    ol.querySelector(":scope > svg.trail")?.remove();
+    const nodes = [...ol.querySelectorAll(":scope > .node-wrap > .node")];
+    if (nodes.length < 2) return;
+    const box = ol.getBoundingClientRect();
+    if (!box.width) return;
+    const pts = nodes.map((n) => {
+      const r = n.getBoundingClientRect();
+      return { x: r.left - box.left + r.width / 2, y: r.top - box.top + r.height / 2, done: n.classList.contains("done") };
+    });
+    let segs = "";
+    for (let k = 0; k < pts.length - 1; k++) {
+      const a = pts[k], b = pts[k + 1], dy = b.y - a.y;
+      const d = `M${a.x.toFixed(1)},${a.y.toFixed(1)} C${a.x.toFixed(1)},${(a.y + dy * 0.55).toFixed(1)} ${b.x.toFixed(1)},${(b.y - dy * 0.55).toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`;
+      const lit = a.done && (b.done || !nodes[k + 1].classList.contains("locked"));
+      segs += `<path class="${lit ? "lit" : "dim"}" d="${d}"/>`;
+    }
+    ol.insertAdjacentHTML("afterbegin", `<svg class="trail" aria-hidden="true" width="${box.width}" height="${box.height}" viewBox="0 0 ${box.width.toFixed(1)} ${box.height.toFixed(1)}">${segs}</svg>`);
+  });
 }
 function levelBlock(lvl, li) {
   const unlocked2 = isLevelUnlocked(li);
@@ -7568,6 +7664,61 @@ function table({ cols, rows }, lv) {
 // js/core/quiz-engine.js
 var tx = (q, s) => q._py ? ruby(s) : esc(s);
 var tile = (q, s) => String(s).includes("|") || !q._py ? pair(s) : ruby(s);
+var vibrate = (p) => {
+  try {
+    navigator.vibrate?.(p);
+  } catch {
+  }
+};
+function celebrateAnswer(root, ok, { xp = 0, combo = 0, progress = 0 } = {}) {
+  const card = root.querySelector(".quiz-card"), bar = root.querySelector(".bar span"), btn = root.querySelector(".quiz-action");
+  const replay = (el, cls) => {
+    if (!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  };
+  if (!ok) {
+    replay(card, "shake");
+    vibrate([40, 40, 40]);
+    return;
+  }
+  vibrate(18);
+  replay(card, "pop");
+  if (bar) {
+    bar.style.width = `${progress * 100}%`;
+    replay(bar.parentElement, "pulse");
+  }
+  if (matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  const r = (btn || card).getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top - 34;
+  const layer = document.createElement("div");
+  layer.className = "burst-layer";
+  const glyphs = ["\u2B50", "\u2728", "\u{1F31F}", "\u25CF", "\u25CF", "\u25CF"];
+  for (let k = 0; k < 14; k++) {
+    const s = document.createElement("span");
+    const a = Math.PI * 2 * k / 14 + Math.random() * 0.4, d = 60 + Math.random() * 70;
+    s.textContent = glyphs[k % glyphs.length];
+    s.className = "burst-p" + (s.textContent === "\u25CF" ? " dot" : "");
+    s.style.cssText = `left:${cx}px;top:${cy}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d - 40}px;--rot:${Math.random() * 360}deg;animation-delay:${Math.random() * 60}ms`;
+    layer.appendChild(s);
+  }
+  if (xp) {
+    const f = document.createElement("b");
+    f.className = "xp-float";
+    f.textContent = `+${xp} XP`;
+    f.style.cssText = `left:${cx}px;top:${cy - 10}px`;
+    layer.appendChild(f);
+  }
+  if (combo >= 3) {
+    const c = document.createElement("b");
+    c.className = "combo-float";
+    c.textContent = `\u{1F525} ${combo} d'affil\xE9e !`;
+    c.style.cssText = `left:${cx}px;top:${cy - 50}px`;
+    layer.appendChild(c);
+  }
+  document.body.appendChild(layer);
+  setTimeout(() => layer.remove(), 1400);
+}
 var normalize = (s) => String(s).toLowerCase().replace(/[’`´]/g, "'").replace(/'\s+/g, "'").replace(/[.,!?;:«»"¿¡()，。！？、；：“”‘’（）—]/g, " ").replace(/\s+/g, "").trim();
 var stripAccents = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
 function checkText(given, answers) {
@@ -7797,8 +7948,8 @@ var TYPES = {
     }
   }
 };
-function runQuiz(root, { title, questions, onFinish, onQuit, onAnswer }) {
-  let i = 0, phase = "answer", api = null, current = null;
+function runQuiz(root, { title, questions, onFinish, onQuit, onAnswer, xpPerAnswer = 0 }) {
+  let i = 0, phase = "answer", api = null, current = null, combo = 0;
   const results = [];
   root.innerHTML = `
     <section class="quiz" aria-live="polite">
@@ -7851,6 +8002,8 @@ function runQuiz(root, { title, questions, onFinish, onQuit, onAnswer }) {
     const foot = root.querySelector(".quiz-foot");
     foot.classList.add(res.correct ? "is-correct" : "is-wrong");
     feedback.hidden = false;
+    combo = res.correct ? combo + 1 : 0;
+    celebrateAnswer(root, res.correct, { xp: xpPerAnswer, combo, progress: (i + 1) / questions.length });
     feedback.innerHTML = res.correct ? `<strong>\u2713 ${tx(q, L.cheers[i % L.cheers.length])}</strong>${res.note ? `<p>${tx(q, res.note)}</p>` : ""}${q.explain ? `<p class="muted">${tx(q, q.explain)}</p>` : ""}` : `<strong>\u2717 Pas tout \xE0 fait\u2026</strong>
          <p>Bonne r\xE9ponse : <b>${tx(q, res.expected)}</b></p>
          ${q.explain ? `<p class="explain">\u{1F4A1} ${tx(q, q.explain)}</p>` : ""}
@@ -8204,6 +8357,7 @@ function start(app2, cfg) {
   runQuiz(app2, {
     title: cfg.title,
     questions: cfg.questions,
+    xpPerAnswer: XP_PER_CORRECT,
     onQuit: () => {
       document.body.classList.remove("focus-mode");
       location.hash = cfg.back.slice(1);
@@ -9152,15 +9306,15 @@ function initSocial() {
   });
 }
 function leaderboard() {
-  const week = weekKey();
-  const total = (id, override) => Object.entries({ ...statsOf(id), ...override || {} }).reduce((n, [, s]) => n + (s?.week === week ? s.weekXp || 0 : 0), 0);
+  const week2 = weekKey();
+  const total = (id, override) => Object.entries({ ...statsOf(id), ...override || {} }).reduce((n, [, s]) => n + (s?.week === week2 ? s.weekXp || 0 : 0), 0);
   const all = (id, override) => Object.values({ ...statsOf(id), ...override || {} }).reduce((n, s) => n + (s?.xp || 0), 0);
   const mine = { [code]: mySummary() };
   const me = S.me ? [{ ...S.me, isMe: true, xp: total(S.me.id, mine), allXp: all(S.me.id, mine) }] : [];
   return [...me, ...friends().map((f) => ({ ...f, xp: total(f.id), allXp: all(f.id) }))].sort((a, b) => b.xp - a.xp || b.allXp - a.allXp);
 }
-function weekStart(week) {
-  const [y, w] = week.split("-W").map(Number);
+function weekStart(week2) {
+  const [y, w] = week2.split("-W").map(Number);
   const jan4 = new Date(Date.UTC(y, 0, 4));
   const monday = new Date(jan4);
   monday.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() || 7) - 1) + (w - 1) * 7);
@@ -9179,9 +9333,9 @@ async function weeklyHistory(limit = 12) {
     m.set(r.user_id, (m.get(r.user_id) || 0) + r.xp);
     byWeek.set(r.week, m);
   }
-  return [...byWeek.entries()].sort((a, b) => b[0].localeCompare(a[0])).slice(0, limit).map(([week, m]) => ({
-    week,
-    start: weekStart(week),
+  return [...byWeek.entries()].sort((a, b) => b[0].localeCompare(a[0])).slice(0, limit).map(([week2, m]) => ({
+    week: week2,
+    start: weekStart(week2),
     ranking: [...m.entries()].map(([id, xp]) => ({ id, xp, isMe: id === uid(), profile: id === uid() ? S.me : S.profiles[id] })).filter((r) => r.profile && r.xp > 0).sort((a, b) => b.xp - a.xp)
   })).filter((w) => w.ranking.length);
 }
@@ -12141,6 +12295,63 @@ function renderTrace(app2, start3) {
   return true;
 }
 
+// js/views/streak.js
+var DAYS = ["L", "M", "M", "J", "V", "S", "D"];
+var busy = () => document.body.classList.contains("focus-mode") || document.body.classList.contains("chat-mode") || document.querySelector(".modal, .streak-screen");
+function message(n) {
+  if (n === 1) return ["C'est parti !", "Reviens demain pour allumer ta s\xE9rie \u{1F525}"];
+  if ([3, 7, 14, 30, 50, 100, 200, 365].includes(n)) return [`Palier de ${n} jours atteint !`, "Incroyable r\xE9gularit\xE9, continue comme \xE7a !"];
+  return ["S\xE9rie prolong\xE9e !", `Reviens demain pour passer \xE0 ${n + 1} jours.`];
+}
+function week() {
+  const now = /* @__PURE__ */ new Date(), monday = new Date(now);
+  monday.setDate(now.getDate() - (now.getDay() + 6) % 7);
+  const today = dayKey();
+  return DAYS.map((label, k) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + k);
+    const key = dayKey(d);
+    return { label, key, today: key === today, active: (state.dayLog?.[key] || 0) > 0, future: key > today };
+  });
+}
+function maybeShowStreak() {
+  if (!hasStreakCelebration() || busy()) return;
+  const n = takeStreakCelebration();
+  const [title, sub] = message(n);
+  const days = week();
+  const el = document.createElement("div");
+  el.className = "streak-screen";
+  el.setAttribute("role", "dialog");
+  el.innerHTML = `
+    <div class="ss-inner">
+      <div class="ss-flame" aria-hidden="true">\u{1F525}</div>
+      <p class="ss-num"><b data-n>${Math.max(0, n - 1)}</b></p>
+      <p class="ss-label">jour${n > 1 ? "s" : ""} de s\xE9rie</p>
+      <h2>${esc(title)}</h2>
+      <div class="ss-week">${days.map((d, k) => `<div class="ss-day ${d.active ? "on" : ""} ${d.today ? "today" : ""} ${d.future ? "future" : ""}" style="--k:${k}">
+        <small>${d.label}</small><span>${d.active ? "\u2713" : ""}</span></div>`).join("")}</div>
+      <p class="ss-sub">${esc(sub)}</p>
+      <button class="ss-go">Continuer</button>
+    </div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("in"));
+  try {
+    navigator.vibrate?.([30, 60, 30]);
+  } catch {
+  }
+  setTimeout(() => {
+    const b = el.querySelector("[data-n]");
+    b.textContent = n;
+    b.classList.add("bump");
+  }, 650);
+  const close = () => {
+    el.classList.remove("in");
+    setTimeout(() => el.remove(), 250);
+  };
+  el.querySelector(".ss-go").onclick = close;
+  el.querySelector(".ss-go").focus();
+}
+
 // js/views/prononciation.js
 var SR = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
 var isZh2 = () => code === "zh";
@@ -12537,6 +12748,8 @@ initCloud();
 initSocial();
 onSocial(renderSocialBadge);
 subscribe(renderHeader);
+subscribe(() => setTimeout(maybeShowStreak, 900));
+setInterval(maybeShowStreak, 1500);
 renderHeader();
 route();
 
