@@ -7435,7 +7435,7 @@ function openPop(nodeEl) {
     ${d.popSub ? `<small class="np-sub">${esc(d.popSub)}</small>` : ""}
     ${d.popNote ? `<small class="np-note">${esc(d.popNote)}</small>` : ""}
     <a class="np-cta" href="${esc(d.popHref)}">${esc(d.popCta)}</a>
-    ${d.popAlt ? `<a class="np-alt" href="${esc(d.popAltHref)}">${esc(d.popAlt)}</a>` : ""}
+    ${d.popAlt ? `<a class="np-alt" href="${esc(d.popAlthref)}">${esc(d.popAlt)}</a>` : ""}
   </div>`);
   const pop = wrap.querySelector(".node-pop");
   requestAnimationFrame(() => pop.classList.add("in"));
