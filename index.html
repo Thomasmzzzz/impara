@@ -1215,6 +1215,8 @@ html.dark .live-watch { background: var(--paper-2); }
 .live-h { margin: 0 0 4px; font-weight: 800; }
 .fr-tabs { display: flex !important; flex-wrap: nowrap !important; gap: 4px; }
 .fr-tabs button { flex: 1 0 auto; white-space: nowrap; padding: 8px 8px; font-size: .84rem; }
+.muted-chip { background: var(--paper-2) !important; color: var(--muted) !important; }
+.story-done small { display: block; font-size: .68rem; color: var(--muted); font-weight: 700; }
 
 </style>
 </head>
@@ -6963,16 +6965,31 @@ function addXp(s, xp) {
     s.streak = { count: s.streak.last === yesterdayKey() ? s.streak.count + 1 : 1, last: today };
   }
 }
-function recordPractice({ label, score, total, xpPer = 5 }) {
-  const xpGained = score * xpPer;
+var PRACTICE_COOLDOWN = 24 * 3600 * 1e3;
+function practiceReadyAt(key) {
+  const last = state.practiceXp?.[key] || 0;
+  return last && Date.now() - last < PRACTICE_COOLDOWN ? last + PRACTICE_COOLDOWN : 0;
+}
+function waitLabel(at) {
+  const min = Math.max(1, Math.ceil((at - Date.now()) / 6e4)), h = Math.floor(min / 60), m = min % 60;
+  return h ? `${h} h ${String(m).padStart(2, "0")}` : `${m} min`;
+}
+function recordPractice({ label, score, total, xpPer = 5, key = null }) {
+  const readyAt = key ? practiceReadyAt(key) : 0;
+  const capped = !!readyAt;
+  const xpGained = capped ? 0 : score * xpPer;
   commit((s) => {
     addXp(s, xpGained);
+    if (key && !capped && xpGained > 0) s.practiceXp = { ...s.practiceXp || {}, [key]: Date.now() };
+    if (s.practiceXp) {
+      for (const [k, t] of Object.entries(s.practiceXp)) if (Date.now() - t > 2 * PRACTICE_COOLDOWN) delete s.practiceXp[k];
+    }
     if (total) {
       s.history.unshift({ date: Date.now(), label, score, total, kind: "practice", passed: score / total >= PASS_LESSON });
       s.history = s.history.slice(0, 20);
     }
   });
-  return { score, total, ratio: total ? score / total : 0, xpGained };
+  return { score, total, ratio: total ? score / total : 0, xpGained, capped, readyAt };
 }
 var isLessonDone = (id) => !!state.lessons[id]?.passed;
 var isExamPassed = (levelId) => !!state.exams[levelId]?.passed;
@@ -8124,7 +8141,7 @@ function renderCarnet(app2) {
     body.querySelectorAll("[data-grade]").forEach((b) => b.onclick = () => {
       const g = b.dataset.grade;
       grade(w, g);
-      if (g === "good") recordPractice({ label: "Flashcards", score: 1, total: 0, xpPer: 2 });
+      if (g === "good") recordPractice({ label: "Flashcards", score: 1, total: 0, xpPer: 2, key: `flash:${w.zh}` });
       ui.done++;
       ui.deck.splice(ui.pos, 1);
       if (g === "again") ui.deck.push(w);
@@ -8295,6 +8312,8 @@ function mergeStates(a, b) {
   out.stories = { ...older.stories || {}, ...newer.stories || {} };
   out.feedSent = { ...older.feedSent || {}, ...newer.feedSent || {} };
   out.feedInit = !!(a.feedInit || b.feedInit);
+  out.practiceXp = { ...a.practiceXp || {} };
+  for (const [k, t] of Object.entries(b.practiceXp || {})) out.practiceXp[k] = Math.max(out.practiceXp[k] || 0, t);
   out.updatedAt = Math.max(a.updatedAt || 0, b.updatedAt || 0);
   return out;
 }
@@ -11311,7 +11330,7 @@ function renderHistoires(app2) {
         <span class="story-txt"><b class="${code === "zh" ? "zh" : ""}">${esc(s.title)} <em class="story-lvl">${esc(lvlLabel2(s.level || "A1"))}</em></b>
           ${s.titlePy ? `<small class="py">${esc(s.titlePy)}</small>` : ""}
           <small>${ok ? esc(s.intro) : `Se d\xE9bloque apr\xE8s la le\xE7on \xAB ${esc(lesson?.title || s.after)} \xBB`}</small></span>
-        ${rec?.done ? `<span class="story-done" title="Termin\xE9e">${rec.best}/${rec.total} \u2713</span>` : ""}
+        ${rec?.done ? `<span class="story-done" title="Termin\xE9e">${rec.best}/${rec.total} \u2713${practiceReadyAt(`story:${s.id}`) ? `<small>XP dans ${waitLabel(practiceReadyAt(`story:${s.id}`))}</small>` : ""}</span>` : ""}
       </a>`;
   }).join("")}
   </div>`;
@@ -11400,7 +11419,7 @@ function renderHistoire(app2, id) {
   function finish() {
     const rec = state.stories?.[story.id];
     const first = !rec?.done;
-    const r = recordPractice({ label: `Histoire \xB7 ${story.title}`, score, total: totalQ, xpPer: 10 });
+    const r = recordPractice({ label: `Histoire \xB7 ${story.title}`, score, total: totalQ, xpPer: 10, key: `story:${story.id}` });
     let bonus = 0;
     if (first) {
       bonus = 20;
@@ -11417,7 +11436,7 @@ function renderHistoire(app2, id) {
       ${ring(pct, 150, 12)}
       <h1>${pct === 100 ? "Tout compris ! \u{1F389}" : pct >= 60 ? "Histoire termin\xE9e !" : "Histoire termin\xE9e"}</h1>
       <p class="lead">${score} / ${totalQ} questions de compr\xE9hension</p>
-      <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained + bonus} XP</span>${bonus ? `<span class="chip">\u{1F4D6} Nouvelle histoire lue</span>` : ""}</div>
+      <div class="result-chips">${r.capped && !bonus ? `<span class="chip muted-chip">\u23F3 XP d\xE9j\xE0 gagn\xE9s aujourd'hui</span>` : `<span class="chip">\u26A1 +${r.xpGained + bonus} XP</span>`}${bonus ? `<span class="chip">\u{1F4D6} Nouvelle histoire lue</span>` : ""}</div>
       <div class="result-actions">
         ${nextStory ? `<a class="btn primary big" href="#histoire-${nextStory.id}">Histoire suivante \u2192</a>` : `<a class="btn primary big" href="#histoires">Toutes les histoires</a>`}
         <a class="btn ghost" href="#histoire-${story.id}" data-reload>Relire</a>
@@ -11513,7 +11532,7 @@ function renderEntrainement(app2) {
   const srs = srsStats(Object.values(state.vocab));
   const vocab = Object.keys(state.vocab).length;
   const st = storyCount();
-  const hero = errors ? { href: "revision", title: "Travaille tes points faibles", sub: `${Math.min(10, errors)} question${errors > 1 ? "s" : ""} rat\xE9e${errors > 1 ? "s" : ""} \xE0 corriger`, xp: Math.min(10, errors) * 10, icon: "\u{1F3AF}" } : srs.todo ? { href: "reviser", title: "R\xE9vision du jour", sub: `${srs.todo} mot${srs.todo > 1 ? "s" : ""} \xE0 revoir en flashcards`, xp: srs.todo * 2, icon: "\u{1F4C5}" } : words >= 4 ? { href: "ecoute", title: "Entra\xEEne ton oreille", sub: "10 mots \xE0 reconna\xEEtre \xE0 l'\xE9coute", xp: 50, icon: "\u{1F3A7}" } : { href: "parcours", title: "Commence ton parcours", sub: "Termine une le\xE7on pour d\xE9bloquer l'entra\xEEnement", xp: 0, icon: "\u{1F5FA}\uFE0F" };
+  const hero = errors ? { href: "revision", title: "Travaille tes points faibles", sub: `${Math.min(10, errors)} question${errors > 1 ? "s" : ""} rat\xE9e${errors > 1 ? "s" : ""} \xE0 corriger`, xp: Math.min(10, errors) * 10, icon: "\u{1F3AF}" } : srs.todo ? { href: "reviser", title: "R\xE9vision du jour", sub: `${srs.todo} mot${srs.todo > 1 ? "s" : ""} \xE0 revoir en flashcards`, xp: srs.todo * 2, icon: "\u{1F4C5}" } : words >= 4 && !practiceReadyAt("ecoute") ? { href: "ecoute", title: "Entra\xEEne ton oreille", sub: "10 mots \xE0 reconna\xEEtre \xE0 l'\xE9coute", xp: 50, icon: "\u{1F3A7}" } : words >= 3 && !practiceReadyAt("prononciation") ? { href: "prononciation", title: "Travaille ta prononciation", sub: "10 mots \xE0 dire \xE0 voix haute", xp: 50, icon: "\u{1F3A4}" } : words >= 4 ? { href: "ecoute", title: "Entra\xEEnement libre", sub: "XP du jour d\xE9j\xE0 gagn\xE9s : tu peux continuer pour progresser", xp: 0, icon: "\u{1F4AA}" } : { href: "parcours", title: "Commence ton parcours", sub: "Termine une le\xE7on pour d\xE9bloquer l'entra\xEEnement", xp: 0, icon: "\u{1F5FA}\uFE0F" };
   const row = (href, title, icon, cls, { badge = 0, sub = "", ok = true } = {}) => `
     <a class="tr-row ${ok ? "" : "disabled"}" ${ok ? `href="#${href}"` : `aria-disabled="true"`}>
       <span class="tr-txt"><b>${title}</b>${sub ? `<small>${sub}</small>` : ""}</span>
@@ -11533,9 +11552,9 @@ function renderEntrainement(app2) {
   <h2 class="tr-h2">Exercices</h2>
   <div class="tr-list">
     ${row("histoires", "Histoires", "\u{1F4D6}", "c-orange", { sub: st.open ? `Dialogues \xE0 lire et \xE9couter \xB7 ${st.done}/${st.total} lues` : "Se d\xE9bloquent au fil des le\xE7ons", ok: st.open > 0, badge: st.open - st.done })}
-    ${row("prononciation", "Prononciation", "\u{1F3A4}", "c-red", { sub: isZh() ? "Parlez, je v\xE9rifie les sons et les tons" : "Parlez, je v\xE9rifie ce que j'entends", ok: words >= 3 })}
-    ${row("ecoute", "\xC9coute", "\u{1F3A7}", "c-blue", { sub: "Reconna\xEEtre les mots \xE0 l'oral", ok: words >= 4 })}
-    ${isZh() ? row("tons", "Les tons", "\u{1F3B5}", "c-green", { sub: "1er, 2e, 3e ou 4e ton ?", ok: syl >= 4 }) : ""}
+    ${row("prononciation", "Prononciation", "\u{1F3A4}", "c-red", { sub: cool("prononciation", isZh() ? "Parlez, je v\xE9rifie les sons et les tons" : "Parlez, je v\xE9rifie ce que j'entends"), ok: words >= 3 })}
+    ${row("ecoute", "\xC9coute", "\u{1F3A7}", "c-blue", { sub: cool("ecoute", "Reconna\xEEtre les mots \xE0 l'oral"), ok: words >= 4 })}
+    ${isZh() ? row("tons", "Les tons", "\u{1F3B5}", "c-green", { sub: cool("tons", "1er, 2e, 3e ou 4e ton ?"), ok: syl >= 4 }) : ""}
     ${isZh() ? row("trace", "Trac\xE9 des caract\xE8res", "\u270D\uFE0F", "c-purple", { sub: "L'ordre des traits, au doigt", ok: words >= 1 }) : ""}
   </div>
 
@@ -11546,6 +11565,11 @@ function renderEntrainement(app2) {
     ${row("carnet", "Carnet", "\u{1F4D2}", "c-yellow", { sub: "Tous vos mots, avec recherche" })}
   </div>`;
 }
+var xpChip = (r) => r.capped ? `<span class="chip muted-chip">\u23F3 XP d\xE9j\xE0 gagn\xE9s aujourd'hui</span>` : `<span class="chip">\u26A1 +${r.xpGained} XP</span>`;
+var cool = (key, sub) => {
+  const at = practiceReadyAt(key);
+  return at ? `${sub} \xB7 \u2713 XP dans ${waitLabel(at)}` : sub;
+};
 function renderEcoute(app2) {
   return practiceQuiz(app2, { title: "\xC9coute", questions: listeningQuestions(), again: "ecoute" });
 }
@@ -11567,14 +11591,15 @@ function practiceQuiz(app2, { title, questions, again }) {
     onFinish: (results) => {
       document.body.classList.remove("focus-mode");
       const score = results.filter((r2) => r2.correct).length;
-      const r = recordPractice({ label: title, score, total: results.length });
+      const r = recordPractice({ label: title, score, total: results.length, key: again });
       const pct = Math.round(r.ratio * 100);
       app2.innerHTML = `
       <section class="results ${pct >= 60 ? "ok" : "ko"}">
         ${ring(pct, 150, 12)}
         <h1>${pct === 100 ? "Sans faute ! \u{1F389}" : pct >= 60 ? "Bien jou\xE9 !" : "Continuez, \xE7a viendra !"}</h1>
         <p class="lead">${score} / ${results.length} bonnes r\xE9ponses</p>
-        <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained} XP</span></div>
+        <div class="result-chips">${xpChip(r)}</div>
+        ${r.capped ? `<p class="muted small">Cet exercice a d\xE9j\xE0 rapport\xE9 des XP dans les derni\xE8res 24 h. Vous pouvez le refaire pour vous entra\xEEner : les XP reviennent dans <b>${waitLabel(r.readyAt)}</b>.</p>` : ""}
         <div class="result-actions">
           <a class="btn primary big" href="#${again}" data-reload>Recommencer</a>
           <a class="btn ghost" href="#entrainement">Autres exercices</a>
@@ -11671,7 +11696,8 @@ function renderTrace(app2, start3) {
       onComplete: ({ totalMistakes }) => {
         const ok = totalMistakes <= 2;
         $2(".trace-msg").textContent = ok ? `\u2713 Bravo ! ${totalMistakes ? totalMistakes + " petite(s) erreur(s)." : "Parfait, sans erreur."} +5 XP` : `Termin\xE9 avec ${totalMistakes} erreurs. R\xE9essayez pour gagner des XP.`;
-        if (ok) recordPractice({ label: `Trac\xE9 ${chars[idx].ch}`, score: 1, total: 0 });
+        const r = ok ? recordPractice({ label: `Trac\xE9 ${chars[idx].ch}`, score: 1, total: 0, key: `trace:${chars[idx].ch}` }) : null;
+        if (r?.capped) $2(".trace-msg").textContent = `\u2713 Bravo ! D\xE9j\xE0 trac\xE9 aujourd'hui : XP de nouveau dans ${waitLabel(r.readyAt)}.`;
         speak(chars[idx].ch);
       }
     });
@@ -11868,14 +11894,14 @@ function renderPrononciation(app2) {
   }
   function finish() {
     document.body.classList.remove("focus-mode");
-    const r = recordPractice({ label: "Prononciation", score, total: words.length });
+    const r = recordPractice({ label: "Prononciation", score, total: words.length, key: "prononciation" });
     const pct = Math.round(r.ratio * 100);
     app2.innerHTML = `
     <section class="results ${pct >= 60 ? "ok" : "ko"}">
       ${ring(pct, 150, 12)}
       <h1>${pct === 100 ? "Prononciation parfaite ! \u{1F389}" : pct >= 60 ? "Bien prononc\xE9 !" : "Continuez, \xE7a viendra !"}</h1>
       <p class="lead">${score} / ${words.length} mots bien prononc\xE9s</p>
-      <div class="result-chips"><span class="chip">\u26A1 +${r.xpGained} XP</span></div>
+      <div class="result-chips">${xpChip(r)}</div>${r.capped ? `<p class="muted small">XP d\xE9j\xE0 gagn\xE9s avec cet exercice dans les derni\xE8res 24 h : de nouveau dans <b>${waitLabel(r.readyAt)}</b>.</p>` : ""}
       <div class="result-actions">
         <a class="btn primary big" href="#prononciation" data-reload>Recommencer</a>
         <a class="btn ghost" href="#entrainement">Autres exercices</a>
