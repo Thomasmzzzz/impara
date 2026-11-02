@@ -8,7 +8,7 @@
    - Les échanges avec le serveur de comptes (Supabase) ne sont jamais
      mis en cache.
    ===================================================================== */
-const VERSION = "impara-v1";
+const VERSION = "impara-v2";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./favicon.png"];
 const RUNTIME = "impara-runtime-v1";
 
@@ -53,6 +53,20 @@ self.addEventListener("fetch", (e) => {
       const hit = await cache.match(req);
       const net = fetch(req).then((res) => { if (res.ok || res.type === "opaque") cache.put(req, res.clone()); return res; }).catch(() => hit);
       return hit || net;
+    })());
+    return;
+  }
+
+  // Morceaux de l'application (app-XXXX.js, c-XXXX.js) : leur nom change à chaque
+  // version, on peut donc les garder en cache sans risque (disponibles hors ligne)
+  if (url.origin === location.origin && /\/(app|c)-[A-Z0-9]+\.js$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      const cache = await caches.open(RUNTIME);
+      const hit = await cache.match(req);
+      if (hit) return hit;
+      const res = await fetch(req);
+      if (res.ok) cache.put(req, res.clone());
+      return res;
     })());
     return;
   }
