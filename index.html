@@ -1340,6 +1340,13 @@ body.lang-zh .cf-go { background: var(--rosso); }
 html.dark .np-cta { background: #f3f4f6; color: #11151b; }
 .node-wrap:has(.node-pop) { z-index: 20; }
 
+/* Barre du bas un peu plus haute (plus loin du bord de l'écran) */
+@media (max-width: 720px) {
+  :root { --tabbar-lift: 12px; }
+  .tabbar { height: calc(var(--tabbar-h) + var(--tabbar-lift) + env(safe-area-inset-bottom)); padding-bottom: calc(var(--tabbar-lift) + env(safe-area-inset-bottom)); }
+  #app { padding-bottom: calc(32px + var(--tabbar-h) + var(--tabbar-lift)); }
+}
+
 </style>
 </head>
 <body>
