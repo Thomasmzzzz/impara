@@ -1147,6 +1147,21 @@ body.lang-zh .mic { background: var(--rosso); box-shadow: 0 6px 0 #8f2a23; }
 .story-foot [hidden] { display: none !important; }
 .story-lvl { font-style: normal; font-size: .7rem; font-weight: 800; color: var(--muted); border: 1.5px solid var(--line); border-radius: 99px; padding: 1px 7px; vertical-align: middle; margin-left: 4px; }
 
+/* Défis : taille et mode */
+.n-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.n-grid button { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 2px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); min-width: 0; }
+.n-grid button b { font-size: 1.2rem; }
+.n-grid button span { font-size: .72rem; font-weight: 700; }
+.n-grid button small { font-size: .62rem; color: var(--muted); text-align: center; line-height: 1.15; }
+.n-grid button.on { border-color: var(--verde); background: var(--verde-l); }
+.n-grid button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 420px) { .n-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.mode-pick { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.mode-pick button { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
+.mode-pick button small { color: var(--muted); font-size: .74rem; line-height: 1.25; }
+.mode-pick button.on { border-color: var(--verde); background: var(--verde-l); }
+.pts-line { margin: 2px 0 0; font-weight: 800; color: var(--blu); }
+
 </style>
 </head>
 <body>
@@ -6779,7 +6794,7 @@ function toast(msg, type = "info") {
     setTimeout(() => el.remove(), 300);
   }, 2600);
 }
-function modal({ title, body = "", actions = [{ label: "OK", value: "ok", kind: "primary" }], dismissable = true }) {
+function modal({ title, body = "", actions = [{ label: "OK", value: "ok", kind: "primary" }], dismissable = true, onOpen = null }) {
   return new Promise((resolve) => {
     const root = $("#modal-root");
     root.innerHTML = `
@@ -6801,6 +6816,7 @@ function modal({ title, body = "", actions = [{ label: "OK", value: "ok", kind: 
       if (e.target.dataset.close !== void 0) close(null);
     };
     root.querySelector(".modal .btn.primary, .modal .btn")?.focus();
+    onOpen?.(root);
   });
 }
 function celebrate() {
@@ -7576,8 +7592,10 @@ var MIN_WORDS = 12;
 function learnedWords() {
   return Object.values(state.vocab).filter((w) => w.zh && w.fr).map((w) => ({ ...w, py: w.py || "" }));
 }
-var canChallenge = () => learnedWords().length >= MIN_WORDS;
-var missingWords = () => Math.max(0, MIN_WORDS - learnedWords().length);
+var wordsNeeded = (n = 10) => Math.max(MIN_WORDS, n);
+var canChallenge = (n = 5) => learnedWords().length >= wordsNeeded(n);
+var missingWords = (n = 5) => Math.max(0, wordsNeeded(n) - learnedWords().length);
+var CHALLENGE_SIZES = [[5, "\xC9clair", "\u2248 1 min"], [10, "Classique", "\u2248 2 min"], [15, "Marathon", "\u2248 4 min"], [25, "Expert", "\u2248 6 min"], [50, "Ultime", "\u2248 12 min"]];
 var zh = () => code === "zh";
 var pick = (arr, n) => shuffle(arr).slice(0, n);
 var strip = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -8403,7 +8421,8 @@ var ERRORS = {
   no_profile: "Choisissez d'abord votre nom d'utilisateur.",
   not_friends: "Vous devez \xEAtre amis pour faire cela.",
   challenge_not_playable: "Ce d\xE9fi n'est pas (ou plus) jouable.",
-  already_played: "Vous avez d\xE9j\xE0 jou\xE9 ce d\xE9fi."
+  already_played: "Vous avez d\xE9j\xE0 jou\xE9 ce d\xE9fi.",
+  invalid_n: "Nombre de questions non disponible."
 };
 function socialError(e) {
   const m = String(e?.message || e || "");
@@ -8462,6 +8481,16 @@ var incoming = () => S.friendships.filter((f) => f.status === "pending" && f.add
 var outgoing = () => S.friendships.filter((f) => f.status === "pending" && f.requester === uid()).map((f) => ({ ...f, to: S.profiles[f.addressee] }));
 var friendByUsername = (u) => friends().find((f) => f.username === u);
 var statsOf = (id) => S.stats[id] || {};
+var SPEED_PER_GOOD = 100;
+var SPEED_PER_SEC = 3;
+function challengePoints(r, mode2) {
+  if (mode2 !== "speed" || !r) return null;
+  return Math.max(0, r.score * SPEED_PER_GOOD - Math.round((r.ms || 0) / 1e3) * SPEED_PER_SEC);
+}
+function friendWords(id) {
+  const s = Object.values(statsOf(id));
+  return s.length ? Math.max(...s.map((x) => x?.words || 0)) : null;
+}
 function view(c) {
   const me = uid();
   const iAmChallenger = c.challenger === me;
@@ -8476,9 +8505,13 @@ function view(c) {
   else if (!theirs) stage = "waiting_play";
   else stage = "done";
   let outcome = null;
+  if (mine) mine.points = challengePoints(mine, c.mode);
+  if (theirs) theirs.points = challengePoints(theirs, c.mode);
   if (stage === "done") {
     const a = mine.score / mine.total, b = theirs.score / theirs.total;
-    outcome = a > b ? "win" : a < b ? "lose" : mine.ms < theirs.ms ? "win" : mine.ms > theirs.ms ? "lose" : "draw";
+    if (c.mode === "speed") outcome = mine.points > theirs.points ? "win" : mine.points < theirs.points ? "lose" : "draw";
+    else if (c.mode === "precision") outcome = a > b ? "win" : a < b ? "lose" : "draw";
+    else outcome = a > b ? "win" : a < b ? "lose" : mine.ms < theirs.ms ? "win" : mine.ms > theirs.ms ? "lose" : "draw";
   }
   return { ...c, iAmChallenger, friend: S.profiles[iAmChallenger ? c.opponent : c.challenger], mine, theirs, stage, outcome };
 }
@@ -8546,8 +8579,8 @@ async function markRead(friendId) {
   await rpc("mark_messages_read", { p_friend: friendId }).catch(() => {
   });
 }
-async function createChallenge(friendId, n = 10) {
-  const id = await rpc("create_challenge", { p_opponent: friendId, p_n: n }).catch((e) => {
+async function createChallenge(friendId, n = 10, mode2 = "speed") {
+  const id = await rpc("create_challenge", { p_opponent: friendId, p_n: n, p_mode: mode2 }).catch((e) => {
     throw new Error(socialError(e));
   });
   await refresh();
@@ -9631,7 +9664,7 @@ function challengeCard(c, { showFriend = true } = {}) {
   return `<li class="s-challenge ${cls}">
     ${link ? `<a class="ch-link" ${link} aria-label="Voir le d\xE9fi"></a>` : ""}
     ${showFriend ? av(f, "sm") : `<span class="s-ch-icon">\u2694\uFE0F</span>`}
-    <div class="s-ch-body"><p>${status}</p><small class="muted">${c.n} questions \xB7 ${when(c.created_at)}${c.mine?.lang ? " \xB7 " + langs(c.mine) : ""}</small></div>
+    <div class="s-ch-body"><p>${status}</p><small class="muted">${c.n} questions \xB7 ${modeLabel(c.mode)} \xB7 ${when(c.created_at)}${c.mine?.lang ? " \xB7 " + langs(c.mine) : ""}</small></div>
     ${score}
     ${actions ? `<div class="s-ch-actions">${actions}</div>` : ""}
   </li>`;
@@ -9643,9 +9676,10 @@ function bindChallengeActions(root) {
     e.preventDefault();
     b.disabled = true;
     try {
-      if (b.dataset.chAccept && !canChallenge()) {
+      const chN = allChallenges().find((x) => x.id === b.dataset.chAccept)?.n || 5;
+      if (b.dataset.chAccept && !canChallenge(chN)) {
         b.disabled = false;
-        return notEnoughWords("Pas encore assez de mots pour ce d\xE9fi");
+        return notEnoughWords(`Pas assez de mots pour ${chN} questions`, chN);
       }
       if (b.dataset.chAccept) {
         await respondChallenge(b.dataset.chAccept, true);
@@ -9665,16 +9699,47 @@ function bindChallengeActions(root) {
     }
   });
 }
+var MODES = {
+  speed: ["\u23F1\uFE0F Vitesse", "Le temps compte : 100 pts par bonne r\xE9ponse, \u22123 pts par seconde"],
+  precision: ["\u{1F3AF} Pr\xE9cision", "Seules les bonnes r\xE9ponses comptent, prenez votre temps"]
+};
+var modeLabel = (m) => MODES[m] ? MODES[m][0] : "\u23F1\uFE0F Classique";
+function sizeState(n, friend) {
+  const mine = learnedWords().length, need = wordsNeeded(n);
+  if (mine < need) return { ok: false, why: `Il vous faut ${need} mots` };
+  if (!friend) return { ok: true };
+  const theirs = friendWords(friend.id);
+  if (theirs == null) return n <= 15 ? { ok: true } : { ok: false, why: `Progression de ${who(friend)} inconnue` };
+  if (theirs < need) return { ok: false, why: `${who(friend)} : ${theirs} mots` };
+  return { ok: true };
+}
+function paintSizes() {
+  const fr = friends();
+  const friend = pendingPick.fixed || fr.find((f) => f.id === pendingPick.friend) || null;
+  let firstOk = null;
+  document.querySelectorAll("[data-ns] [data-n]").forEach((b) => {
+    const st = sizeState(+b.dataset.n, friend);
+    b.disabled = !st.ok;
+    b.querySelector("small").textContent = st.ok ? b.dataset.t : `\u{1F512} ${st.why}`;
+    if (st.ok && firstOk == null) firstOk = +b.dataset.n;
+  });
+  const cur = document.querySelector(`[data-ns] [data-n="${pendingPick.n}"]`);
+  if (cur?.disabled) {
+    const ok = [...document.querySelectorAll("[data-ns] [data-n]:not(:disabled)")].pop();
+    pendingPick.n = ok ? +ok.dataset.n : null;
+  }
+  document.querySelectorAll("[data-ns] [data-n]").forEach((x) => x.classList.toggle("on", +x.dataset.n === pendingPick.n));
+}
 async function askChallenge(friend = null) {
-  if (!canChallenge()) return notEnoughWords("Pas encore assez de mots pour d\xE9fier");
+  if (!canChallenge(5)) return notEnoughWords("Pas encore assez de mots pour d\xE9fier", 5);
   const fr = friends();
   if (!friend && !fr.length) {
     toast("Ajoutez d'abord un ami depuis votre profil", "warn");
     return;
   }
-  let target = friend || (fr.length === 1 ? fr[0] : null), n = 10;
-  pendingPick.friend = target?.id || null;
-  pendingPick.n = n;
+  let target = friend || (fr.length === 1 ? fr[0] : null);
+  Object.assign(pendingPick, { friend: target?.id || null, fixed: friend, n: 10, mode: pendingPick.mode || "speed" });
+  if (!sizeState(10, target).ok) pendingPick.n = 5;
   const rec = (f) => {
     const r = record(f.id);
     return r.total ? `${r.win}V \xB7 ${r.lose}D${r.draw ? ` \xB7 ${r.draw}N` : ""}` : "Premier duel";
@@ -9683,36 +9748,49 @@ async function askChallenge(friend = null) {
     title: friend ? `\u2694\uFE0F D\xE9fier ${who(friend)}` : "\u2694\uFE0F Nouveau d\xE9fi",
     body: `${friend ? "" : `<p class="set-label">Adversaire</p><div class="pick-friends">${fr.map((f) => `<button type="button" class="pick-friend ${target?.id === f.id ? "on" : ""}" data-f="${f.id}">${av(f, "sm")}<b>${who(f)}</b><small>${rec(f)}</small></button>`).join("")}</div>`}
       <p class="set-label">Nombre de questions</p>
-      <div class="seg wide" data-ns>${[[5, "\xC9clair", "\u2248 1 min"], [10, "Classique", "\u2248 2 min"], [15, "Marathon", "\u2248 4 min"]].map(([k, l, t]) => `<button type="button" data-n="${k}" class="${k === n ? "on" : ""}">${k} \xB7 ${l}<small>${t}</small></button>`).join("")}</div>
-      <ul class="defi-rules"><li>\u{1F3B2} Questions vari\xE9es sur <b>vos mots appris</b>, chacun dans sa langue</li><li>\u{1F3C6} Le meilleur score gagne, puis le plus rapide</li><li>\u23F3 Votre ami doit accepter, puis chacun joue quand il veut</li></ul>`,
-    actions: [{ label: "Annuler", value: "" }, { label: "\u2694\uFE0F Lancer le d\xE9fi", value: "go", kind: "primary" }]
+      <div class="n-grid" data-ns>${CHALLENGE_SIZES.map(([k, l, t]) => `<button type="button" data-n="${k}" data-t="${t}"><b>${k}</b><span>${l}</span><small>${t}</small></button>`).join("")}</div>
+      <p class="small muted">Il faut avoir appris au moins autant de mots que de questions, vous <b>et</b> votre adversaire.</p>
+      <p class="set-label">Mode</p>
+      <div class="mode-pick" data-modes>${Object.entries(MODES).map(([k, [l, d]]) => `<button type="button" data-mode="${k}" class="${pendingPick.mode === k ? "on" : ""}"><b>${l}</b><small>${d}</small></button>`).join("")}</div>
+      <ul class="defi-rules"><li>\u{1F3B2} Questions vari\xE9es sur <b>vos mots appris</b>, chacun dans sa langue</li><li>\u23F3 Votre ami doit accepter, puis chacun joue quand il veut</li></ul>`,
+    actions: [{ label: "Annuler", value: "" }, { label: "\u2694\uFE0F Lancer le d\xE9fi", value: "go", kind: "primary" }],
+    onOpen: paintSizes
   });
   if (v !== "go") return;
   target = friend || fr.find((f) => f.id === pendingPick.friend) || null;
-  n = pendingPick.n || 10;
   if (!target) {
     toast("Choisissez un adversaire", "warn");
     return askChallenge(null);
   }
+  const n = pendingPick.n;
+  if (!n || !sizeState(n, target).ok) {
+    toast("Ce nombre de questions n'est pas possible avec cet adversaire", "warn");
+    return askChallenge(friend);
+  }
   try {
-    await createChallenge(target.id, n);
+    await createChallenge(target.id, n, pendingPick.mode);
     toast(`D\xE9fi envoy\xE9 \xE0 ${target.pseudo || target.username} \u2694\uFE0F`, "ok");
   } catch (e) {
     toast(e.message, "warn");
   }
 }
 document.addEventListener("click", (e) => {
-  const pf = e.target.closest(".pick-friend"), pn = e.target.closest("[data-ns] [data-n]");
+  const pf = e.target.closest(".pick-friend"), pn = e.target.closest("[data-ns] [data-n]"), pm = e.target.closest("[data-modes] [data-mode]");
   if (pf) {
     document.querySelectorAll(".pick-friend").forEach((x) => x.classList.toggle("on", x === pf));
     pendingPick.friend = pf.dataset.f;
+    paintSizes();
   }
-  if (pn) {
-    document.querySelectorAll("[data-ns] [data-n]").forEach((x) => x.classList.toggle("on", x === pn));
+  if (pn && !pn.disabled) {
     pendingPick.n = +pn.dataset.n;
+    paintSizes();
+  }
+  if (pm) {
+    document.querySelectorAll("[data-modes] [data-mode]").forEach((x) => x.classList.toggle("on", x === pm));
+    pendingPick.mode = pm.dataset.mode;
   }
 });
-var pendingPick = { friend: null, n: null };
+var pendingPick = { friend: null, fixed: null, n: null, mode: "speed" };
 var tab = "classement";
 var MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
 var weekLabel = (start3) => {
@@ -10201,12 +10279,12 @@ function renderChat(app2, username) {
     clearInterval(poll2);
   };
 }
-function notEnoughWords(title = "Pas encore assez de mots") {
-  const n = missingWords(), other2 = Object.values(LANGS).find((l) => l.code !== code);
+function notEnoughWords(title = "Pas encore assez de mots", size = 5) {
+  const n = missingWords(size), other2 = Object.values(LANGS).find((l) => l.code !== code);
   return modal({
     title: `\u{1F4D2} ${title}`,
     body: `<p>Les d\xE9fis utilisent uniquement les mots que <b>vous avez appris</b> en ${esc(L.label.toLowerCase())} (ceux de vos le\xE7ons r\xE9ussies), avec des questions vari\xE9es.</p>
-      <p>Il vous faut au moins <b>${MIN_WORDS} mots</b> : encore <b>${n}</b> \xE0 apprendre. Terminez une ou deux le\xE7ons de plus !</p>
+      <p>Il vous faut au moins <b>${wordsNeeded(size)} mots</b> : encore <b>${n}</b> \xE0 apprendre. Terminez une ou deux le\xE7ons de plus !</p>
       ${other2 ? `<p class="muted small">Vous avez plus de mots en ${esc(other2.label.toLowerCase())} ? Changez de langue en haut de la page.</p>` : ""}`,
     actions: [{ label: "Fermer", value: "close", kind: "ghost" }, { label: "Aller au parcours", value: "go", kind: "primary" }]
   }).then((v) => {
@@ -10224,10 +10302,10 @@ function renderDefi(app2, id) {
       return;
     }
     if (c.stage !== "to_play") return showDefi(app2, c);
-    if (!canChallenge()) {
+    if (!canChallenge(c.n)) {
       app2.innerHTML = `<a class="back-link" href="#amis">\u2190 Amis</a>
       <section class="card s-defi-intro"><p class="eyebrow">D\xE9fi</p><h1>\u{1F4D2} Encore quelques mots \xE0 apprendre</h1>
-        <p class="lead">Ce d\xE9fi utilise uniquement les mots que vous avez appris en ${esc(L.label.toLowerCase())}. Il en faut au moins ${MIN_WORDS} : encore <b>${missingWords()}</b>.</p>
+        <p class="lead">Ce d\xE9fi utilise uniquement les mots que vous avez appris en ${esc(L.label.toLowerCase())}. Pour ${c.n} questions, il en faut au moins ${wordsNeeded(c.n)} : encore <b>${missingWords(c.n)}</b>.</p>
         <p class="muted">Terminez une ou deux le\xE7ons, puis revenez : le d\xE9fi vous attend. Vous apprenez une autre langue ? Changez de langue en haut de la page.</p>
         <a class="btn primary big" href="#parcours">Continuer mon parcours</a></section>`;
       return;
@@ -10237,14 +10315,14 @@ function renderDefi(app2, id) {
     app2.innerHTML = `
     <a class="back-link" href="#amis">\u2190 Amis</a>
     <section class="card s-defi-intro defi-arena">
-      <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions</p>
+      <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions \xB7 ${modeLabel(c.mode)}</p>
       <div class="s-vs vs-anim">${av(social().me, "xl")}<span class="s-vs-x">VS</span>${av(c.friend, "xl")}</div>
       <h1>Vous contre ${who(c.friend)}</h1>
       ${rec.total ? `<p class="h2h">Bilan : <b>${rec.win}</b> victoire${rec.win > 1 ? "s" : ""} \xB7 <b>${rec.lose}</b> d\xE9faite${rec.lose > 1 ? "s" : ""}${rec.draw ? ` \xB7 <b>${rec.draw}</b> \xE9galit\xE9${rec.draw > 1 ? "s" : ""}` : ""}</p>` : `<p class="h2h">Premier duel entre vous !</p>`}
-      ${c.theirs ? `<div class="to-beat">\u{1F3AF} Score \xE0 battre : <b>${c.theirs.score}/${c.theirs.total}</b> en <b>${secs(c.theirs.ms)}</b></div>` : `<div class="to-beat soft">Vous jouez en premier : placez la barre haut !</div>`}
+      ${c.theirs ? `<div class="to-beat">\u{1F3AF} \xC0 battre : <b>${c.theirs.score}/${c.theirs.total}</b>${c.mode === "precision" ? "" : ` en <b>${secs(c.theirs.ms)}</b>`}${c.mode === "speed" ? ` \xB7 <b>${c.theirs.points} pts</b>` : ""}</div>` : `<div class="to-beat soft">Vous jouez en premier : placez la barre haut !</div>`}
       <ul class="defi-rules">
         <li>\u{1F3B2} ${qs.length} questions vari\xE9es sur vos <b>${learnedWords().length} mots</b> de ${esc(L.label.toLowerCase())} <span class="flag mini">${flagSVG(code)}</span></li>
-        <li>\u23F1\uFE0F Chronom\xE8tre lanc\xE9 au d\xE9part : \xE0 \xE9galit\xE9, le plus rapide gagne</li>
+        <li>${c.mode === "precision" ? "\u{1F3AF} Mode pr\xE9cision : seules les bonnes r\xE9ponses comptent, le temps n'est pas pris en compte" : c.mode === "speed" ? `\u23F1\uFE0F Mode vitesse : ${SPEED_PER_GOOD} pts par bonne r\xE9ponse, \u2212${SPEED_PER_SEC} pts par seconde. Vite\u2026 mais juste !` : "\u23F1\uFE0F Chronom\xE8tre lanc\xE9 au d\xE9part : \xE0 \xE9galit\xE9, le plus rapide gagne"}</li>
         <li>\u261D\uFE0F Une seule tentative</li>
       </ul>
       <button class="btn primary big" data-go>C'est parti !</button>
@@ -10330,7 +10408,10 @@ function play(app2, c, questions) {
       const maxMine = good + (total - good - bad);
       race = good > c.theirs.score ? `<span class="ahead">\u{1F525} Devant !</span>` : maxMine < c.theirs.score ? `<span class="behind">Plus possible de gagner\u2026</span>` : `<span>\u{1F3AF} ${c.theirs.score}/${c.theirs.total} \xE0 battre</span>`;
     }
-    hud.innerHTML = `<span class="hud-t">\u23F1\uFE0F ${t}</span><span class="hud-ok">\u2713 ${good}</span><span class="hud-ko">\u2717 ${bad}</span>${race}`;
+    const pts = c.mode === "speed" ? Math.max(0, good * SPEED_PER_GOOD - Math.round(el) * SPEED_PER_SEC) : null;
+    if (c.theirs && c.mode === "speed") race = pts > c.theirs.points ? `<span class="ahead">\u{1F525} ${pts} pts</span>` : `<span>${pts} / ${c.theirs.points} pts</span>`;
+    else if (c.mode === "speed") race = `<span>${pts} pts</span>`;
+    hud.innerHTML = `${c.mode === "precision" ? "" : `<span class="hud-t">\u23F1\uFE0F ${t}</span>`}<span class="hud-ok">\u2713 ${good}</span><span class="hud-ko">\u2717 ${bad}</span>${race}`;
   }
   paintHud();
   const timer = setInterval(paintHud, 500);
@@ -10352,9 +10433,9 @@ function showDefi(app2, c, justPlayed = false) {
   } catch {
   }
   const col = (r, label, p, win) => r ? `<div class="s-res-col ${win ? "winner" : ""}">${win ? `<span class="crown">\u{1F451}</span>` : ""}${av(p, "lg")}<p class="s-res-who">${label}</p>
-      <p class="big-score" data-count="${r.score}">0</p><p class="muted small">sur ${r.total} \xB7 \u23F1 ${secs(r.ms)} <span class="flag mini">${flagSVG(r.lang)}</span></p></div>` : `<div class="s-res-col">${av(p, "lg")}<p class="s-res-who">${label}</p><p class="big-score muted">?</p><p class="muted small">${c.stage === "to_accept" || c.stage === "waiting_accept" ? "Pas encore accept\xE9" : "Pas encore jou\xE9"}</p></div>`;
+      <p class="big-score" data-count="${r.score}">0</p><p class="muted small">sur ${r.total}${c.mode === "precision" ? "" : ` \xB7 \u23F1 ${secs(r.ms)}`} <span class="flag mini">${flagSVG(r.lang)}</span></p>${r.points != null ? `<p class="pts-line">${r.points} pts</p>` : ""}</div>` : `<div class="s-res-col">${av(p, "lg")}<p class="s-res-who">${label}</p><p class="big-score muted">?</p><p class="muted small">${c.stage === "to_accept" || c.stage === "waiting_accept" ? "Pas encore accept\xE9" : "Pas encore jou\xE9"}</p></div>`;
   const head = {
-    done: { win: "\u{1F3C6} Victoire !", lose: `${who(f)} l'emporte`, draw: "\u{1F91D} \xC9galit\xE9 parfaite" }[c.outcome],
+    done: { win: "\u{1F3C6} Victoire !", lose: `${who(f)} l'emporte`, draw: c.mode === "precision" ? "\u{1F91D} \xC9galit\xE9" : "\u{1F91D} \xC9galit\xE9 parfaite" }[c.outcome],
     waiting_play: "Score envoy\xE9 \u2713",
     to_accept: `${who(f)} vous d\xE9fie !`,
     waiting_accept: `En attente de ${who(f)}`,
@@ -10363,14 +10444,18 @@ function showDefi(app2, c, justPlayed = false) {
   }[c.stage] || "D\xE9fi";
   const sub = {
     waiting_play: `Vous serez pr\xE9venu d\xE8s que ${who(f)} aura jou\xE9.`,
-    done: c.outcome === "win" ? c.mine.score === c.theirs.score ? "M\xEAme score, mais vous avez \xE9t\xE9 plus rapide \u26A1" : "Bien jou\xE9 ! Pr\xEAt \xE0 remettre \xE7a ?" : c.outcome === "lose" ? c.mine.score === c.theirs.score ? `M\xEAme score, ${who(f)} a \xE9t\xE9 plus rapide.` : "La revanche vous attend !" : "M\xEAme score, m\xEAme temps : impressionnant."
+    done: c.mode === "speed" ? c.outcome === "draw" ? "Exactement le m\xEAme nombre de points !" : (() => {
+      const w = c.outcome === "win" ? c.mine : c.theirs, l = c.outcome === "win" ? c.theirs : c.mine;
+      const by = w.score < l.score ? " gr\xE2ce \xE0 la vitesse \u26A1" : w.score === l.score ? ", plus rapide \u26A1" : "";
+      return `${c.outcome === "win" ? "Vous gagnez" : `${who(f)} gagne`} ${w.points} \xE0 ${l.points} pts${by}`;
+    })() : c.mode === "precision" ? c.outcome === "draw" ? "M\xEAme nombre de bonnes r\xE9ponses : match nul !" : c.outcome === "win" ? "Plus de bonnes r\xE9ponses : bien jou\xE9 !" : "La revanche vous attend !" : c.outcome === "win" ? c.mine.score === c.theirs.score ? "M\xEAme score, mais vous avez \xE9t\xE9 plus rapide \u26A1" : "Bien jou\xE9 ! Pr\xEAt \xE0 remettre \xE7a ?" : c.outcome === "lose" ? c.mine.score === c.theirs.score ? `M\xEAme score, ${who(f)} a \xE9t\xE9 plus rapide.` : "La revanche vous attend !" : "M\xEAme score, m\xEAme temps : impressionnant."
   }[c.stage] || "";
   const rec = record(f?.id);
   const reactions = c.stage === "done" ? c.outcome === "win" ? ["\u{1F44F} GG !", "\u{1F60E} Trop facile", "\u{1F525} Revanche ?"] : c.outcome === "lose" ? ["\u{1F44F} Bien jou\xE9 !", "\u{1F525} Revanche !", "\u{1F605} La prochaine fois\u2026"] : ["\u{1F91D} \xC9galit\xE9 parfaite !", "\u{1F525} On d\xE9partage ?"] : [];
   app2.innerHTML = `<div class="s-page">
   <a class="back-link" href="#amis">\u2190 Amis</a>
   <section class="card s-defi-res ${c.outcome || ""} ${justPlayed ? "fresh" : ""}">
-    <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions \xB7 ${when(c.created_at)}</p>
+    <p class="eyebrow">D\xE9fi \xB7 ${c.n} questions \xB7 ${modeLabel(c.mode)} \xB7 ${when(c.created_at)}</p>
     <h1>${head}</h1>${sub ? `<p class="muted">${sub}</p>` : ""}
     <div class="s-res">${col(c.mine, "Vous", me, c.outcome === "win")}<span class="s-vs-x">VS</span>${col(c.theirs, who(f), f, c.outcome === "lose")}</div>
     ${rec.total ? `<p class="h2h">Bilan contre ${who(f)} : <b>${rec.win}</b>V \xB7 <b>${rec.lose}</b>D${rec.draw ? ` \xB7 <b>${rec.draw}</b>N` : ""}</p>` : ""}
