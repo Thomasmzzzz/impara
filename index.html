@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Impara — apprenez l'italien ou le mandarin de A1 à C2 avec un parcours gamifié, des quiz et un suivi personnalisé.">
   <meta name="theme-color" content="#c23b32">
+  <!-- Thème appliqué avant l'affichage (pas de flash blanc en mode sombre) -->
+  <script>
+    (function () {
+      var t = "auto"; try { t = localStorage.getItem("impara.theme") || "auto"; } catch (e) {}
+      var dark = t === "dark" || (t === "auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", dark);
+    })();
+  </script>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1010,6 +1018,67 @@ button.pf-stat:not([disabled]):hover b { color: var(--verde-d); }
 .quick-replies .chip-btn { white-space: nowrap; }
 @media (max-width: 720px) { .chat-page .s-chat { height: calc(100vh - 240px - var(--tabbar-h)); } }
 .chat-page, .fr-page { grid-template-columns: minmax(0, 1fr); }
+
+/* 17. MODE SOMBRE (html.dark) ----------------------------------------- */
+html.dark {
+  color-scheme: dark;
+  --paper: #11151b; --paper-2: #1b212a; --card: #181e26;
+  --ink: #e9edf2; --ink-2: #b9c2cd; --muted: #8a95a3; --line: #2b333e;
+  --verde-l: #173a2b; --rosso-l: #3b1f1d; --blu: #7ea6cc;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .6);
+}
+html.dark body.lang-zh { --verde-l: #173a2b; }
+html.dark body { background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .035) 1px, transparent 0); }
+html.dark .topbar { background: rgba(17, 21, 27, .88); }
+html.dark .tabbar { background: rgba(24, 30, 38, .96); }
+/* Éléments « encre sur fond clair » : texte sombre sur pastille claire */
+html.dark .topnav a.active, html.dark .chip-btn.on, html.dark .lang-chip.on, html.dark .toast, html.dark .gear-pill.active { color: #11151b; }
+html.dark .gear-pill.active .gear { filter: invert(1); }
+html.dark .field input:focus, html.dark .s-add-row input:focus, html.dark .s-send textarea:focus { background: var(--card); }
+html.dark .switch span { background: #3a4450; }
+html.dark .node.locked { background: #2a313b; box-shadow: 0 6px 0 #1b2027; }
+html.dark .node-start { background: var(--card); }
+html.dark .node-start::after { background: var(--card); }
+html.dark tbody tr:nth-child(even) td { background: #1d242d; }
+html.dark .level-head { background: linear-gradient(120deg, color-mix(in srgb, var(--lvl) 22%, var(--card)), var(--card) 70%); }
+html.dark .lesson-emoji { background: color-mix(in srgb, var(--lvl) 22%, var(--card)); }
+html.dark .mnemo { background: linear-gradient(120deg, #2f2817, #262116); border-color: #5a4a22; }
+html.dark .option:hover:not(:disabled) { background: #1f2630; border-color: #3a4552; }
+html.dark .option.selected, html.dark .tile.sel { background: #1d2c3c; box-shadow: 0 3px 0 #2c4259; }
+html.dark .fill-input { background: #1d2c3c; color: var(--ink); }
+html.dark .fill-input:focus { background: #233648; }
+html.dark .tile:hover:not(:disabled) { border-color: #3a4552; }
+html.dark .quiz-foot.is-wrong { border-color: #6b2f2b; }
+html.dark .option.wrong { box-shadow: 0 3px 0 #6b2f2b; }
+html.dark .stars { color: #39414c; }
+html.dark .meter-labels { color: #56606d; }
+html.dark .s-highlight, html.dark .s-challenge.todo { background: #29251a; }
+html.dark .btn.grade.hard { background: #352d1b; border-color: #6a5527; }
+html.dark .btn.grade.again { border-color: #6b2f2b; }
+html.dark .btn.grade.good { border-color: #2b6a4b; }
+html.dark .btn.primary:disabled, html.dark body.lang-zh .btn.primary:disabled { background: #2d353f; box-shadow: 0 4px 0 #20262e; color: #6f7a87; }
+html.dark .tr-row:hover { border-color: #3a4552; }
+html.dark .c-blue { background: #1c3550; } html.dark .c-green { background: #173a2b; } html.dark .c-purple { background: #2e2549; }
+html.dark .c-orange { background: #40301a; } html.dark .c-sky { background: #163a48; } html.dark .c-yellow { background: #3b3518; }
+html.dark .champ, html.dark .to-beat { background: #33301c; border-color: #5c4f22; }
+html.dark .to-beat.soft { background: #173a2b; border-color: #2b6a4b; }
+html.dark .duel-hud .ahead { background: #3b2f17; color: #f0b25a; }
+html.dark .danger-zone { border-color: #5a2b28; }
+html.dark .s-invite { box-shadow: 0 0 0 3px #4a3d18; }
+html.dark .pf-banner { filter: saturate(.9) brightness(.92); }
+html.dark .rec, html.dark .defi-rules li, html.dark .recap li { background: var(--paper-2); }
+html.dark .recap li.ko { background: var(--rosso-l); }
+html.dark .pod-2 .pod-block { background: linear-gradient(#9aa4b1, #6d7783); }
+html.dark .streak-pill .flame { filter: grayscale(1) opacity(.45); }
+html.dark .streak-pill.lit .flame { filter: none; }
+html.dark img, html.dark .qr-box { color-scheme: light; }
+.theme-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.theme-opt { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); color: var(--ink); font-weight: 700; font-size: .88rem; }
+.theme-opt.on { border-color: var(--verde); }
+.theme-opt i { width: 46px; height: 30px; border-radius: 8px; border: 1px solid var(--line); }
+.theme-opt .t-light { background: linear-gradient(135deg, #faf7f1 50%, #ffffff 50%); }
+.theme-opt .t-dark { background: linear-gradient(135deg, #11151b 50%, #1b212a 50%); }
+.theme-opt .t-auto { background: linear-gradient(135deg, #faf7f1 50%, #11151b 50%); }
 
 </style>
 </head>
@@ -8051,6 +8120,35 @@ async function disablePush() {
   });
 }
 
+// js/core/theme.js
+var KEY2 = "impara.theme";
+var media = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+function getTheme() {
+  try {
+    return localStorage.getItem(KEY2) || "auto";
+  } catch {
+    return "auto";
+  }
+}
+function applyTheme(t = getTheme()) {
+  const dark = t === "dark" || t === "auto" && !!media?.matches;
+  document.documentElement.classList.toggle("dark", dark);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#11151b" : document.body.classList.contains("lang-zh") ? "#c23b32" : "#1e8e5a");
+}
+function setTheme(t) {
+  try {
+    localStorage.setItem(KEY2, t);
+  } catch {
+  }
+  applyTheme(t);
+}
+function initTheme() {
+  applyTheme();
+  media?.addEventListener?.("change", () => {
+    if (getTheme() === "auto") applyTheme();
+  });
+}
+
 // js/views/reglages.js
 var SYNC = {
   off: ["\u26AA", "Mode local"],
@@ -8075,6 +8173,11 @@ function renderReglages(app2) {
         <div class="lang-pick">${Object.values(LANGS).map((l) => `<button type="button" class="lang-chip ${l.code === code ? "on" : ""}" data-lang="${l.code}">
           <span class="flag">${flagSVG(l.code)}</span>${l.label}</button>`).join("")}</div>
         <p class="small muted">Chaque langue garde sa propre progression ; votre profil est commun.</p>
+      </section>
+
+      <section class="card set-card"><h2 class="h3">\u{1F317} Apparence</h2>
+        <div class="theme-pick">${[["auto", "Automatique", "t-auto"], ["light", "Clair", "t-light"], ["dark", "Sombre", "t-dark"]].map(([v, l, c]) => `<button type="button" class="theme-opt ${getTheme() === v ? "on" : ""}" data-theme-opt="${v}"><i class="${c}"></i>${l}</button>`).join("")}</div>
+        <p class="small muted">\xAB Automatique \xBB suit le r\xE9glage clair / sombre de votre t\xE9l\xE9phone ou ordinateur.</p>
       </section>
 
       <section class="card set-card"><h2 class="h3">\u{1F3AF} Objectif quotidien</h2>
@@ -8131,6 +8234,11 @@ function renderReglages(app2) {
   const pick2 = (name, apply) => app2.querySelectorAll(`[data-${name}]`).forEach((b) => b.onclick = () => {
     app2.querySelectorAll(`[data-${name}]`).forEach((x) => x.classList.toggle("on", x === b));
     apply(b.dataset[name]);
+    saved();
+  });
+  app2.querySelectorAll("[data-theme-opt]").forEach((b) => b.onclick = () => {
+    app2.querySelectorAll("[data-theme-opt]").forEach((x) => x.classList.toggle("on", x === b));
+    setTheme(b.dataset.themeOpt);
     saved();
   });
   pick2("goal", (v) => commit((s) => {
@@ -9494,9 +9602,9 @@ function renderTrace(app2, start3) {
         height: s,
         padding: 10,
         showOutline: outline,
-        strokeColor: "#1d2733",
+        strokeColor: getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#1d2733",
         radicalColor: "#c23b32",
-        outlineColor: "#e7e1d5",
+        outlineColor: getComputedStyle(document.documentElement).getPropertyValue("--line").trim() || "#e7e1d5",
         drawingColor: "#c23b32",
         highlightColor: "#e8b04b",
         strokeAnimationSpeed: 1,
@@ -9734,6 +9842,7 @@ onCloud((i) => {
 window.addEventListener("impara:remote-update", () => {
   if (!document.body.classList.contains("focus-mode")) route();
 });
+initTheme();
 initPwa();
 initCloud();
 initSocial();
