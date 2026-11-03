@@ -1,0 +1,44 @@
+import{b as R}from"./c-O2KBLRJ7.js";import{p as M,q as V}from"./c-PSLELW2N.js";import{d as I}from"./c-5XZDULRL.js";import{e as z,h as j}from"./c-ER3QAR2D.js";import{c as x,g as k,i as C,q as o,r as D,t as H,x as E,y as A}from"./c-YBRFINJL.js";import"./c-427Z5ASM.js";var N={it:()=>import("./c-YWEIGXWK.js"),zh:()=>import("./c-TVOW3XW3.js")},b=(await(N[x]||N.it)()).default,q=c=>V(c.after),f=()=>x==="zh",Y=()=>({total:b.length,open:b.filter(q).length,done:b.filter(c=>k.dialogues?.[c.id]?.done).length});function Z(c){return c.innerHTML=`
+  <a class="back-link" href="#entrainement">\u2190 Entra\xEEnement</a>
+  <header class="page-head"><p class="eyebrow">Parler en situation</p><h1>\u{1F4AC} Dialogues</h1>
+    <p class="muted">Une sc\xE8ne de la vie r\xE9elle : \xE0 chaque tour, choisissez la r\xE9plique qui convient. Attention aux r\xE9ponses maladroites !</p></header>
+  <div class="story-list">
+    ${b.map(i=>{let s=q(i),g=k.dialogues?.[i.id],p=z(i.after);return`<a class="story-item ${s?"":"locked"}" ${s?`href="#dialogue-${i.id}"`:'aria-disabled="true"'}>
+        <span class="story-emoji">${s?i.emoji:"\u{1F512}"}</span>
+        <span class="story-txt"><b class="${f()?"zh":""}">${o(i.title)} <em class="story-lvl">${o(j(i.level))}</em></b>
+          ${i.titlePy?`<small class="py">${o(i.titlePy)}</small>`:""}
+          <small>${s?o(i.intro):`Se d\xE9bloque apr\xE8s la le\xE7on \xAB ${o(p?.title||i.after)} \xBB`}</small></span>
+        ${g?.done?`<span class="story-done" title="Meilleur score">${g.best} %</span>`:""}
+      </a>`}).join("")}
+  </div>`,!0}function _(c,i){let s=b.find(e=>e.id===i);if(!s||!q(s))return!1;let g=f()&&I(s.level),p=s.turns.filter(e=>e.choices).length,h=0,P=0,m=!1;document.body.classList.add("focus-mode"),c.innerHTML=`
+  <section class="story dlg">
+    <div class="story-top">
+      <button class="btn ghost small" data-quit aria-label="Quitter">\u2715</button>
+      <div class="progress"><span class="story-bar"></span></div>
+    </div>
+    <header class="story-head"><span class="big-emoji">${s.emoji}</span>
+      <h1 class="${f()?"zh":""}">${o(s.title)}</h1>${s.titlePy?`<p class="py">${o(s.titlePy)}</p>`:""}
+      <p class="muted">${o(s.intro)}</p></header>
+    <div class="story-lines"></div>
+    <div class="dlg-pick" hidden></div>
+    <div class="story-foot"><button class="btn primary big" data-next>Commencer</button></div>
+  </section>`;let $=e=>c.querySelector(e),O=$(".story-lines"),r=$(".dlg-pick"),n=$("[data-next]");$("[data-quit]").onclick=()=>{document.body.classList.remove("focus-mode"),location.hash="dialogues"};let w=e=>H(e,{force:!0});function S(e,u){let l=document.createElement("div");l.className=`sl talk ${u?"me":""}`,l.style.setProperty("--who",u?"var(--verde)":"#3b82c4"),l.innerHTML=`<span class="sl-who">${u?"Vous":o(s.npc)}</span>
+      <div class="sl-bubble"><p class="sl-t ${f()?"zh":""}">${R(e.t??e.npc)}</p>
+        ${e.py?`<p class="sl-py ${g?"":"hidden"}">${o(e.py)}</p>`:""}
+        <p class="sl-fr hidden">${o(e.fr)}</p></div>
+      <button class="speak" data-say aria-label="R\xE9\xE9couter">\u{1F50A}</button>`,l.querySelector("[data-say]").onclick=t=>{t.stopPropagation(),w(e.t??e.npc)},l.onclick=()=>{l.querySelector(".sl-fr").classList.toggle("hidden"),l.querySelector(".sl-py")?.classList.remove("hidden")},O.appendChild(l),w(e.t??e.npc),l.scrollIntoView({behavior:"smooth",block:"end"})}function U(e){let u=D(e.choices.map((t,a)=>({...t,i:a}))),l=0;n.hidden=!0,r.hidden=!1,r.innerHTML=`<div class="dlg-head"><p class="eyebrow">\xC0 vous : que r\xE9pondez-vous ?</p>
+        <button class="btn ghost small" data-fr>${m?"Masquer":"Voir"} les traductions</button></div>
+      <div class="dlg-opts">${u.map(t=>`<button class="option dlg-opt" data-i="${t.i}">
+        <span><b class="${f()?"zh":""}">${o(t.t)}</b>${t.py&&g?`<small class="py">${o(t.py)}</small>`:""}<small class="dlg-fr" ${m?"":"hidden"}>${o(t.fr)}</small></span>
+        <i class="dlg-say" data-hear="${t.i}" role="button" aria-label="\xC9couter">\u{1F50A}</i></button>`).join("")}</div>
+      <div class="dlg-fb" aria-live="polite"></div>`,r.querySelector("[data-fr]").onclick=t=>{m=!m,r.querySelectorAll(".dlg-fr").forEach(a=>a.hidden=!m),t.currentTarget.textContent=`${m?"Masquer":"Voir"} les traductions`},r.querySelectorAll("[data-hear]").forEach(t=>t.onclick=a=>{a.stopPropagation(),w(e.choices[+t.dataset.hear].t)}),r.scrollIntoView({behavior:"smooth",block:"end"}),r.querySelectorAll(".dlg-opt").forEach(t=>t.onclick=()=>{if(t.disabled)return;let a=e.choices[+t.dataset.i];l++;let y=r.querySelector(".dlg-fb");if(a.ok===0){t.disabled=!0,t.classList.add("wrong"),y.innerHTML=`<div class="dlg-res ko"><b>\u2717 \xC7a ne va pas</b><p>${o(a.why)}</p><p class="small muted">Choisissez une autre r\xE9ponse.</p></div>`;return}let d=e.choices.find(v=>v.ok===2)||a;l===1&&(P+=a.ok),r.querySelectorAll(".dlg-opt").forEach(v=>{v.disabled=!0,+v.dataset.i===e.choices.indexOf(d)&&v.classList.add("correct")}),a.ok===1&&t.classList.add("meh"),y.innerHTML=a.ok===2?`<div class="dlg-res ok"><b>\u2713 Parfait !</b><p>${o(a.why)}</p></div>`:`<div class="dlg-res meh"><b>\u2248 Compr\xE9hensible, mais maladroit</b><p>${o(a.why)}</p><p class="small">Plus naturel : <b class="${f()?"zh":""}">${o(d.t)}</b></p></div>`,n.hidden=!1,n.textContent="Continuer",n.focus(),n.onclick=()=>{r.hidden=!0,r.innerHTML="",S(a.ok===2?a:d,!0),L()}})}function L(){if(h>=s.turns.length){n.hidden=!1,n.textContent="Terminer",n.onclick=T;return}let e=s.turns[h++];if($(".story-bar").style.width=`${Math.round(h/s.turns.length*100)}%`,e.choices)return U(e);S(e,!1),s.turns[h]?.choices?setTimeout(()=>L(),700):(n.hidden=!1,n.textContent=h>=s.turns.length?"Terminer":"Continuer",n.onclick=h>=s.turns.length?T:L)}function T(){let e=Math.round(P/(2*p)*100),u=k.dialogues?.[s.id],l=!u?.done,t=M({label:`Dialogue \xB7 ${s.title}`,score:P,total:2*p,xpPer:5,key:`dialogue:${s.id}`}),a=0;l&&(a=20,M({label:"",score:1,total:0,xpPer:a})),C(d=>{d.dialogues={...d.dialogues||{},[s.id]:{done:!0,best:Math.max(u?.best||0,e),date:Date.now()}}}),document.body.classList.remove("focus-mode");let y=b.find(d=>q(d)&&!k.dialogues?.[d.id]?.done);c.innerHTML=`
+    <section class="results ${e>=60?"ok":"ko"}">
+      ${A(e,150,12)}
+      <h1>${e===100?"Comme un natif ! \u{1F389}":e>=60?"Bien jou\xE9 !":"Dialogue termin\xE9"}</h1>
+      <p class="lead">${P} / ${2*p} points \xB7 ${p} r\xE9pliques</p>
+      <div class="result-chips">${t.capped&&!a?`<span class="chip muted-chip">\u23F3 XP d\xE9j\xE0 gagn\xE9s aujourd'hui</span>`:`<span class="chip">\u26A1 +${t.xpGained+a} XP</span>`}${a?'<span class="chip">\u{1F4AC} Nouveau dialogue</span>':""}</div>
+      <div class="result-actions">
+        ${y?`<a class="btn primary big" href="#dialogue-${y.id}">Dialogue suivant \u2192</a>`:'<a class="btn primary big" href="#dialogues">Tous les dialogues</a>'}
+        <a class="btn ghost" href="#dialogue-${s.id}" data-reload>Rejouer</a>
+      </div>
+    </section>`,e===100&&E()}return n.onclick=()=>L(),!0}export{Y as dialogueCount,_ as renderDialogue,Z as renderDialogues};
