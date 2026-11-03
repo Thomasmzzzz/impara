@@ -31,6 +31,7 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.hostname.endsWith("supabase.co")) return;              // toujours en direct
+  if (url.pathname.includes("/audio/")) return;                   // enregistrements : lus par morceaux (Range), sans cache
 
   // Page : réseau d'abord, copie de secours hors ligne
   if (req.mode === "navigate" || (url.origin === location.origin && url.pathname.endsWith("/index.html"))) {
